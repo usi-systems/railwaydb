@@ -8,9 +8,7 @@
 #include <leveldb/db.h>
 
 #include <memory>
-#include <tr1/memory>
 #include <list>
-#include <tr1/unordered_map>
 
 namespace intergdb { namespace core
 {
@@ -20,20 +18,20 @@ namespace intergdb { namespace core
     private:
         struct VertexDataAndIdIter
         {
-            std::tr1::shared_ptr<VertexData> data;
+            std::shared_ptr<VertexData> data;
             std::list<VertexId>::iterator iter;
         };
     public:
         VertexManager(Conf const & conf);
         void addVertex(VertexId id, VertexData const & data);
-        std::tr1::shared_ptr<VertexData> getVertexData(VertexId id);
+        std::shared_ptr<VertexData> getVertexData(VertexId id);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
     private:
         size_t reqCount_;
         size_t hitCount_;
         size_t vertexDataBufferSize_;
         std::list<VertexId> lruList_;
-        std::tr1::unordered_map<VertexId, VertexDataAndIdIter> cache_;
+        std::unordered_map<VertexId, VertexDataAndIdIter> cache_;
         std::auto_ptr<leveldb::DB> db_;
     };
 
@@ -57,7 +55,7 @@ namespace intergdb { namespace core
     #undef VERTEX_DB_NAME
 
     template<class VertexData>
-    std::tr1::shared_ptr<VertexData> VertexManager<VertexData>::getVertexData(VertexId id)
+    std::shared_ptr<VertexData> VertexManager<VertexData>::getVertexData(VertexId id)
     {
         reqCount_++;
         auto it = cache_.find(id);

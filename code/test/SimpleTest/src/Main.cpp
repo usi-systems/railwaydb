@@ -3,30 +3,40 @@
 #include <cstdlib>
 #include <iostream>
 
+
+#include <boost/filesystem.hpp>
+
 using namespace std;
 using namespace intergdb::core;
 
 int main()
 {
-    Conf conf("test", "/tmp/");
+    Conf conf("test", "/tmp/myigdb");
+    bool newDB = !boost::filesystem::exists(conf.getStorageDir());
+    boost::filesystem::create_directories(conf.getStorageDir());
+    
     typedef InteractionGraph<std::string,std::string> Graph;
     Graph graph(conf);
-    graph.createVertex(2, "");
-    graph.createVertex(4, "");
-    graph.addEdge(2, 4, "");
-    graph.flush();
-    graph.getVertexData(2);
-    Graph::VertexIterator iqIt = graph.processIntervalQuery(5, 10);
+
+    if (newDB) {  
+        graph.createVertex(2, "v2");
+        graph.createVertex(4, "v4");
+        Timestamp ts = 7.0;
+        graph.addEdge(2, 4, "e2-4", ts);
+        graph.flush();
+    }
+
+    Graph::VertexIterator iqIt = graph.processIntervalQuery(5.0, 10.0);
     while(iqIt.isValid()) {
-        iqIt.getVertexData();
-        iqIt.getVertexId();
+        cout << *iqIt.getVertexData() << endl; 
+        cout << iqIt.getVertexId() << endl; 
         iqIt.next();
     }
-    Graph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(0, 5, 10);
+    Graph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(2, 5.0, 10.0);
     while(fiqIt.isValid()) {
-        fiqIt.getEdgeData();
-        fiqIt.getToVertex();
-        fiqIt.getTime();
+        cout << *fiqIt.getEdgeData() << endl; 
+        cout << fiqIt.getToVertex() << endl; 
+        cout << fiqIt.getTime() << endl; 
         fiqIt.next();
     }
     return EXIT_SUCCESS;

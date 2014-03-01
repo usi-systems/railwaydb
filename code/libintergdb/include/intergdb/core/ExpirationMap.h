@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <algorithm>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 namespace intergdb { namespace core
 {
@@ -93,9 +93,9 @@ namespace intergdb { namespace core
         };
     public:
         ExpirationMap(Conf const & conf, HistoricalGraph<EdgeData> * histg);
-        void addEdge(UEdge const & edge, std::tr1::shared_ptr<EdgeData> data);
+        void addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data);
         void flush();
-        std::tr1::unordered_map<VertexId, NeighborList<EdgeData> > const & getNeighborLists() const
+        std::unordered_map<VertexId, NeighborList<EdgeData> > const & getNeighborLists() const
             { return neigLists_; }
         BlockStats const & getBlockStats() const { return stats_; }
     private:
@@ -115,7 +115,7 @@ namespace intergdb { namespace core
         HistoricalGraph<EdgeData> * histg_;
         std::auto_ptr<HeadVertexScorer> hvScorer_;
         PriorityQueue<double, VertexId> scoreQueue_;
-        std::tr1::unordered_map<VertexId, NeighborList<EdgeData> > neigLists_;
+        std::unordered_map<VertexId, NeighborList<EdgeData> > neigLists_;
     };
 
     template <class EdgeData>
@@ -127,7 +127,7 @@ namespace intergdb { namespace core
     }
 
     template <class EdgeData>
-    void ExpirationMap<EdgeData>::addEdge(UEdge const & edge, std::tr1::shared_ptr<EdgeData> data)
+    void ExpirationMap<EdgeData>::addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data)
     {
         typedef typename NeighborList<EdgeData>::Edge NLEdge;
         {
@@ -225,7 +225,7 @@ namespace intergdb { namespace core
     template <class EdgeData>
     void ExpirationMap<EdgeData>::getBlock(Block<EdgeData> & block)
     {
-        std::tr1::unordered_map<VertexId, size_t> nTaken;
+        std::unordered_map<VertexId, size_t> nTaken;
         size_t maxBlockSize = conf_.blockSize();
         VertexId headVertex;
         while (!scoreQueue_.empty() && block.getSerializedSize()<maxBlockSize) {
@@ -261,22 +261,12 @@ namespace intergdb { namespace core
 
 } } /* namespace */
 
-
-namespace std { namespace tr1 {
-    template <class T>
-    struct hash<std::tr1::shared_ptr<T> > {
-      inline size_t operator()(std::tr1::shared_ptr<T> const & ptr) const {
-          return hash<void *>()(ptr.get());
-      }
-    };
-} } /* namespace */
-
 namespace intergdb { namespace core
 {
     template <class EdgeData>
     void ExpirationMap<EdgeData>::getBlockSmart(Block<EdgeData> & block)
     {
-        std::tr1::unordered_set<std::tr1::shared_ptr<Candidate> > candidates;
+        std::unordered_set<std::shared_ptr<Candidate> > candidates;
         { // initialize candidates
             size_t l = conf_.smartLayoutConf().seedEdgeCount();
             size_t k = std::min(neigLists_.size(),
@@ -284,7 +274,7 @@ namespace intergdb { namespace core
             auto it = scoreQueue_.getItems().begin();
             for (size_t j=0; j<k; ++j, ++it) {
                 size_t headVertex = it->id();
-                std::tr1::shared_ptr<Candidate> candidate(new Candidate());
+                std::shared_ptr<Candidate> candidate(new Candidate());
                 size_t edgeCount = std::min(neigLists_[headVertex].getEdges().size(), l);
                 assert(edgeCount<=neigLists_[headVertex].getEdges().size());
                 candidate->setEdgeCount(*this, headVertex, edgeCount);
@@ -292,7 +282,7 @@ namespace intergdb { namespace core
             }
         }
 
-        std::vector<std::tr1::shared_ptr<Candidate> > finalized;
+        std::vector<std::shared_ptr<Candidate> > finalized;
         while (!candidates.empty()) {
             for(auto it=candidates.begin(); it!=candidates.end();) {
                 auto cit = it++;

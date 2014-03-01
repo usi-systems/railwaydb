@@ -6,8 +6,8 @@
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/NetworkByteBuffer.h>
 
-#include <tr1/unordered_map>
-#include <tr1/unordered_set>
+#include <unordered_map>
+#include <unordered_set>
 #include <algorithm>
 #include <cassert>
 
@@ -17,13 +17,13 @@ namespace intergdb { namespace core
     class Block
     {
     public:
-        typedef std::tr1::unordered_map<VertexId, NeighborList<EdgeData> > NeighborListMap;
+        typedef std::unordered_map<VertexId, NeighborList<EdgeData> > NeighborListMap;
         Block() : id_(0), serializedSize_(sizeof(BlockId)) {}
         Block(BlockId id) : id_ (id), serializedSize_(sizeof(BlockId)) {}
         BlockId id() const { return id_; }
         BlockId & id() { return id_; }
         void addEdge(VertexId headVertex, VertexId to, Timestamp tm,
-                    std::tr1::shared_ptr<EdgeData> data);
+                    std::shared_ptr<EdgeData> data);
         void removeNewestEdge(VertexId headVertex);
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
@@ -34,7 +34,7 @@ namespace intergdb { namespace core
     private:
         BlockId id_;
         size_t serializedSize_;
-        std::tr1::unordered_map<VertexId, NeighborList<EdgeData> > neigs_;
+        std::unordered_map<VertexId, NeighborList<EdgeData> > neigs_;
     };
 
     template <class EdgeData>
@@ -57,9 +57,9 @@ namespace intergdb { namespace core
 
     template <class EdgeData>
     void Block<EdgeData>::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
-                                  std::tr1::shared_ptr<EdgeData> data)
+                                  std::shared_ptr<EdgeData> data)
     {
-        std::tr1::shared_ptr<EdgeData> sdata;
+        std::shared_ptr<EdgeData> sdata;
         if (neigs_.count(to)>0) {
             auto & nlist = neigs_[to];
             bool there = nlist.getEdgeData(headVertex, tm, sdata);
@@ -106,7 +106,7 @@ namespace intergdb { namespace core
         VertexId to = edge.getToVertex();
         if (neigs_.count(to)>0) {
             auto & nlist = neigs_[to];
-            std::tr1::shared_ptr<EdgeData> sdata;
+            std::shared_ptr<EdgeData> sdata;
             bool there = nlist.getEdgeData(headVertex, edge.getTime(), sdata);
             if (!there)
                 serializedSize_ -= getSerializedSizeOf(*edge.getData());
@@ -141,7 +141,7 @@ namespace intergdb { namespace core
 
 } } /* namespace */
 
-namespace std { namespace tr1 {
+namespace std { 
     template<>
     struct hash<intergdb::core::EdgeTriplet> {
       inline size_t operator()(intergdb::core::EdgeTriplet const & et) const {
@@ -152,7 +152,7 @@ namespace std { namespace tr1 {
           return hval;
       }
     };
-} } /* namespace */
+} /* namespace */
 
 namespace intergdb { namespace core
 {
@@ -179,7 +179,7 @@ namespace intergdb { namespace core
     template <class EdgeData>
     inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, Block<EdgeData> const & block)
     {
-        std::tr1::unordered_set<EdgeTriplet> written;
+        std::unordered_set<EdgeTriplet> written;
         sbuf << block.id();
         auto const & neigs = block.getNeighborLists();
         for (auto it=neigs.begin(); it!=neigs.end(); ++it)  {
@@ -205,7 +205,7 @@ namespace intergdb { namespace core
     template <class EdgeData>
     inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, Block<EdgeData> & block)
     {
-        std::tr1::unordered_map<EdgeTriplet, std::tr1::shared_ptr<EdgeData> > read;
+        std::unordered_map<EdgeTriplet, std::shared_ptr<EdgeData> > read;
         sbuf >> block.id();
         while (sbuf.getNRemainingBytes()>0) {
             VertexId headVertex;
@@ -217,7 +217,7 @@ namespace intergdb { namespace core
                 sbuf >> toVertex;
                 Timestamp tm;
                 sbuf >> tm;
-                std::tr1::shared_ptr<EdgeData> sdata;
+                std::shared_ptr<EdgeData> sdata;
                 EdgeTriplet etrip(headVertex, toVertex, tm);
                 auto it = read.find(etrip);
                 if (it==read.end()) {
