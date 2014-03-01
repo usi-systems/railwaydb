@@ -7,9 +7,10 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <unordered_set>
+#include <tr1/unordered_set>
 
 using namespace std;
+using namespace std::tr1;
 using namespace intergdb::gen;
 using namespace intergdb::run;
 using namespace intergdb::run::test;

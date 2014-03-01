@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include <unordered_map>
+#include <tr1/unordered_map>
 #include <boost/variant.hpp>
 
 namespace intergdb { namespace run { namespace exp {
@@ -38,7 +38,7 @@ private:
 	std::string fileName_;
 	std::fstream file_;
 	std::vector<std::string> fieldNames_;
-	std::unordered_map<std::string, size_t> fieldNameIndices_;
+	std::tr1::unordered_map<std::string, size_t> fieldNameIndices_;
 	std::vector<std::vector<any_value> > values_;
 };
 
