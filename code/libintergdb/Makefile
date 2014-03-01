@@ -19,10 +19,12 @@ INCDIR  = include
 LIBRARY   = libintergdb.so
 
 CPPFLAGS  = 
-INCLUDES  = -isystem /opt/local/include \
- -I $(THISDIR)../ext/include -I $(THISDIR)../ext/src/leveldb/include
-LDFLAGS   = -L /opt/local/lib \
- -L $(THISDIR)../ext/lib -L $(THISDIR)../ext/src/leveldb \
+INCLUDES  = -isystem /opt/local/libcpp-software/include \
+ -I $(THISDIR)../ext/include \
+ -I $(THISDIR)../ext/src/leveldb/include
+LDFLAGS   = -L /opt/local/libcpp-software/lib \
+ -L $(THISDIR)../ext/lib \
+ -L $(THISDIR)../ext/src/leveldb \
  -lboost_coroutine-mt -lboost_context-mt -lboost_filesystem-mt \
  -lboost_iostreams-mt -lboost_chrono-mt -lboost_date_time-mt \
  -lboost_system-mt -lboost_thread-mt \
@@ -30,7 +32,7 @@ LDFLAGS   = -L /opt/local/lib \
 
 ## Implicit Section: change the following only when necessary.
 CXX      = clang++ 
-CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libstdc++  
+CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libc++  
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
 INCDIRS  = $(shell find $(INCDIR) -type d)
 INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)

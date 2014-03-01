@@ -1,7 +1,7 @@
 #ifndef INTERGDB_TYPES_H
 #define INTERGDB_TYPES_H
 
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <iostream>
 #include <inttypes.h>
 

@@ -2,12 +2,11 @@
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <spatialindex/tools/Tools.h>
 #include <boost/filesystem.hpp>
-#include <tr1/unordered_set>
+#include <unordered_set>
 
 using namespace SpatialIndex;
 using namespace intergdb::core;
 using namespace std;
-using namespace std::tr1;
 
 auto_ptr<Region> RTreeIntervalIndex::
     IntervalData::getRegion(Timestamp const start, Timestamp const end,
