@@ -1,9 +1,9 @@
 #ifndef INTERGDB_NEIGHBORLIST_H
 #define INTERGDB_NEIGHBORLIST_H
 
-#include <memory>
+#include <tr1/memory>
 #include <deque>
-#include <unordered_map>
+#include <tr1/unordered_map>
 #include <algorithm>
 
 namespace intergdb { namespace core
@@ -16,17 +16,17 @@ namespace intergdb { namespace core
         class Edge
         {
         public:
-            Edge(VertexId toVertex, Timestamp tm, std::shared_ptr<EdgeData> sdata)
+            Edge(VertexId toVertex, Timestamp tm, std::tr1::shared_ptr<EdgeData> sdata)
                 : toVertex_(toVertex), tm_(tm), data_(sdata) {}
             VertexId getToVertex() const { return toVertex_; }
             Timestamp getTime() const { return tm_; }
-            std::shared_ptr<EdgeData> getData() const { return data_; }
+            std::tr1::shared_ptr<EdgeData> getData() const { return data_; }
             bool operator<(Edge const & rhs) const
                 { return tm_<rhs.tm_; }
         private:
             VertexId toVertex_;
             Timestamp tm_;
-            std::shared_ptr<EdgeData> data_;
+            std::tr1::shared_ptr<EdgeData> data_;
         };
     public:
         VertexId & headVertex() { return headVertex_; }
@@ -38,7 +38,7 @@ namespace intergdb { namespace core
         Edge const & getNewestEdge() const { return edges_.back(); }
         void removeOldestEdge() { if (!edges_.empty()) edges_.pop_front(); }
         void removeNewestEdge() { if (!edges_.empty()) edges_.pop_back(); }
-        bool getEdgeData(VertexId to, Timestamp tm, std::shared_ptr<EdgeData> & sdata);
+        bool getEdgeData(VertexId to, Timestamp tm, std::tr1::shared_ptr<EdgeData> & sdata);
         bool hasEdgesInRange(Timestamp start, Timestamp end) const;
     private:
         VertexId headVertex_;
@@ -47,10 +47,10 @@ namespace intergdb { namespace core
 
     template <class EdgeData>
     bool NeighborList<EdgeData>::getEdgeData(VertexId to, Timestamp tm,
-            std::shared_ptr<EdgeData> & sdata)
+            std::tr1::shared_ptr<EdgeData> & sdata)
     {
         bool found = false;
-        Edge tmEdge(to, tm, std::shared_ptr<EdgeData>());
+        Edge tmEdge(to, tm, std::tr1::shared_ptr<EdgeData>());
         auto it = std::lower_bound(edges_.begin(), edges_.end(), tmEdge);
         for (; it!=edges_.end() && it->getTime()==tm; ++it) {
             if (it->getToVertex()==to) {
@@ -66,7 +66,7 @@ namespace intergdb { namespace core
     template <class EdgeData>
     bool NeighborList<EdgeData>::hasEdgesInRange(Timestamp start, Timestamp end) const
     {
-        Edge startEdge(0, start, std::shared_ptr<EdgeData>());
+        Edge startEdge(0, start, std::tr1::shared_ptr<EdgeData>());
         auto it = std::lower_bound(edges_.begin(), edges_.end(), startEdge);
         if (it==edges_.end())
             return false;

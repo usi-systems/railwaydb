@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 #include <typeinfo>
-#include <type_traits>
+#include <tr1/type_traits>
 #include <string>
 
 namespace intergdb { namespace core
@@ -22,7 +22,7 @@ namespace intergdb { namespace core
     template <class T>
     size_t getSerializedSizeOf(T const & val)
     {
-        if (std::is_integral<T>::value || std::is_floating_point<T>::value)
+        if (std::tr1::is_integral<T>::value || std::tr1::is_floating_point<T>::value)
             return sizeof(T);
         throw std::runtime_error("Type "+std::string(typeid(T).name())+" does not have getSerializedSizeOf defined for it");
         return 0;

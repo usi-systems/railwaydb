@@ -4,7 +4,7 @@
 #include <intergdb/core/Types.h>
 
 #include <set>
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 namespace intergdb { namespace core
 {
@@ -104,7 +104,7 @@ namespace intergdb { namespace core
         }
     private:
         typedef std::set<KeyIdPair> SortedItemsOnKey;
-        typedef std::unordered_map<Id, typename SortedItemsOnKey::iterator> ItemsIndexedById;
+        typedef std::tr1::unordered_map<Id, typename SortedItemsOnKey::iterator> ItemsIndexedById;
         size_t maxItemCount_;
         SortedItemsOnKey items_;
         ItemsIndexedById index_;

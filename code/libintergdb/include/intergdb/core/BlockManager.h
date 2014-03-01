@@ -10,7 +10,7 @@
 
 #include <memory>
 #include <list>
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 namespace intergdb { namespace core
 {
@@ -41,7 +41,7 @@ namespace intergdb { namespace core
         size_t hitCount_;
         size_t blockBufferSize_;
         std::list<BlockId> lruList_;
-        std::unordered_map<BlockId, BlockAndIdIter> cache_;
+        std::tr1::unordered_map<BlockId, BlockAndIdIter> cache_;
         std::auto_ptr<leveldb::DB> db_;
     };
 

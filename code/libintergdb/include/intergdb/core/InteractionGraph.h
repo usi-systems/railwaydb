@@ -8,7 +8,7 @@
 #include <intergdb/core/InMemoryGraph.h>
 #include <intergdb/core/HistoricalGraph.h>
 
-#include <memory>
+#include <tr1/memory>
 
 namespace intergdb { namespace core
 {
@@ -20,35 +20,35 @@ namespace intergdb { namespace core
         {
         public:
             VertexIterator(VertexManager<VertexData> * vman,
-              std::shared_ptr<typename HistoricalGraph<EdgeData>::VertexIterator> it)
+              std::tr1::shared_ptr<typename HistoricalGraph<EdgeData>::VertexIterator> it)
                 : vman_(vman), it_(it) {}
             bool isValid() { return it_->isValid(); }
             void next() { it_->next(); }
             VertexId getVertexId() { return it_->getVertexId(); }
-            std::shared_ptr<VertexData> getVertexData()
+            std::tr1::shared_ptr<VertexData> getVertexData()
                 { return vman_->getVertexData(getVertexId()); }
         private:
             VertexManager<VertexData> * vman_;
-            std::shared_ptr<typename HistoricalGraph<EdgeData>::VertexIterator> it_;
+            std::tr1::shared_ptr<typename HistoricalGraph<EdgeData>::VertexIterator> it_;
         };
         class EdgeIterator
         {
         public:
-            EdgeIterator(std::shared_ptr<typename HistoricalGraph<EdgeData>::EdgeIterator> it)
+            EdgeIterator(std::tr1::shared_ptr<typename HistoricalGraph<EdgeData>::EdgeIterator> it)
                 : it_(it) {}
             bool isValid() { return it_->isValid(); }
             void next() { it_->next(); }
             VertexId getToVertex() { return it_->getEdge().getToVertex(); }
             Timestamp getTime() { return it_->getEdge().getTime(); }
-            std::shared_ptr<EdgeData> getEdgeData() { return it_->getEdge().getData(); }
+            std::tr1::shared_ptr<EdgeData> getEdgeData() { return it_->getEdge().getData(); }
         private:
-            std::shared_ptr<typename HistoricalGraph<EdgeData>::EdgeIterator> it_;
+            std::tr1::shared_ptr<typename HistoricalGraph<EdgeData>::EdgeIterator> it_;
         };
     public:
         InteractionGraph(Conf const & conf);
 
         void createVertex(VertexId id, VertexData const & data);
-        std::shared_ptr<VertexData> getVertexData(VertexId id);
+        std::tr1::shared_ptr<VertexData> getVertexData(VertexId id);
         // The same vertex cannot be involved in more than one edge with the same timestamp
         void addEdge(VertexId v, VertexId u, EdgeData const & data,
                      Timestamp time=Helper::getCurrentTimestamp());
@@ -86,7 +86,7 @@ namespace intergdb { namespace core
     }
 
     template<class VertexData, class EdgeData>
-    std::shared_ptr<VertexData> InteractionGraph<VertexData,EdgeData>::
+    std::tr1::shared_ptr<VertexData> InteractionGraph<VertexData,EdgeData>::
         getVertexData(VertexId id)
     {
         return vman_.getVertexData(id);

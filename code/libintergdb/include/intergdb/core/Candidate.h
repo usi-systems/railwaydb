@@ -2,8 +2,8 @@
 #define INTERGDB_CANDIDATE_H
 
 #include <intergdb/core/PriorityQueue.h>
-#include <unordered_map>
-#include <memory>
+#include <tr1/unordered_map>
+#include <tr1/memory>
 
 namespace intergdb { namespace core
 {
@@ -21,7 +21,7 @@ namespace intergdb { namespace core
     };
 } } /* namespace */
 
-namespace std {
+namespace std { namespace tr1 {
     using namespace intergdb::core;
     template<>
     struct hash<SUEdge> {
@@ -33,7 +33,7 @@ namespace std {
           return hval;
       }
     };
-} /* namespace */
+} } /* namespace */
 
 namespace intergdb { namespace core
 {
@@ -43,8 +43,8 @@ namespace intergdb { namespace core
     class Candidate
     {
     public:
-        typedef std::unordered_map<VertexId, size_t> EdgeCounts;
-        typedef std::unordered_map<VertexId, size_t> PresentVertices;
+        typedef std::tr1::unordered_map<VertexId, size_t> EdgeCounts;
+        typedef std::tr1::unordered_map<VertexId, size_t> PresentVertices;
         Candidate() : size_(sizeof(BlockId)), edgeCount_(0), outEdgeCount_(0) {}
         double getLocality(Conf::SmartLayoutConf::LocalityMetric metric) const;
         EdgeCounts const & getEdgeCounts() const { return numEdges_; }
@@ -67,10 +67,10 @@ namespace intergdb { namespace core
         size_t size_;
         size_t edgeCount_; // total edge count
         size_t outEdgeCount_; // num of edges going out
-        std::unordered_map<VertexId, size_t> presentVertices_; // vertices that appear in neiglists
+        std::tr1::unordered_map<VertexId, size_t> presentVertices_; // vertices that appear in neiglists
         PriorityQueue<Timestamp, VertexId, PriorityQueueOrder::MaxAtTop> timestamps_; // max timestamps of neiglists
-        std::unordered_map<VertexId, size_t> numEdges_; // number of edges from each neiglists
-        std::unordered_map<SUEdge, size_t> internalEdges_; // neiglist to neiglist edges
+        std::tr1::unordered_map<VertexId, size_t> numEdges_; // number of edges from each neiglists
+        std::tr1::unordered_map<SUEdge, size_t> internalEdges_; // neiglist to neiglist edges
     };
 
     template <class EdgeData>
