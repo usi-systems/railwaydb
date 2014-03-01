@@ -1,0 +1,37 @@
+# First build the dependent libraries: leveldb and libspatialindex
+
+## Enter into the external software dir
+cd ext/src
+
+## Build leveldb
+cd leveldb
+make
+cp libleveldb.* ../../lib/
+cd ..
+
+## Build libspatialindex
+cd libspatialindex
+./configure --prefix $(cd ../..; pwd)
+make
+make install
+cd ..
+
+## Go back to the top level
+cd ../..
+
+# Next, build libintergdb
+cd libintergdb
+make
+cd ..
+
+# Last, run a test application
+cd test/Simple
+make
+./bin/SimpleTest 
+
+
+
+
+
+
+
