@@ -11,7 +11,7 @@
 #include <boost/random/uniform_real.hpp>
 #include <boost/random.hpp>
 
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 #include <cstdlib>
 #include <inttypes.h>
@@ -105,7 +105,7 @@ namespace intergdb { namespace gen
         GraphIndexMap vertexIndex_;
         std::auto_ptr<Zipf> popularitySkew_;
         std::vector<std::vector<core::VertexId>> verticesByPopularity_;
-        std::unordered_map<core::VertexId, VertexInfo> vertexInfo_;
+        std::tr1::unordered_map<core::VertexId, VertexInfo> vertexInfo_;
     };
 
 } } /* namespace */

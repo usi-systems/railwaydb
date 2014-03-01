@@ -9,7 +9,7 @@
 #include "boost/date_time/posix_time/posix_time_types.hpp"
 
 #include <algorithm>
-#include <unordered_set>
+#include <tr1/unordered_set>
 
 using namespace std;
 using namespace intergdb::gen;
@@ -135,8 +135,8 @@ static uint64_t getTweetTimestamp(string const & td, uint64_t dayStart)
 
 
 void ExpSetupHelper::scanTweets(string const & dirPath,
-        function<void (uint64_t, int64_t, vector<int64_t> const &,
-                       string const &, string const &)> visitor)
+        tr1::function<void (uint64_t, int64_t, vector<int64_t> const &,
+                            string const &, string const &)> visitor)
 {
     using namespace boost::filesystem;
     path tweetDir(dirPath);
@@ -178,6 +178,7 @@ void ExpSetupHelper::populateGraphFromTweets(string const & dirPath,
                     InteractionGraph<int64_t, string> & graph,
                     size_t * nVertices/*=nullptr*/, size_t * nEdges/*=nullptr*/)
 {
+    using namespace std::tr1;
     using namespace boost;
     /*
     {
@@ -195,7 +196,7 @@ void ExpSetupHelper::populateGraphFromTweets(string const & dirPath,
     }
     */
     {
-        std::unordered_set<int64_t> vertices;
+        std::tr1::unordered_set<int64_t> vertices;
         scanTweets(dirPath, [&] (uint64_t time,
                 int64_t from, vector<int64_t> const & tos,
                 string const & id, string const & data)

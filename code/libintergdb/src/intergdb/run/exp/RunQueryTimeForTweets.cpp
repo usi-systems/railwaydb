@@ -7,9 +7,10 @@
 #include <intergdb/core/Conf.h>
 #include <intergdb/gen/InteractionGraphGenerator.h>
 
-#include <functional>
+#include <tr1/functional>
 
 using namespace std;
+using namespace std::tr1;
 using namespace intergdb::core;
 using namespace intergdb::gen;
 using namespace intergdb::run;
@@ -17,13 +18,13 @@ using namespace intergdb::run::exp;
 
 void RunQueryTimeForTweets::process()
 {
-    using namespace std::placeholders;
-    using std::placeholders::_1;
-    using std::placeholders::_2;
-    using std::placeholders::_3;
-    using std::placeholders::_4;
-    using std::placeholders::_5;
-    using std::placeholders::_6;
+    using namespace std::tr1::placeholders;
+    using std::tr1::placeholders::_1;
+    using std::tr1::placeholders::_2;
+    using std::tr1::placeholders::_3;
+    using std::tr1::placeholders::_4;
+    using std::tr1::placeholders::_5;
+    using std::tr1::placeholders::_6;
 
     Experiment exp("tweets_and_query_time");
     exp.setDescription("Query time for tweet graph with different algs");

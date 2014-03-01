@@ -5,7 +5,7 @@
 #include <intergdb/core/InteractionGraph.h>
 #include <intergdb/core/Types.h>
 #include <intergdb/gen/InteractionGraphGenerator.h>
-#include <functional>
+#include <tr1/functional>
 
 namespace intergdb { namespace run { namespace exp
 {
@@ -21,8 +21,8 @@ namespace intergdb { namespace run { namespace exp
                 core::InteractionGraph<int64_t, std::string> & graph,
                 size_t * nVertices=nullptr, size_t * nEdges=nullptr);
         static void scanTweets(std::string const & dirPath,
-                std::function<void (uint64_t, int64_t, std::vector<int64_t> const &,
-                                    std::string const &, std::string const &)> visitor);
+                std::tr1::function<void (uint64_t, int64_t, std::vector<int64_t> const &,
+                                         std::string const &, std::string const &)> visitor);
 
         template <class VertexData, class EdgeData>
         static void addGraphVertices(gen::InteractionGraphGenerator & gen,
@@ -140,7 +140,7 @@ namespace intergdb { namespace run { namespace exp
                 core::Timestamp startTime = time - timeExtent/2.0;
                 core::Timestamp endTime = time +  timeExtent/2.0;
                 core::VertexId headVertex = (i<vertices.size()) ? vertices[i] : 0;
-                std::unordered_set<core::VertexId> seenVertices;
+                std::tr1::unordered_set<core::VertexId> seenVertices;
                 seenVertices.insert(headVertex);
                 std::deque<std::pair<core::VertexId, int>> queue;
                 queue.push_back(std::make_pair(headVertex, 0));
@@ -178,7 +178,7 @@ namespace intergdb { namespace run { namespace exp
                 core::Timestamp startTime = time - timeExtent/2.0;
                 core::Timestamp endTime = time +  timeExtent/2.0;
                 core::VertexId headVertex = (i<vertices.size()) ? vertices[i] : 0;
-                std::unordered_set<core::VertexId> seenVertices;
+                std::tr1::unordered_set<core::VertexId> seenVertices;
                 seenVertices.insert(headVertex);
                 std::deque<std::pair<core::VertexId, int>> queue;
                 queue.push_back(std::make_pair(headVertex, 0));
@@ -220,7 +220,7 @@ namespace intergdb { namespace run { namespace exp
                 core::Timestamp startTime = time - timeExtent/2.0;
                 core::Timestamp endTime = time +  timeExtent/2.0;
                 core::VertexId headVertex = vertices[i%vertices.size()];
-                std::unordered_set<core::VertexId> seenVertices;
+                std::tr1::unordered_set<core::VertexId> seenVertices;
                 seenVertices.insert(headVertex);
                 std::deque<std::pair<core::VertexId, int>> queue;
                 queue.push_back(std::make_pair(headVertex, 0));
@@ -243,11 +243,11 @@ namespace intergdb { namespace run { namespace exp
         }
 
         template<class T>
-        size_t intersectionSize(std::unordered_set<T> const & s1,
-                                std::unordered_set<T> const & s2)
+        size_t intersectionSize(std::tr1::unordered_set<T> const & s1,
+                                std::tr1::unordered_set<T> const & s2)
         {
-            std::unordered_set<T> const * s = nullptr;
-            std::unordered_set<T> const * l = nullptr;
+            std::tr1::unordered_set<T> const * s = nullptr;
+            std::tr1::unordered_set<T> const * l = nullptr;
             if (s1.size() <= s2.size()) {
                 s = &s1;
                 l = &s2;
@@ -275,7 +275,7 @@ namespace intergdb { namespace run { namespace exp
                 core::Timestamp endTime = time +  timeExtent/2.0;
                 core::VertexId v = vertices[i%vertices.size()];
                 double clusteringCoefficient = 0.0;
-                std::unordered_set<core::VertexId> tz;
+                std::tr1::unordered_set<core::VertexId> tz;
                 auto fiqIt = graph.processFocusedIntervalQuery(v, startTime, endTime);
                 for (; fiqIt.isValid(); fiqIt.next()) {
                     auto to = fiqIt.getToVertex();
@@ -330,21 +330,21 @@ namespace intergdb { namespace run { namespace exp
             double time = minTime + timeDiff / 2.0;
             core::Timestamp startTime = time - timeExtent/2.0;
             core::Timestamp endTime = time +  timeExtent/2.0;
-            std::unordered_set<core::VertexId> pages;
+            std::tr1::unordered_set<core::VertexId> pages;
             auto iqIt = graph.processIntervalQuery(startTime, endTime);
             for (; iqIt.isValid(); iqIt.next()) {
                 auto to = iqIt.getVertexId();
                 pages.insert(to);
             }
             double damp = 0.85;
-            std::unordered_map<core::VertexId,double> ranks1, ranks2;
+            std::tr1::unordered_map<core::VertexId,double> ranks1, ranks2;
             for (auto const & v : pages)
                 ranks1[v] = 1.0/pages.size();
             for (size_t k=0; k<nIters; k++) {
                 for (auto const & v : pages)
                     ranks2[v] = 0.0;
             for (core::VertexId const & from : pages) {
-                std::unordered_map<core::VertexId,double> delta;
+                std::tr1::unordered_map<core::VertexId,double> delta;
                 auto fiqIt = graph.processFocusedIntervalQuery(from, startTime, endTime);
                 size_t nEdges = 0;
                 for (; fiqIt.isValid(); fiqIt.next()) {

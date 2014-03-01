@@ -11,6 +11,7 @@
 #include <algorithm>
 
 using namespace std;
+using namespace std::tr1;
 using namespace intergdb::core;
 using namespace intergdb::gen;
 
