@@ -10,6 +10,7 @@
 #include <intergdb/core/NetworkByteBuffer.h>
 
 #include <memory>
+#include <tr1/memory>
 
 namespace intergdb { namespace core
 {
@@ -44,7 +45,7 @@ namespace intergdb { namespace core
     public:
         IntervalQueryIndex(Conf const & conf, BlockManager<EdgeData> * bman);
         void indexBlock(Block<EdgeData> const & block);
-        std::shared_ptr<Iterator> query(Timestamp start, Timestamp end);
+        std::tr1::shared_ptr<Iterator> query(Timestamp start, Timestamp end);
         void queryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
     private:
         BlockManager<EdgeData> * bman_;
@@ -117,10 +118,10 @@ namespace intergdb { namespace core
     }
 
     template<class EdgeData>
-    std::shared_ptr<typename IntervalQueryIndex<EdgeData>::Iterator> IntervalQueryIndex<EdgeData>::
+    std::tr1::shared_ptr<typename IntervalQueryIndex<EdgeData>::Iterator> IntervalQueryIndex<EdgeData>::
         query(Timestamp start, Timestamp end)
     {
-        return std::shared_ptr<IntervalQueryIndex::Iterator>(new Iterator(iidx_, bman_, start, end));
+        return std::tr1::shared_ptr<IntervalQueryIndex::Iterator>(new Iterator(iidx_, bman_, start, end));
     }
 
     template<class EdgeData>

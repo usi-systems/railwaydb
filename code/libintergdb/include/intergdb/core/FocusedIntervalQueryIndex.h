@@ -10,6 +10,7 @@
 #include <leveldb/db.h>
 
 #include <memory>
+#include <tr1/memory>
 
 namespace intergdb { namespace core
 {
@@ -44,7 +45,7 @@ namespace intergdb { namespace core
         };
         FocusedIntervalQueryIndex(Conf const & conf);
         void indexBlock(Block<EdgeData> const & block);
-        std::shared_ptr<Iterator> query(VertexId vertex, Timestamp start, Timestamp end);
+        std::tr1::shared_ptr<Iterator> query(VertexId vertex, Timestamp start, Timestamp end);
     private:
         std::auto_ptr<leveldb::DB> db_;
     };
@@ -113,10 +114,10 @@ namespace intergdb { namespace core
     }
 
     template <class EdgeData>
-    std::shared_ptr<typename FocusedIntervalQueryIndex<EdgeData>::Iterator> FocusedIntervalQueryIndex<EdgeData>::
+    std::tr1::shared_ptr<typename FocusedIntervalQueryIndex<EdgeData>::Iterator> FocusedIntervalQueryIndex<EdgeData>::
         query(VertexId vertex, Timestamp start, Timestamp end)
     {
-        return std::shared_ptr<FocusedIntervalQueryIndex::Iterator>(new Iterator(db_.get(), vertex, start, end));
+        return std::tr1::shared_ptr<FocusedIntervalQueryIndex::Iterator>(new Iterator(db_.get(), vertex, start, end));
     }
 
     template <class EdgeData>
