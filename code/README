@@ -5,14 +5,13 @@ cd ext/src
 
 ## Build leveldb
 cd leveldb
-make
-cp libleveldb.* ../../lib/
+make -j 4
 cd ..
 
 ## Build libspatialindex
 cd libspatialindex
 ./configure --prefix $(cd ../..; pwd)
-make
+make -j 4
 make install
 cd ..
 
@@ -21,11 +20,11 @@ cd ../..
 
 # Next, build libintergdb
 cd libintergdb
-make
+make -j 4
 cd ..
 
 # Last, run a test application
-cd test/Simple
+cd test/SimpleTest
 make
 ./bin/SimpleTest 
 
