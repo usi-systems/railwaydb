@@ -1,0 +1,39 @@
+Typical interaction graphs have data associated with their vertices and edges.
+Most algorithms access this data as they traverse the graph. However, not all
+of the data is accessed by all the queries. Typically, there are correlations
+among the attributes accessed by different queries, such as Q1 and Q5
+accessing attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and
+so on.
+
+In an interaction graph database organized as blocks of temporal neighborlists
+(as in my earlier paper), it is important to store the edge and vertex
+properties locally. For  instance, if the edge properties are kept away in a
+relational table, there will be almost no benefit to the locality
+optimizations performed for block organization (discussed in my earlier
+paper), as we would have to go back and forth between the disk blocks to
+access the edge attributes. 
+
+On the other hand, putting all the edge attributes into the disk blocks
+containing the graph structure is expected to cause significant overhead when
+only a few of these attributes are read. This is somewhat similar to the 
+problem with row-oriented databases, where the entire row needs to be accessed
+from the disk despite the query needing only a small fraction of it.
+Unfortunately, there is no clear correspondence to a column-oriented database
+layout for the graph databases.
+
+Recall that interaction graphs are temporal. As such, the co-access
+correlations for the attributes can be different for different temporal
+regions. It might also  be unknown at the insertion time and may be discovered
+later depending on the workload. This points to the need for adaptively
+optimizing the layout (somewhat similar to the H2O paper).
+
+I imagine a solution to this problem, which I name the 'rail layout'. The idea
+is to start with large blocks that contain the entire data. As we learn about
+the access properties for different time regions, we might start splitting
+such blocks into smaller blocks that run parallel to each other, almost like
+having two or more graph databases for certain time regions, each containing a
+ different subset of the attributes, but with a link between them in case a
+query needs to access both. Some attributes can be replicated as well. 
+More details to follow about all this...
+
+
