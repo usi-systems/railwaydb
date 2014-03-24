@@ -1,6 +1,8 @@
 
 \documentclass{sig-alternate}
 
+\usepackage{alltt}
+
 \begin{document}
 
 \conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
@@ -21,6 +23,10 @@ TODO
 
 
 \section{Introduction}
+An \emph{interaction graph} is an append-only graph, where new edges and
+vertices are added as time progresses. 
+%
+
 %
 Typical interaction graphs have data associated with their vertices and edges.
 Most algorithms access this data as they traverse the graph. However, not all
@@ -34,8 +40,7 @@ In an interaction graph database organized as blocks of temporal neighborlists
 (as in my earlier paper), it is important to store the edge and vertex
 properties locally. For  instance, if the edge properties are kept away in a
 relational table, there will be almost no benefit to the locality
-optimizations performed for block organization (discussed in my earlier
-paper), as we would have to go back and forth between the disk blocks to
+optimizations performed for block organization (discussed in \cite{gedik14}), as we would have to go back and forth between the disk blocks to
 access the edge attributes. 
 %
 
@@ -66,6 +71,46 @@ More details to follow about all this...
 
 \section{Example}
 
+\begin{alltt}\scriptsize
+- Work through a concrete example of a database and a 
+   couple of queries that would change the layout on disk.
+
+- An interaction graph is an append-only graph, where new 
+   edges and vertices are added as time progresses. 
+
+- Typically, in graph dbs, if a vertex is visited during a 
+   traversal, then it is likely that its neighbors will also 
+    be visited
+
+- So, we store we place highly connected neighbors in the 
+    same disk block, to minimize disk I/O.
+
+- Interaction graphs are temporal. The edges between vertices 
+   change over time. 
+
+- For interaction graphs, we need to group edges spatially 
+   and temporally.
+
+- Vertices and edges have data associated with them. 
+
+- We want to store as much relevant data as possible in the 
+   same block.
+
+- We will store:
+   - edges and vertices that are connected in the same time interval
+   - edges and vertices that are highly connected (neighbors)
+   - edge attributes that are likely to be accessed
+   - vertex attributes that are likely to be accessed
+
+- Example: We use an interaction graph to model connections
+   between people on Twitter. Every time 
+
+- $C^d(B) = conductance, lower is better.$
+- $C^h(B) = cohesiveness, higher is better.$
+
+\end{alltt}
+
+$L(B) = \sqrt[2]{C^h(B) \cdot ( 1 - C^d(B))}$
 
 \section{Adaptation}
 
