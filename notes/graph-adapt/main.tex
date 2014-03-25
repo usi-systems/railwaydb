@@ -112,6 +112,21 @@ More details to follow about all this...
 
 $L(B) = \sqrt[2]{C^h(B) \cdot ( 1 - C^d(B))}$
 
+
+\emph{In the problem you're describing, one natural idea that springs to mind is
+  to reduce it back to a graph problem by the edges of the original interaction
+  graph as vertices of an "augmented interaction graph" whose vertex set
+  consists of both the vertices and edges of the original graph, i.e. all
+  entities that might have data associated to them. And two vertices of the
+  augmented interaction graph are joined by an edge if either (a) both of them
+  are vertices of the original interaction graph, and they are joined by an
+  edge, or (b) one is an edge and the other is a vertex which is an endpoint of
+  that edge. Pictorially, the augmented interaction graph is obtained by
+  inserting a new vertex alongside each edge of the original interaction graph
+  and turning the edge into a triangle with the new vertex as its third
+  corner. It seems that this would work well assuming that queries which
+  traverse an edge are likely to traverse its endpoints. -- rdk}
+
 \section{Adaptation}
 
 
