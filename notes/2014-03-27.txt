@@ -1,0 +1,76 @@
+- (Old version, same blocking) Connectivity structure of the graph
+- Take the block, chop it into smaller blocks.
+  - They only contain subsets of the attributes. 
+  - There are links between them.
+  - For example, divide into three
+    - you may group the addributes into smaller blocks...
+
+    - Dividing one logical block into multiple physical blocks
+    - Only want to do this if you see high-correlation between the
+      attributes
+
+  - Doing the division dynamically across time and space...
+
+Cost model depends on the query
+the query would have a timestamp
+each query has a set of attributes that it accesses
+  - if it acceses only certain attributes, then we split it
+  - if it accesses all, we don't split it
+  - if it doesn't access a time region, then we don't touch the block.
+
+H20 depends on table scans, so the cost model is low...
+
+Maybe we should start with the adaption: start with the idea of hte
+"rail layout", with potentially overlapping sub-blocks.
+need to model storage side, and model the query I/O
+There is a tradeoff.
+
+The tradeoff is the interesting part, because we sacrifice disk storage
+for query performance.
+
+
+Adaption:
+  - As queries are submitted, we would learn:
+    - the arrtibues
+    - the time spans
+
+  - We need some sort of temporal data structure...
+
+  - which attributes are frequently accessed together in time
+
+  - Can't divide time into fixed regions, because the windows might
+   be too big, or too fine grained.
+  - We need "dynamic windows"
+
+  - How do we map a time into the range.
+  - How do we summarize queries over time?
+     -> Sets of attributes, and the number of times they were accessed together
+
+ - User would submit a query with a time range (Give me the neighbors of this vertix within this time range)
+ - Determine which attributes were accessed together
+ - Lookup in the time window, and update the statistics about co-frequency
+
+ - We are keeping a summary, do an exponential decay, if things change, then 
+   our summary changes as well
+
+ - Queries whos start points is "now": online vs disk. We are more concerned
+   with data on disk...
+
+
+- Not thinking that the attribute co-acess frequency would change over time
+
+- Our system is not "adaptive". We are assuming that we will learn the access
+  frequencies...
+
+- DOn't know (at the system level) what the frequencies are, and don't want
+  users to declare them...
+
+
+TODOs:
+  - Bugra will draw a picture, and write up the layour in more detail
+  - Robert will write up about the statistics colation and adaptivity.
+
+  - Look at the related work in H20 
+
+  
+
