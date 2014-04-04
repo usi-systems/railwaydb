@@ -1,0 +1,129 @@
+Each query has:
+(i) a set of attributes that it accesses:
+
+(ii) approximate sizes of the attributes:
+
+(iii) frequencies
+ for any given subset of attributes, for which a query was asked, 
+ we keep a count of how many times the query was asked
+
+(iv) a time range:
+t_s, t_e
+
+where delta = t_e - t_s
+
+Two things we need to model:
+
+(i) storage cost
+
+- If we assume a non-overlapping storage:
+  - each block contains temporal neighbor lists
+  - if you split a block, then each sub-block will contain the connectivity information
+  - so, the size will increase as we create more splits
+
+(ii) querying cost
+
+- we have to see the workload
+  - the tradeoff is if there isn’t a 
+  - Example:
+     - the block is 4k
+     - the cost is 4k
+     - vs. you’ve divided the block
+     - each will be larger than 2k (because the edge information)
+     - each is 2.5k
+     - if your queries require you to access both, then you would get 5k
+     - if you only load 1, then its 2.5k
+
+Problem: if you allow overlapping, how do you store? The query I/O might increase but the storage cost will go up.
+
+
+Formalize the problem:
+
+If storage were infinite:
+  - For each query, you have a sub-block for the attributes for only that query, and replicate everything.
+     - but, there might be other tradeoffs, such as indices that will increase
+        - the IKDE paper uses two indices:
+            - Given a vertex, which block is it stored in?
+            - Given a time interval, find the vertices that had interactions
+     - query processing might slow down as index size grows
+
+  - The other extreme is that you load the entire block, increase the I/O time
+
+  - Tradeoff between storage and query I/O, but only if the query is amenable
+
+
+- The Question is:
+  - If I can tolerate a 50% increase in storage, what query performance would I gain, and by how much?
+
+ How do we model the workload:
+  Q[a_i ... a_j ]
+  t_s, t_e
+  Q_i -> int
+
+There are two possible ways to model this:
+(1) Hypergraph: in a hyper graph, edges connect multiple vertices
+    the co-access frequencies become a hyper graph 
+    the attributes are vertices, the edges weights are frequencies, the edges correspond to queries
+
+(2) Bi-partite graph: on one side you have queries, the other is attributes. If a query uses an attribute, then there is an edge to the attribute vertex. No edges between queries. No edges between attributes. The frequencies are data stored at the query vertices.
+
+When someone asks a query, it has a time stamp. We will need to aggregate the data in that time range.
+
+Q: Vertices and edges both have attributes. Does the distinction matter in the model?
+
+- It doesn’t make sense to store vertex attributes with their Vertices, because the vertices might appear in multiple neighbor lists. Current architecture stored edge data with edges, but vertex data is stored elsewhere. 
+
+- We are currently only talking about edge data.
+
+{a_k}, [t_s, t_e]
+
+
+pre-compute aggregate time ranges
+or get them when you need them
+
+Note that in the blocks, there may be overlap. 
+
+We need to model the query I/O.
+
+Easiest way to model this:
+For any given split, what is the I/O cost, and then pick the best one.
+Not possible in practice, since this will be combinatorial.
+
+abcd
+
+50% access ab
+50% access cd
+
+alternative:
+abcd
+ab and cd
+ac and bd
+
+minimal I/O cost is ab and cd
+but ab and cd will have worse storage than abcd
+
+A more interesting example:
+
+50% access ab
+50% access ac
+
+abcd
+
+ab ac d  (this has higher storage cost, because 3 blocks, and connectivity information is repeated 3 times)
+
+abd ac   (this has lower storage cost, but query performance similar to what we wrote)
+
+
+This will depend on the size of d vs. the connectivity information (requiring extra storage)
+
+Let’s divide the formalization into two pieces:
+
+TODO items:
+
+bg: query model and formulation
+rs: cost model based on bg’s formulation
+
+
+
+
+
