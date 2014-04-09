@@ -115,7 +115,7 @@ $L(B) = \sqrt[2]{C^h(B) \cdot ( 1 - C^d(B))}$
 
 \emph{In the problem you're describing, one natural idea that springs to mind is
   to reduce it back to a graph problem by the edges of the original interaction
-  graph as vertices of an "augmented interaction graph" whose vertex set
+  graph as vertices of an ``augmented interaction graph" whose vertex set
   consists of both the vertices and edges of the original graph, i.e. all
   entities that might have data associated to them. And two vertices of the
   augmented interaction graph are joined by an edge if either (a) both of them
@@ -129,8 +129,37 @@ $L(B) = \sqrt[2]{C^h(B) \cdot ( 1 - C^d(B))}$
 
 \section{Adaptation}
 
-
 \section{Cost Model}
+
+Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
+attributes $q.A$ and traverses parts of the graph for the time range
+$q.T=[q.t_s,q.t_e]$. We denote the set of all attributes as $A$. A given block
+$B$, we denote its time range as $B.T$, which is the union of the time ranges
+of its temporal neighborlists. Let $s(a)$ denote the size of an attribute $a$.
+We also use the same notation for block size, that is $s(B)$ for a block $B$. 
+We use $c(B)$ to denote the number of entries in the temporal neighborlists
+within block $B$, that is the number of edges in the block. 
+
+Our goal is to create an overlapping partitioning of a block, denoted by
+$\mathcal{P}(B)$. We call the partitions \emph{sub-blocks}. We have
+$\bigcup_{B'\in \mathcal{P}(B)} B'.A = A$. We aim to find the function
+$\mathcal{P}$ that minimizes the query I/O over $B$, while keeping the
+relative storage overhead beyond a limit, say $1+\alpha$ times the original.
+If we represent the query I/O as $L(\mathcal{P}(B))$ and the relative storage
+overhead as $H(\mathcal{P}(B))$, our goal is to find:
+\begin{equation}
+\mathcal{P} \leftarrow \mbox{argmax}_{\{\mathcal{P}: H(\mathcal{P}(B)) < \alpha\}} L(\mathcal{P}(B))
+\end{equation}
+
+The storage overhead can be formalized as:
+\begin{equation}
+H(\mathcal{P}(B)) = (1-\frac{\sum_{a\in A} s(a)}{s(B)})\cdot |\mathcal{P}(B)| 
+\end{equation}
+
+The Query I/O can be formalized as:\\
+TODO for Robert.\\
+We need to use the workload characteristics for the blocks time range as
+well as $\mathcal{P}(B)$ to formalize the query I/O.\\
 
 
 \bibliographystyle{abbrv}
