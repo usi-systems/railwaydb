@@ -148,7 +148,7 @@ relative storage overhead beyond a limit, say $1+\alpha$ times the original.
 If we represent the query I/O as $L(\mathcal{P}(B))$ and the relative storage
 overhead as $H(\mathcal{P}(B))$, our goal is to find:
 \begin{equation}
-\mathcal{P} \leftarrow \mbox{argmax}_{\{\mathcal{P}: H(\mathcal{P}(B)) < \alpha\}} L(\mathcal{P}(B))
+\mathcal{P} \leftarrow \mbox{argmin}_{\{\mathcal{P}: H(\mathcal{P}(B)) < \alpha\}} L(\mathcal{P}(B))
 \end{equation}
 
 The storage overhead can be formalized as:
