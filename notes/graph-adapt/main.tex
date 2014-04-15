@@ -74,43 +74,8 @@ More details to follow about all this...
 \begin{alltt}\scriptsize
 - Work through a concrete example of a database and a 
    couple of queries that would change the layout on disk.
-
-- An interaction graph is an append-only graph, where new 
-   edges and vertices are added as time progresses. 
-
-- Typically, in graph dbs, if a vertex is visited during a 
-   traversal, then it is likely that its neighbors will also 
-    be visited
-
-- So, we store we place highly connected neighbors in the 
-    same disk block, to minimize disk I/O.
-
-- Interaction graphs are temporal. The edges between vertices 
-   change over time. 
-
-- For interaction graphs, we need to group edges spatially 
-   and temporally.
-
-- Vertices and edges have data associated with them. 
-
-- We want to store as much relevant data as possible in the 
-   same block.
-
-- We will store:
-   - edges and vertices that are connected in the same time interval
-   - edges and vertices that are highly connected (neighbors)
-   - edge attributes that are likely to be accessed
-   - vertex attributes that are likely to be accessed
-
-- Example: We use an interaction graph to model connections
-   between people on Twitter. Every time 
-
-- $C^d(B) = conductance, lower is better.$
-- $C^h(B) = cohesiveness, higher is better.$
-
 \end{alltt}
 
-$L(B) = \sqrt[2]{C^h(B) \cdot ( 1 - C^d(B))}$
 
 
 
