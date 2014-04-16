@@ -2,6 +2,7 @@
 \documentclass{sig-alternate}
 
 \usepackage{alltt}
+\usepackage{enumerate}
 
 \begin{document}
 
@@ -112,6 +113,69 @@ The Query I/O can be formalized as:\\
 TODO for Robert.\\
 We need to use the workload characteristics for the blocks time range as
 well as $\mathcal{P}(B)$ to formalize the query I/O.\\
+
+\subsection{Query I/0}
+
+\noindent 
+We have a set of queries:
+
+$$
+Q = \left\{ q_0, \dots,  q_n \right\}
+$$
+
+\noindent 
+And that the queries access set of attributes:
+$$
+Q.A = \left\{ q_0.A, \dots,  q_n.A \right\}
+$$
+
+\noindent 
+Assume that we are given a function $f$ that maps a query to the frequency the
+query is executed:
+$$
+f(q_i)
+$$
+
+To work through a concrete example, say we are given a schema \texttt{abcd}
+which we partition in two ways:
+\begin{enumerate}[(i)]
+\item \texttt{ab}, \texttt{ac}, and \texttt{d} 
+\item \texttt{abd} and \texttt{ac} 
+\end{enumerate}
+
+\noindent 
+and say we are given the following query attribute sets and frequencies:
+$$
+Q.A = \left\{ abd, ac, d \right\}\\
+$$
+$$
+\left\{ f(q_o) \mapsto 0.4,  f(q_1) \mapsto 0.5,  f(q_2) \mapsto 0.1 \right\}
+$$
+Then the I/O cost for (i) should be:
+$$
+L(\mathcal{P}(B))  = 0.4 \cdot (s(ab) + s(d)) + 0.5 \cdot s(ac) + 0.1 \cdot s(d) 
+$$
+Then the I/O cost for (ii) should be:
+$$
+L(\mathcal{P}(B))  = 0.4 \cdot s(abd) + 0.5 \cdot s(ac) + 0.1 \cdot s(abd) 
+$$
+\noindent 
+Generalizing, I think we want an equation like the following:
+$$
+L(\mathcal{P}(B)) = \sum_{q\in Q} \left( f(q) \cdot \sum_{a\in A} s(a) \right)
+$$
+\noindent 
+But, I don't think this is quite right. I have the following questions below:\\
+\textbf{Questions}:
+\begin{enumerate}
+\item The term in the second summation is supposed to be the sizes of all the
+sub-blocks accessed. I am not quite sure how to write this in our notation. 
+\item It might be the case that there are several possible sub-block that we
+  could access to satisfy a query. I think somewhere in the formulation, we need
+  to say that we access the \texttt{min} subblock that will give us the
+  attributes we want.
+\end{enumerate}
+
 
 
 \bibliographystyle{abbrv}
