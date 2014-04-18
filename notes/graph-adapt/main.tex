@@ -89,9 +89,16 @@ attributes $q.A$ and traverses parts of the graph for the time range
 $q.T=[q.t_s,q.t_e]$. We denote the set of all attributes as $A$. Given a block
 $B$, we denote its time range as $B.T$, which is the union of the time ranges
 of its temporal neighborlists. Let $s(a)$ denote the size of an attribute $a$.
-We also use the same notation for block size, that is $s(B)$ for a block $B$. 
-We use $c(B)$ to denote the number of entries in the temporal neighborlists
-within block $B$, that is the number of edges in the block. 
+We use $c_n(B)$ to denote the number of temporal neighborlists within block
+$B$ and $c_e(B)$ to denote the total number of edges in the temporal
+neighborlists within the block. We overload the notation for block size and
+use $s(B)$ to denote the size of a block $B$. We have: 
+\begin{equation}
+s(B) = c_e(B) \cdot \left(16 + \sum_{a\in A} s(a)\right) + c_n(B) \cdot 12  
+\end{equation}
+Here, $16$ corresponds to the cost of storing the edge id and the timestamp,
+and $qw$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
+the number of entries ($4$ bytes) for a temporal neighborlist. 
 
 Our goal is to create an overlapping partitioning of a block, denoted by
 $\mathcal{P}(B)$. We call the partitions \emph{sub-blocks}. We have
@@ -106,7 +113,7 @@ overhead as $H(\mathcal{P}(B))$, our goal is to find:
 
 The storage overhead can be formalized as:
 \begin{equation}
-H(\mathcal{P}(B)) = |\mathcal{P}(B)|\cdot\left(1-\frac{c(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
+H(\mathcal{P}(B)) = |\mathcal{P}(B)|\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
 \end{equation}
 
 The Query I/O can be formalized as:\\
