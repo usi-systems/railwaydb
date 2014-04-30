@@ -82,6 +82,32 @@ More details to follow about all this...
 
 \section{Adaptation}
 
+\begin{itemize}
+
+\item First, let's define a measure for the similarity between two
+partitions. I think this can be the sum of the size of attributes that
+they do not have in common. So, if we have partitions: abc, abd, and
+abe, then abc-abd will be more similar than abc-abe, if size(d) <
+size(e).
+
+\item The first partitioning is based on what queries we have seen.
+Every query gets its own sub-block. This is the "ideal" situation,
+because the I/O cost would be minimized for every query that we would
+have seen.
+
+\item We calculate the storage cost for the partitioning.
+
+\item If the storage cost is above some threshold, then we do a pairwise
+comparison of all sub-blocks to determine which two are the most
+similar, using (0).
+
+\item We combine the two most-similar sub-blocks, and repeat the process
+starting at (2) until we are satisfied with the storage cost.
+
+\item The result is our partitioned block.
+
+\end{itemize}
+
 \section{Cost Model}
 
 Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
