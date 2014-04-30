@@ -9,6 +9,7 @@
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{xargs}
 \usepackage{amssymb}
+\usepackage{amsmath}
 
 \renewcommand{\CommentSty}[1]{\textnormal{#1}}
 \DontPrintSemicolon
@@ -168,6 +169,7 @@ bring the highest relative marginal gain, which is defined as the size of
 attribute data that contributes to the query result, relative to the sub-block
 size. While computing the marginal gain, attributes that are covered by
 sub-blocks that are already selected are not considered.
+%
 \begin{algorithm}[h]
 \scriptsize
 \caption{m-overlapping($\mathcal{P}, B, q$)}
@@ -181,7 +183,7 @@ $S\leftarrow \emptyset; R\leftarrow \emptyset$ \tcp*{Selected attributes; Result
 }
 \Return R \tcp*{Final set of sub-blocks covering the query attributes}
 \end{algorithm} 
-
+%
 The query I/O cost for a block is then given by:
 \begin{equation}
 L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(Q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} s(B')
@@ -212,6 +214,11 @@ f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T|
 %\linprog{f(x)}{g_i(x) \leq 0}{\eqnlimit[1]{i}[n]}{h_j(x) = 0}{\eqnlimit[1]{j}[m]}{eq:linprog1}
 
 
+ \begin{alignat*}{2}
+    \text{minimize: }   & L(\mathcal{P}, B)   \\
+    \text{subject to: } & H(\mathcal{P}, B) \leq \text{Max Storage}
+  \end{alignat*}
+
 \subsection{Overlapping Attributes}
 
 \begin{itemize}
@@ -239,6 +246,40 @@ starting at (2) until we are satisfied with the storage cost.
 \item The result is our partitioned block.
 
 \end{itemize}
+
+
+\begin{algorithm}[h]
+\scriptsize
+\caption{Algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
+\label{alg:overlappingP}
+\KwData{$B$: block, $Q$: set of queries}
+$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
+
+\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
+ $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
+}
+
+\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq \text{max}$}{
+    $min = \infty$ \; 
+    $x = \emptyset$ \;
+    $y = \emptyset$ \;
+    \For{$b_1 \in \mathcal{P}(B)$}{ 
+        \For{$b_2 \in \mathcal{P}(B)$}{ 
+            $\delta = (b_1 \cup b_2) - (b_1 \cap b_2)$ \; 
+           \If{$min < \delta $}{
+                 $\text{x} \leftarrow  b_1$\;
+                 $\text{y} \leftarrow b_2$\;
+                 $min \leftarrow \delta$
+            } 
+        }
+    }
+$ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
+ $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
+}
+\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
+\end{algorithm} 
+
+
 
 %\begin{acknowledgements}
 %If you'd like to thank anyone, place your comments here
