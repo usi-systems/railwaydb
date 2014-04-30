@@ -1,19 +1,25 @@
-
 \documentclass{sig-alternate}
 
 \usepackage{alltt}
 \usepackage{enumerate}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\renewcommand{\CommentSty}[1]{\textnormal{#1}}
+\DontPrintSemicolon
+\SetKwComment{tcp}{$\triangleright$ }{}
+\SetVlineSkip{0cm}
+\SetAlgoSkip{}
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
 
 \begin{document}
 
 \conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
-
 \title{Adaptive Disk Storage for Interaction Graphs}
-
-
 \numberofauthors{1} %  in this sample file, there are a *total*
 
-\author{ }
+\author{}
 
 \date{}
 
@@ -28,7 +34,7 @@ An \emph{interaction graph} is an append-only graph, where new edges and
 vertices are added as time progresses. 
 %
 
-%
+% 
 Typical interaction graphs have data associated with their vertices and edges.
 Most algorithms access this data as they traverse the graph. However, not all
 of the data is accessed by all the queries. Typically, there are correlations
@@ -109,7 +115,6 @@ starting at (2) until we are satisfied with the storage cost.
 \end{itemize}
 
 \section{Cost Model}
-
 Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
 attributes $q.A$ and traverses parts of the graph for the time range
 $q.T=[q.t_s,q.t_e]$. We denote the set of all attributes as $A$. Given a block
@@ -131,48 +136,67 @@ $\mathcal{P}(B)$. We call the partitions \emph{sub-blocks}. We have
 $\bigcup_{B'\in \mathcal{P}(B)} B'.A = A$. We aim to find the function
 $\mathcal{P}$ that minimizes the query I/O over $B$, while keeping the
 relative storage overhead beyond a limit, say $1+\alpha$ times the original.
-If we represent the query I/O as $L(\mathcal{P}(B))$ and the relative storage
-overhead as $H(\mathcal{P}(B))$, our goal is to find:
+If we represent the query I/O as $L(\mathcal{P}, B)$ and the relative storage
+overhead as $H(\mathcal{P}, B)$, our goal is to find:
 \begin{equation}
-\mathcal{P} \leftarrow \mbox{argmin}_{\{\mathcal{P}: H(\mathcal{P}(B)) < \alpha\}} L(\mathcal{P}(B))
+\mathcal{P} \leftarrow \mbox{argmin}_{\{\mathcal{P}: H(\mathcal{P}(B)) < \alpha\}} L(\mathcal{P},B)
 \end{equation}
 
 The storage overhead can be formalized as:
 \begin{equation}
-H(\mathcal{P}(B)) = |\mathcal{P}(B)|\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
+H(\mathcal{P}, B) = |\mathcal{P}(B)|\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
 \end{equation}
 
-The Query I/O can be formalized as:\\
-TODO for Robert.\\
-We need to use the workload characteristics for the blocks time range as
-well as $\mathcal{P}(B)$ to formalize the query I/O.\\
+\subsection{Query I/O}
 
-\subsection{Query I/0}
+Let $m$ be a function that maps a query $q$ to the set of sub-blocks that are
+accessed to satisfy it for a relevant block $B$ under a given partitioning
+$\mathcal{P}$. For the case of non-overlapping attributes, we have:
+\begin{equation}
+m(\mathcal{P}, B, q) = \{B': B'\in \mathcal{P}(B) \wedge q.A \cap B'.A \ne \emptyset\}  
+\end{equation}
 
-We are also given a function $f$ that maps a query to the frequency the
-query is executed during a particular time range $[t_s,t_e]$:
-$$
-f:  \text{query} \rightarrow \text{time} * \text{time} \rightarrow \text{frequency}
-$$
+For the case of overlapping attributes, we use a simple heuristic to define the
+set of sub-blocks to be used for answering the query.
+Algorithm~\ref{alg:greedyM} captures it. The idea is to select sub-blocks that
+bring the highest relative marginal gain, which is defined as the size of
+attribute data that contributes to the query result, relative to the sub-block
+size. While computing the marginal gain, attributes that are covered by
+sub-blocks that are already selected are not considered.
+\begin{algorithm}[h]
+\scriptsize
+\caption{m-overlapping($\mathcal{P}, B, q$)}
+\label{alg:greedyM}
+\KwData{$\mathcal{P}$: partitioning function, $B$: block, $q$: query}
+$S\leftarrow \emptyset; R\leftarrow \emptyset$ \tcp*{Selected attributes; Resulting sub-blocks}
+\While(\tcp*[f]{While unselected attributes remain}){$S \subset q.A$}{
+  $B' \leftarrow \mbox{argmax}_{B'\in\mathcal{P}(B)\setminus R} \sum_{a\in B'.A \cap q.A \setminus S} \frac{c_e(B') \cdot s(a)}{s(B')}$
+  $S \leftarrow S \cup B'.A$\tcp*{Extend the selected attributes}
+  $R\leftarrow R \cup B'$\tcp*{Extend the selected sub-blocks}
+}
+\Return R \tcp*{Final set of sub-blocks covering the query attributes}
+\end{algorithm} 
 
-\noindent 
-We are also given a function $m$ that maps a query to the set of sub-blocks that are
-accessed to satisfy that query during a particular time range. 
-$$
-m:  \text{query} \rightarrow \text{time} * \text{time} \rightarrow \text{block set}
-$$
+The query I/O cost for a block is then given by:
+\begin{equation}
+L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(Q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} s(B')
+\end{equation}
 
-\noindent Define:
-$$
-\bigcup_{B'\in m(q, q.t_s, q.t_e)} B'.A = M
-$$
+\noindent The following are unused, but may be needed for the partitioning
+algorithm.
 
-\noindent 
-Generalizing, I think we want an equation like the following:
-$$
-L(\mathcal{P}(B)) = \sum_{q\in Q} \left( f(q, q.t_s, q.t_e) \cdot \left( \sum_{a \in M}
-  s(a) + \left\vert{m(q, q.t_s, q.t_e)}\right\vert \cdot c(B)\right) \right)
-$$
+Let $f: \mathbb{R}\times A \rightarrow \mathbb{N}$ be a function that maps a
+attribute-timestamp pair $(a, t)$ to the frequency of queries that access
+attribute $a$ for time $t$. More formally:
+\begin{equation}
+f(a,t) = \sum_{q\in Q} \textbf{1}(a\in q.A \wedge t\in q.T)
+\end{equation}
+ 
+Let $T$ represent a time range $[T.s, T.e]$. We denote the frequency of
+attribute access for the time interval $T$ for attribute $a$ as follows:
+\begin{equation}
+f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T| 
+\end{equation}
 
 
 
