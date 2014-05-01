@@ -1,8 +1,15 @@
-\documentclass{sig-alternate}
+
+\documentclass[twocolumn]{svjour3}          % twocolumn
+%
+\smartqed  % flush right qed marks, e.g. at end of proof
+%
 
 \usepackage{alltt}
 \usepackage{enumerate}
 \usepackage[ruled,vlined]{algorithm2e}
+\usepackage{xargs}
+\usepackage{amssymb}
+\usepackage{amsmath}
 
 \renewcommand{\CommentSty}[1]{\textnormal{#1}}
 \DontPrintSemicolon
@@ -13,20 +20,43 @@
 \let\oldemptyset\emptyset
 \let\emptyset\varnothing
 
+
+% Insert the name of "your journal" with
+\journalname{VLDBJ}
+%
 \begin{document}
 
-\conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
 \title{Adaptive Disk Storage for Interaction Graphs}
-\numberofauthors{1} %  in this sample file, there are a *total*
 
-\author{}
+%\titlerunning{Short form of title}        % if too long for running head
 
-\date{}
+\author{Bu\u{g}ra Gedik         \and
+        Robert Soul\'{e}%etc.
+}
+
+%\authorrunning{Short form of author list} % if too long for running head
+
+\institute{B. Gedik \at            
+              \email{bgedik@cs.bilkent.edu.tr}           %  \\
+           \and
+           R. Soul\'{e} \at
+               \email{robert.soule@usi.ch}     
+}
+
+\date{Received: date / Accepted: date}
+% The correct dates will be entered by the editor
+
 
 \maketitle
+
 \begin{abstract}
-TODO
+Insert your abstract here. Include keywords, PACS and mathematical
+subject classification numbers as needed.
+\keywords{First keyword \and Second keyword \and More}
+% \PACS{PACS code1 \and PACS code2 \and more}
+% \subclass{MSC code1 \and MSC code2 \and more}
 \end{abstract}
+
 
 
 \section{Introduction}
@@ -44,10 +74,10 @@ so on.
 %
 
 In an interaction graph database organized as blocks of temporal neighborlists
-(as in my earlier paper), it is important to store the edge and vertex
+(as in Gedik et al.~\cite{gedik14}), it is important to store the edge and vertex
 properties locally. For  instance, if the edge properties are kept away in a
 relational table, there will be almost no benefit to the locality
-optimizations performed for block organization (discussed in \cite{gedik14}), as we would have to go back and forth between the disk blocks to
+optimizations performed for block organization (discussed in Gedik et al.~\cite{gedik14}, as we would have to go back and forth between the disk blocks to
 access the edge attributes. 
 %
 
@@ -85,8 +115,6 @@ More details to follow about all this...
 
 
 
-
-\section{Adaptation}
 
 \section{Cost Model}
 Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
@@ -137,6 +165,7 @@ bring the highest relative marginal gain, which is defined as the size of
 attribute data that contributes to the query result, relative to the sub-block
 size. While computing the marginal gain, attributes that are covered by
 sub-blocks that are already selected are not considered.
+%
 \begin{algorithm}[h]
 \scriptsize
 \caption{m-overlapping($\mathcal{P}, B, q$)}
@@ -150,7 +179,7 @@ $S\leftarrow \emptyset; R\leftarrow \emptyset$ \tcp*{Selected attributes; Result
 }
 \Return R \tcp*{Final set of sub-blocks covering the query attributes}
 \end{algorithm} 
-
+%
 The query I/O cost for a block is then given by:
 \begin{equation}
 L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} s(B')
@@ -174,7 +203,90 @@ f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T|
 
 
 
-\bibliographystyle{abbrv}
+\section{Adaptation}
+
+\subsection{Non-Overlapping Attributes}
+
+%\linprog{f(x)}{g_i(x) \leq 0}{\eqnlimit[1]{i}[n]}{h_j(x) = 0}{\eqnlimit[1]{j}[m]}{eq:linprog1}
+
+
+ \begin{alignat*}{2}
+    \text{minimize: }   & L(\mathcal{P}, B)   \\
+    \text{subject to: } & H(\mathcal{P}, B) \leq \text{Max Storage}
+  \end{alignat*}
+
+\subsection{Overlapping Attributes}
+
+\begin{itemize}
+
+\item First, let's define a measure for the similarity between two
+partitions. I think this can be the sum of the size of attributes that
+they do not have in common. So, if we have partitions: abc, abd, and
+abe, then abc-abd will be more similar than abc-abe, if size(d) <
+size(e).
+
+\item The first partitioning is based on what queries we have seen.
+Every query gets its own sub-block. This is the "ideal" situation,
+because the I/O cost would be minimized for every query that we would
+have seen.
+
+\item We calculate the storage cost for the partitioning.
+
+\item If the storage cost is above some threshold, then we do a pairwise
+comparison of all sub-blocks to determine which two are the most
+similar, using (0).
+
+\item We combine the two most-similar sub-blocks, and repeat the process
+starting at (2) until we are satisfied with the storage cost.
+
+\item The result is our partitioned block.
+
+\end{itemize}
+
+
+\begin{algorithm}[h]
+\scriptsize
+\caption{Algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
+\label{alg:overlappingP}
+\KwData{$B$: block, $Q$: set of queries}
+$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
+
+\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
+ $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
+}
+
+\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq \text{max}$}{
+    $min = \infty$ \; 
+    $x = \emptyset$ \;
+    $y = \emptyset$ \;
+    \For{$b_1 \in \mathcal{P}(B)$}{ 
+        \For{$b_2 \in \mathcal{P}(B)$}{ 
+            $\delta = (b_1 \cup b_2) - (b_1 \cap b_2)$ \; 
+           \If{$min < \delta $}{
+                 $\text{x} \leftarrow  b_1$\;
+                 $\text{y} \leftarrow b_2$\;
+                 $min \leftarrow \delta$
+            } 
+        }
+    }
+$ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
+ $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
+}
+\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
+\end{algorithm} 
+
+
+
+%\begin{acknowledgements}
+%If you'd like to thank anyone, place your comments here
+%and remove the percent signs.
+%\end{acknowledgements}
+
+\bibliographystyle{spmpsci}
 \bibliography{main} 
 
+
+
 \end{document}
+% end of file template.tex
+
