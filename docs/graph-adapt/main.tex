@@ -217,12 +217,14 @@ f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T|
 
 \subsection{Overlapping Attributes}
 
+\paragraph{First proposal}
+
 \begin{itemize}
 
 \item First, let's define a measure for the similarity between two
 partitions. I think this can be the sum of the size of attributes that
 they do not have in common. So, if we have partitions: abc, abd, and
-abe, then abc-abd will be more similar than abc-abe, if size(d) <
+abe, then abc-abd will be more similar than abc-abe, if size(d) $<$
 size(e).
 
 \item The first partitioning is based on what queries we have seen.
@@ -275,6 +277,56 @@ $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
 \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
 \end{algorithm} 
 
+\paragraph{Second proposal}
+
+\begin{itemize}
+
+\item The first partitioning is based on what queries we have seen.
+Every query gets its own sub-block. This is the "ideal" situation,
+because the I/O cost would be minimized for every query that we would
+have seen.
+
+\item We keep a mapping of queries to blocks and frequencies.
+
+\item If the storage cost is above some threshold, then we get the queries with
+  the lowest frequencies, and combine their blocks. We also add the frequencies,
+  so we are combining the blocks that are least likely to be accessed. 
+
+\item We repeat until we are below the storage threshold.
+
+\item The result is our partitioned block.
+
+\end{itemize}
+
+
+
+\begin{algorithm}[h]
+\scriptsize
+\caption{Alternative algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
+\label{alg:overlappingP2}
+\SetKwFunction{Enqueue}{Enqueue}
+\SetKwFunction{Dequeue}{Dequeue}
+
+\KwData{$B$: block, $Q$: set of queries}
+$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
+$pq \leftarrow \emptyset;$  \tcp*{priority queue;}
+
+\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
+ $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ \;
+ \Enqueue{$pq,\mathcal{P}(B), f(\mathcal{P}(B))$}\tcp*{put blocks in the queue;}
+}
+\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
+  \text{max}$}{  
+  $x \leftarrow $ \Dequeue{$pq$}\;
+$y \leftarrow $ \Dequeue{$pq$}\tcp*{remove the two minimum;}
+  \Enqueue{$pq,x \cup y, f(x) + f(y)$}\tcp*{combine and insert;}    
+    }
+
+\For(\tcp*[f]{The elements in the queue are our partition}){$p \in pq$}{ 
+  $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) \cup p$ \;
+}
+\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
+\end{algorithm} 
 
 
 %\begin{acknowledgements}
