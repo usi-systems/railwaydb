@@ -1,0 +1,49 @@
+
+- Online, sharded graph database
+
+- Ayush has already looked at evaluating partitioning schemes, 
+  including static partitioning
+
+- bg: temporal slicing
+      
+
+- Weaver: no temporal slicing
+- 
+
+Things we could do:
+  - How to take an interaction graph, and layer it on top of Weaver
+  - Change what Weaver does to how it stores data and edges (if it would have a benefit)
+
+  * Perhaps we could apply the block partitioning ideas to Weaver 
+  * Existing graph processing systems:
+     - You run a graph analytic, you compute a result, and its done. You have to start from graph next time.
+     - Is the information resident? Or is it like Pregel, and its done?
+
+     - How to shift the data around in response to workloads?
+
+- Weaver memoizes or caches the intermediate computations, so the
+  queries do not morph the graph.
+
+- Can Weaver queries change the graph structure?
+  - Global, read-only queries 
+  - or batched queries that modify
+  - No transactions where you read a bit, then modify, then read more
+
+- Different algorithms for what to shard and when to migrate
+  - Re-locate vertices based on the graph strucutre.
+  - Move vertices to shards where it has the most neighbors 
+    subject to storage constraints
+  - Looked at communication-based approach, but didn't really see a performance 
+    benefit
+
+- Can aggregate, and cache the result
+
+- If there are global aggregations, then perhaps we could cache
+  the intermediate results, and use those results..
+
+- Perhaps we could do pagerank for epochs... reuse portions of the
+  computation
+ 
+BG: Time-based graph with history, so you go back and forward in time
+
+
