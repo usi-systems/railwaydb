@@ -61,26 +61,22 @@ subject classification numbers as needed.
 
 \section{Introduction}
 An \emph{interaction graph} is an append-only graph, where new edges and
-vertices are added as time progresses. 
-%
+vertices are added as time progresses.%
 
-% 
-Typical interaction graphs have data associated with their vertices and
-edges. We call this data \emph{attributes} or \emph{properties}.
-Most algorithms access this data as they traverse the graph. However, not all
-of the data is accessed by all the queries. Typically, there are correlations
-among the attributes accessed by different queries, such as Q1 and Q5
-accessing attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and
-so on.
-%
+Typical interaction graphs have data associated with their vertices and edges.
+We call this data \emph{attributes} or \emph{properties}. Most algorithms
+access this data as they traverse the graph. However, not all of the data is
+accessed by all the queries. Typically, there are correlations among the
+attributes accessed by different queries, such as Q1 and Q5 accessing
+attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and so on.%
 
 In an interaction graph database organized as blocks of temporal neighborlists
-(as in Gedik et al.~\cite{gedik14}), it is important to store the edge and vertex
-properties locally. For  instance, if the edge properties are kept away in a
-relational table, there will be almost no benefit to the locality
-optimizations performed for block organization (discussed in Gedik et al.~\cite{gedik14}, as we would have to go back and forth between the disk blocks to
-access the edge attributes). 
-%
+(as in Gedik et al.~\cite{gedik14}), it is important to store the edge and
+vertex properties locally. For  instance, if the edge properties are kept away
+in a relational table, there will be almost no benefit to the locality
+optimizations performed for block organization (discussed in Gedik et
+al.~\cite{gedik14}, as we would have to go back and forth between the disk
+blocks to access the edge attributes).%
 
 On the other hand, putting all the edge attributes into the disk blocks
 containing the graph structure is expected to cause significant overhead when
@@ -88,18 +84,16 @@ only a few of these attributes are read. This is somewhat similar to the
 problem with row-oriented databases, where the entire row needs to be accessed
 from the disk despite the query needing only a small fraction of it.
 Unfortunately, there is no clear correspondence to a column-oriented database
-layout for the graph databases.
-%
+layout for the graph databases.%
 
 An important characteristic of interaction graphs are that they are temporal.
 As such, the co-access correlations for the attributes can be different for
 different temporal regions. It might also be unknown at the insertion time and
 may be discovered later depending on the workload. This points to the need for
 adaptively optimizing the layout (somewhat similar to H2O \cite{alagiannis14}
-and HYRISE~\cite{grund10}).
-%
+and HYRISE~\cite{grund10}).%
 
-I imagine a solution to this problem, which I name the 'rail layout'. The idea
+I imagine a solution to this problem, which I name the `rail layout'. The idea
 is to start with large blocks that contain the entire data. As we learn about
 the access properties for different time regions, we might start splitting
 such blocks into smaller blocks that run parallel to each other, almost like
@@ -111,13 +105,15 @@ query needs to access both.
 
 The problem is to determine a partitioning of the disk blocks into sub-blocks
 that would minimize query I/O. Of course, partitioning into sub-blocks results
-in an increase in storage cost. The storage cost must stay below some specified limit.
+in an increase in storage cost. The storage cost must stay below some
+specified limit.
 
-There are two possibilities: \emph{overlapping}
-and \emph{non-overlapping} partitioning. In the overlapping case, attributes can
-be replicated in the sub-blocks. The non-overlapping case is a true partition.
+There are two possibilities: \emph{overlapping} and \emph{non-overlapping}
+partitioning. In the overlapping case, attributes can be replicated in the
+sub-blocks. The non-overlapping case is a true partition.
 
-We start by defining the cost model, which formalizes the query I/O and storage costs.
+We start by defining the cost model, which formalizes the query I/O and storage
+costs.
 
 \section{Cost Model}
 Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
@@ -133,7 +129,7 @@ use $s(B)$ to denote the size of a block $B$. We have:
 s(B) = c_e(B) \cdot \left(16 + \sum_{a\in A} s(a)\right) + c_n(B) \cdot 12  
 \end{equation}
 Here, $16$ corresponds to the cost of storing the edge id and the timestamp,
-and $qw$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
+and $12$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
 the number of entries ($4$ bytes) for a temporal neighborlist. 
 
 Our goal is to create an overlapping partitioning of a block, denoted by
