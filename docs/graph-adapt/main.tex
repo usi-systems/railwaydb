@@ -132,8 +132,8 @@ Here, $16$ corresponds to the cost of storing the edge id and the timestamp,
 and $12$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
 the number of entries ($4$ bytes) for a temporal neighborlist. 
 
-Our goal is to create an overlapping partitioning of a block, denoted by
-$\mathcal{P}(B)$. We call the partitions \emph{sub-blocks}. We have
+Our goal is to create a potentially overlapping partitioning of a block,
+denoted by $\mathcal{P}(B)$. We call the partitions \emph{sub-blocks}. We have
 $\bigcup_{B'\in \mathcal{P}(B)} B'.A = A$. We aim to find the function
 $\mathcal{P}$ that minimizes the query I/O over $B$, while keeping the
 relative storage overhead beyond a limit, say $1+\alpha$ times the original.
@@ -181,7 +181,7 @@ $S\leftarrow \emptyset; R\leftarrow \emptyset$ \tcp*{Selected attributes; Result
 %
 The query I/O cost for a block is then given by:
 \begin{equation}
-L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} s(B')
+L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} \!\!s(B')
 \end{equation}
 
 
@@ -214,6 +214,10 @@ TODO: This section is still a work-in-progress. We are trying to find the algori
 
 \textbf{Problem:} \emph{Find a true partitioning of attributes that minimizes
   the query I/O and bounds the storage cost by some upper limit.}
+
+Idea1: Start with each attribute on its own, but as a set. At each step,
+consider  merging two existing sets, but pick the pair that results in the 
+maximum reduction in query cost per overhead removed.
 
 \subsection{Overlapping Attributes}
 
