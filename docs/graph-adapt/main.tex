@@ -65,7 +65,8 @@ vertices are added as time progresses.
 %
 
 % 
-Typical interaction graphs have data associated with their vertices and edges.
+Typical interaction graphs have data associated with their vertices and
+edges. We call this data \emph{attributes} or \emph{properties}.
 Most algorithms access this data as they traverse the graph. However, not all
 of the data is accessed by all the queries. Typically, there are correlations
 among the attributes accessed by different queries, such as Q1 and Q5
@@ -78,7 +79,7 @@ In an interaction graph database organized as blocks of temporal neighborlists
 properties locally. For  instance, if the edge properties are kept away in a
 relational table, there will be almost no benefit to the locality
 optimizations performed for block organization (discussed in Gedik et al.~\cite{gedik14}, as we would have to go back and forth between the disk blocks to
-access the edge attributes. 
+access the edge attributes). 
 %
 
 On the other hand, putting all the edge attributes into the disk blocks
@@ -90,11 +91,12 @@ Unfortunately, there is no clear correspondence to a column-oriented database
 layout for the graph databases.
 %
 
-Recall that interaction graphs are temporal. As such, the co-access
-correlations for the attributes can be different for different temporal
-regions. It might also  be unknown at the insertion time and may be discovered
-later depending on the workload. This points to the need for adaptively
-optimizing the layout (somewhat similar to the H2O paper).
+An important characteristic of interaction graphs are that they are temporal.
+As such, the co-access correlations for the attributes can be different for
+different temporal regions. It might also be unknown at the insertion time and
+may be discovered later depending on the workload. This points to the need for
+adaptively optimizing the layout (somewhat similar to H2O \cite{alagiannis14}
+and HYRISE~\cite{grund10}).
 %
 
 I imagine a solution to this problem, which I name the 'rail layout'. The idea
@@ -103,15 +105,19 @@ the access properties for different time regions, we might start splitting
 such blocks into smaller blocks that run parallel to each other, almost like
 having two or more graph databases for certain time regions, each containing a
  different subset of the attributes, but with a link between them in case a
-query needs to access both. Some attributes can be replicated as well. 
-More details to follow about all this...
+query needs to access both.
 
-\section{Example}
+\section{Problem Description}
 
-\begin{alltt}\scriptsize
-- Work through a concrete example of a database and a 
-   couple of queries that would change the layout on disk.
-\end{alltt}
+The problem is to determine a partitioning of the disk blocks into sub-blocks
+that would minimize query I/O. Of course, partitioning into sub-blocks results
+in an increase in storage cost. The storage cost must stay below some specified limit.
+
+There are two possibilities: \emph{overlapping}
+and \emph{non-overlapping} partitioning. In the overlapping case, attributes can
+be replicated in the sub-blocks. The non-overlapping case is a true partition.
+
+We start by defining the cost model, which formalizes the query I/O and storage costs.
 
 \section{Cost Model}
 Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
@@ -182,6 +188,9 @@ The query I/O cost for a block is then given by:
 L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} s(B')
 \end{equation}
 
+
+\paragraph{\textbf{Other useful equations}}
+
 \noindent The following are unused, but may be needed for the partitioning
 algorithm.
 
@@ -200,26 +209,31 @@ f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T|
 
 
 
-\section{Adaptation}
+\section{Partitioning}
+
+TODO: This section is still a work-in-progress. We are trying to find the algorithms.
+
 
 \subsection{Non-Overlapping Attributes}
 
-%\linprog{f(x)}{g_i(x) \leq 0}{\eqnlimit[1]{i}[n]}{h_j(x) = 0}{\eqnlimit[1]{j}[m]}{eq:linprog1}
-
-
- \begin{alignat*}{2}
-    \text{minimize: }   & L(\mathcal{P}, B)   \\
-    \text{subject to: } & H(\mathcal{P}, B) \leq \text{Max Storage}
-  \end{alignat*}
+\textbf{Problem:} \emph{Find a true partitioning of attributes that minimizes
+  the query I/O and bounds the storage cost by some upper limit.}
 
 \subsection{Overlapping Attributes}
+
+\textbf{Problem:} \emph{Find an overlapping partitioning of attributes that minimizes
+  the query I/O and bounds the storage cost by some upper limit.}
+
+Below, we sketch two proposed algorithms. We are still working on these.
+
+\paragraph{First proposal}
 
 \begin{itemize}
 
 \item First, let's define a measure for the similarity between two
 partitions. I think this can be the sum of the size of attributes that
 they do not have in common. So, if we have partitions: abc, abd, and
-abe, then abc-abd will be more similar than abc-abe, if size(d) <
+abe, then abc-abd will be more similar than abc-abe, if size(d) $<$
 size(e).
 
 \item The first partitioning is based on what queries we have seen.
@@ -272,6 +286,56 @@ $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
 \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
 \end{algorithm} 
 
+\paragraph{Second proposal}
+
+\begin{itemize}
+
+\item The first partitioning is based on what queries we have seen.
+Every query gets its own sub-block. This is the "ideal" situation,
+because the I/O cost would be minimized for every query that we would
+have seen.
+
+\item We keep a mapping of queries to blocks and frequencies.
+
+\item If the storage cost is above some threshold, then we get the queries with
+  the lowest frequencies, and combine their blocks. We also add the frequencies,
+  so we are combining the blocks that are least likely to be accessed. 
+
+\item We repeat until we are below the storage threshold.
+
+\item The result is our partitioned block.
+
+\end{itemize}
+
+
+
+\begin{algorithm}[h]
+\scriptsize
+\caption{Alternative algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
+\label{alg:overlappingP2}
+\SetKwFunction{Enqueue}{Enqueue}
+\SetKwFunction{Dequeue}{Dequeue}
+
+\KwData{$B$: block, $Q$: set of queries}
+$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
+$pq \leftarrow \emptyset;$  \tcp*{priority queue;}
+
+\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
+ $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ \;
+ \Enqueue{$pq,\mathcal{P}(B), f(\mathcal{P}(B))$}\tcp*{put blocks in the queue;}
+}
+\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
+  \text{max}$}{  
+  $x \leftarrow $ \Dequeue{$pq$}\;
+$y \leftarrow $ \Dequeue{$pq$}\tcp*{remove the two minimum;}
+  \Enqueue{$pq,x \cup y, f(x) + f(y)$}\tcp*{combine and insert;}    
+    }
+
+\For(\tcp*[f]{The elements in the queue are our partition}){$p \in pq$}{ 
+  $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) \cup p$ \;
+}
+\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
+\end{algorithm} 
 
 
 %\begin{acknowledgements}
