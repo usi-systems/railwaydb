@@ -1,0 +1,30 @@
+- Bugra: let's combine the overlapping algorithms so that
+  the comparison is parameterized by a utility function.
+
+  - Someone might say "what if there are too many queries?". We could 
+   cluster (using similarity and k-means) and then run the same algorithm.
+
+- Bugra: non-overlapping case. Let's start with everything in a single
+  partition, and then try to divide.
+  Question: what is the heuristic for how to divide?
+  Maybe we could look at hierarchical clustering algorithms.
+
+- Weaver: 
+  - Maybe we can add something more? 
+  - Something about storage (SSDs, fast storage)
+  - Maybe set up a meeting with Gun?
+
+TODO: 
+- Robert: different alternatives for utility
+         - Maximizing reduction in query I/O
+         - Maximizing reduction in query I/O per reduction in overhead
+         - Similarity
+         - Frequency
+- Bugra: work on non-overlapping case
+- Bugra: send me a bunch of refernces
+
+
+
+        
+  
+
