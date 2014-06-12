@@ -1,0 +1,43 @@
+- bg: Thought of an algorithm. Based on the idea of distributing items to buckets.
+   - idea: Hypergraph partitioning or iterative approach
+
+
+- Distributed rail road:
+  - All the data is in memory
+  - Would parallelism be reduced?
+  - If you separate the attributes, you coudl put more nodes that have the same attributes together
+      - avoid the network communication cost
+  - What you might lose is parallelism
+      - If you have 4 attributes abcs, 50% of queries want ab, 50% of queries cd "many worlds"
+      - Two graphs, maybe the entrire graph with just ab on one machine
+  - Keep ab on machine 1, cd on machine 2
+     - Goal: do no communication
+  - In the alternative, you would be using 2 machines to process the query, so it might 
+    execute faster.
+  - Possible response, the queries are parallel, so overall, its still faster
+  - Make sure that one of the machines is not idle
+  - Reducing the number of machines that any given subgraph is using, reducing the parallelism
+
+- Batch reads:
+  - Declaratively define traversals
+  - "Key idea" separate the processing logic from the scope of the traversal
+  - What if the traversal is data dependent?
+  - Say the vertices have numbers. What if I only follow traversals who are less than 5? another less than 7?
+  - Popular algorithm: Connected components as a vertex program?
+  - Express logic as predicates: does one imply the other?
+  - Look at connected components: sketch how we might do that.
+  - Problem is state..
+  - If we assume the vertex algorithms are stateless, then we can do this.
+  - similar to database algorithms.
+  - How common are stateless vs. stateful?
+  - RS: Work on a Connected components, sketch how we might do it
+
+
+
+ 
+
+
+
+ 
+
+
