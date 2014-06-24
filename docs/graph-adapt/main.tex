@@ -20,6 +20,8 @@
 \let\oldemptyset\emptyset
 \let\emptyset\varnothing
 
+\DeclareMathOperator{\dist}{dist}
+
 
 % Insert the name of "your journal" with
 \journalname{VLDBJ}
@@ -212,8 +214,10 @@ TODO: This section is still a work-in-progress. We are trying to find the algori
 
 \subsection{Non-Overlapping Attributes}
 
-\textbf{Problem:} \emph{Find a true partitioning of attributes that minimizes
+\paragraph*{Problem.}\emph{Find a true partitioning of attributes that minimizes
   the query I/O and bounds the storage cost by some upper limit.}
+
+\paragraph*{Approach.} 
 
 Idea1: Start with each attribute on its own, but as a set. At each step,
 consider  merging two existing sets, but pick the pair that results in the 
@@ -221,41 +225,38 @@ maximum reduction in query cost per overhead removed.
 
 \subsection{Overlapping Attributes}
 
-\textbf{Problem:} \emph{Find an overlapping partitioning of attributes that minimizes
+
+\paragraph*{Problem.}\emph{Find an overlapping partitioning of attributes that minimizes
   the query I/O and bounds the storage cost by some upper limit.}
 
-Below, we sketch two proposed algorithms. We are still working on these.
-
-\paragraph{First proposal}
-
-\begin{itemize}
-
-\item First, let's define a measure for the similarity between two
-partitions. I think this can be the sum of the size of attributes that
-they do not have in common. So, if we have partitions: abc, abd, and
-abe, then abc-abd will be more similar than abc-abe, if size(d) $<$
-size(e).
-
-\item The first partitioning is based on what queries we have seen.
-Every query gets its own sub-block. This is the "ideal" situation,
+\paragraph*{Approach.} We start the algorithm with a 
+ partitioning based on what queries we have seen.
+Every query gets its own sub-block. This is the``ideal'' partitioning,
 because the I/O cost would be minimized for every query that we would
-have seen.
+have seen. As input to the algorithm, we provide a function $\dist$, which
+is used to compute the distance between two blocks.
 
-\item We calculate the storage cost for the partitioning.
+$$
+\dist: block \rightarrow block \rightarrow int
+$$
 
-\item If the storage cost is above some threshold, then we do a pairwise
-comparison of all sub-blocks to determine which two are the most
-similar, using (0).
+Note that the $\dist$ function can be chosen arbitrarily.  Examples of useful
+$\dist$ functions are the frequencies with which the queries are accessed, or the Jaccard index, which measures the set-similarity of
+the attributes.
 
-\item We combine the two most-similar sub-blocks, and repeat the process
-starting at (2) until we are satisfied with the storage cost.
+Using this function, the algorithm iteratively combines the two partitions that
+are closest together. Algorithm~\ref{alg:closestBF} shows the pseudocode for a brute-force approach
+  to finding the closest paris that runs in $O(n^2)$ time. However, there is
+  also a divide-and-conquer algorithm~\cite{cormen01} for solving closest pair
+  of points problem in $O(n \log n)$.
+After each combination of partitions, the algorithm calculate the storage cost
+for the partitioning. The algorithm stops when the  storage cost is below some
+specified threshold.  The result is the block partitioning.
 
-\item The result is our partitioned block.
-
-\end{itemize}
 
 
 \begin{algorithm}[h]
+\SetKwFunction{closestPair}{closestPair}
 \scriptsize
 \caption{Algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
 \label{alg:overlappingP}
@@ -266,76 +267,59 @@ $\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
  $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
 }
 
-\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq \text{max}$}{
-    $min = \infty$ \; 
-    $x = \emptyset$ \;
-    $y = \emptyset$ \;
-    \For{$b_1 \in \mathcal{P}(B)$}{ 
-        \For{$b_2 \in \mathcal{P}(B)$}{ 
-            $\delta = (b_1 \cup b_2) - (b_1 \cap b_2)$ \; 
-           \If{$min < \delta $}{
-                 $\text{x} \leftarrow  b_1$\;
-                 $\text{y} \leftarrow b_2$\;
-                 $min \leftarrow \delta$
-            } 
-        }
-    }
-$ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
- $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
-}
-\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
-\end{algorithm} 
-
-\paragraph{Second proposal}
-
-\begin{itemize}
-
-\item The first partitioning is based on what queries we have seen.
-Every query gets its own sub-block. This is the "ideal" situation,
-because the I/O cost would be minimized for every query that we would
-have seen.
-
-\item We keep a mapping of queries to blocks and frequencies.
-
-\item If the storage cost is above some threshold, then we get the queries with
-  the lowest frequencies, and combine their blocks. We also add the frequencies,
-  so we are combining the blocks that are least likely to be accessed. 
-
-\item We repeat until we are below the storage threshold.
-
-\item The result is our partitioned block.
-
-\end{itemize}
-
-
-
-\begin{algorithm}[h]
-\scriptsize
-\caption{Alternative algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
-\label{alg:overlappingP2}
-\SetKwFunction{Enqueue}{Enqueue}
-\SetKwFunction{Dequeue}{Dequeue}
-
-\KwData{$B$: block, $Q$: set of queries}
-$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
-$pq \leftarrow \emptyset;$  \tcp*{priority queue;}
-
-\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
- $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ \;
- \Enqueue{$pq,\mathcal{P}(B), f(\mathcal{P}(B))$}\tcp*{put blocks in the queue;}
-}
 \While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
-  \text{max}$}{  
-  $x \leftarrow $ \Dequeue{$pq$}\;
-$y \leftarrow $ \Dequeue{$pq$}\tcp*{remove the two minimum;}
-  \Enqueue{$pq,x \cup y, f(x) + f(y)$}\tcp*{combine and insert;}    
-    }
-
-\For(\tcp*[f]{The elements in the queue are our partition}){$p \in pq$}{ 
-  $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) \cup p$ \;
+  \text{max}$}{
+$\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
+ $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
+  $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
 }
 \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
 \end{algorithm} 
+
+
+
+ \begin{algorithm}[h]
+\SetKwFunction{length}{length}
+\SetKwFunction{dist}{dist}
+ \scriptsize
+ \caption{Brute-force algorithm for closest points in $O(n^2)$.}
+ \label{alg:closestBF}
+
+
+
+$minDist  \gets \infty $ \;
+\For{$i \gets 1$ \textbf{to} $\length(P)-1$} {
+\For{$j \gets i+ 1$ \textbf{to} $\length(P)$} {
+
+  $p \gets P[i]$ \;
+  $q \gets P[j]$ \;
+  \If{$\dist(p,q) < minDist$} {
+    $minDist \gets \dist(p,q)$\;
+    $closestPair \gets (p,q)$\;
+  }
+}
+}
+\Return $closestPair$
+
+% \KwData{$B$: block, $Q$: set of queries}
+
+
+
+% $\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
+
+% \For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
+%  $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
+% }
+
+% \While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
+%   \text{max}$}{
+% $\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
+%  $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
+%   $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
+
+% \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
+ \end{algorithm} 
+
 
 
 %\begin{acknowledgements}
