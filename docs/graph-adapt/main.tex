@@ -217,14 +217,41 @@ TODO: This section is still a work-in-progress. We are trying to find the algori
 \paragraph*{Problem.}\emph{Find a true partitioning of attributes that minimizes
   the query I/O and bounds the storage cost by some upper limit.}
 
-\paragraph*{Approach.} 
+%$\mathcal{P}(B) \leftarrow \emptyset$ \tcp*{Initial partitioning}
 
-Idea1: Start with each attribute on its own, but as a set. At each step,
-consider  merging two existing sets, but pick the pair that results in the 
-maximum reduction in query cost per overhead removed.
+\begin{algorithm}[h]
+\scriptsize
+\caption{Algorithm for partitioning blocks into sub-blocks with non-overlapping attributes.}
+\label{alg:overlappingP}
+\KwData{$B$: block, $Q$: set of queries}
+$c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
+\For(\tcp*[f]{For each possible \# of partitions}){$k=1$ to $|A|$}{
+   $R[i]\leftarrow \emptyset, \forall i\in [1..k]$ \tcp*{Initialize partitions}
+   \For(\tcp*[f]{For each attribute}){$a \in A$\textnormal{, in decr.\/ order of }$f(a)$}{
+      $c\leftarrow \infty$ \tcp*{Lowest cost over all assignments}  
+      $j\leftarrow -1$ \tcp*{Best partition assignment}
+      \For(\tcp*[f]{For each partition assignment}){$i\in [1..k]$} {
+         $R[i]\leftarrow R[i] \cup \{a\}$\tcp*{Assign attribute}
+         \If(\tcp*[f]{If size is not feasable}){$H(R, B, Q)\geq\alpha$}{
+            \textbf{continue}
+         }
+         \If(\tcp*[f]{If query cost is lower}){$L(R, B, Q)<c$}{
+            $c\leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
+            $j\leftarrow i$\tcp*{Update the best partition}
+         }
+         $R[i]\leftarrow R[i] \setminus a$\tcp*{Un-assign attribute}
+      }
+      $R[j]\leftarrow R[j] \cup a$\tcp*{Assign to best partition}
+   }
+   \If(\tcp*[f]{If query cost is lower}){$L(R, B, Q)<c^*$}{
+      $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
+      $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
+   }
+}
+\Return $\mathcal{P}(B)$ \tcp*{Final set of sub-blocks}
+\end{algorithm} 
 
 \subsection{Overlapping Attributes}
-
 
 \paragraph*{Problem.}\emph{Find an overlapping partitioning of attributes that minimizes
   the query I/O and bounds the storage cost by some upper limit.}
