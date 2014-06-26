@@ -1,0 +1,14 @@
+Thu Jun 26 11:16:22 CEST 2014
+
+- We need concrete examples of the dist functions.
+
+- Is our objective function linear?
+  - If it is linear, we could phrase this as a linear program?
+
+- both: concrete dist functions
+- both: think about the objective function
+
+
+
+
+
