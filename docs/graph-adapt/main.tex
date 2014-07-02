@@ -243,7 +243,7 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
       }
       $R[j]\leftarrow R[j] \cup \{a\}$\tcp*{Assign to best partition}
    }
-   \If(\tcp*[f]{Lower cost}){$||R||=|A| \wedge L(R, B, Q)<c^*$}{
+   \If(\tcp*[f]{Has lower cost}){$||R||=|A| \wedge L(R, B, Q)<c^*$}{
       $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
       $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
    }
