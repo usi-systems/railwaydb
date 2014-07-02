@@ -1,5 +1,4 @@
-#ifndef INTERGDB_SIMULATION_EXPERIMENTALDATA_H
-#define INTERGDB_SIMULATION_EXPERIMENTALDATA_H
+#pragma once
 
 #include <string>
 #include <fstream>
@@ -42,4 +41,3 @@ private:
 
 }}
 
-#endif /* INTERGDB_SIMULATION_EXPERIMENTALDATA_H */

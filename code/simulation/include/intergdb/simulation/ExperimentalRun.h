@@ -1,5 +1,4 @@
-#ifndef INTERGDB_SIMULATION_EXPERIMENTALRUN_H
-#define INTERGDB_SIMULATION_EXPERIMENTALRUN_H
+#pragma once
 
 #include <string>
 
@@ -17,4 +16,3 @@ namespace intergdb { namespace simulation
 
 } } /* namespace */
 
-#endif /* INTERGDB_SIMULATION_EXPERIMENTALRUN_H */
