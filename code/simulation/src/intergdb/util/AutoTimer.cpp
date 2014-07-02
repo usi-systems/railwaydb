@@ -1,6 +1,6 @@
-#include <intergdb/simulation/AutoTimer.h>
+#include <intergdb/util/AutoTimer.h>
 
-using namespace intergdb::simulation;
+using namespace intergdb::util;
 using namespace boost::chrono;
 
 AutoTimer::AutoTimer()

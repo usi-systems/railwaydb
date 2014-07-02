@@ -1,10 +1,8 @@
-
-#ifndef INTERGDB_SIMULATION_AUTOTIMER_H
-#define INTERGDB_SIMULATION_AUTOTIMER_H
+#pragma once
 
 #include <boost/chrono.hpp>
 
-namespace intergdb { namespace simulation
+namespace intergdb { namespace util
 {
     class AutoTimer
     {
@@ -22,4 +20,3 @@ namespace intergdb { namespace simulation
     };
 }}
 
-#endif /* INTERGDB_SIMULATION_AUTOTIMER_H */

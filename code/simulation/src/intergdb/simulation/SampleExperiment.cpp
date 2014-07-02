@@ -1,5 +1,6 @@
 #include <intergdb/simulation/Experiments.h>
 #include <intergdb/simulation/ExperimentalData.h>
+#include <intergdb/simulation/SimulationConf.h>
 
 #include <random>
 #include <iostream>
@@ -13,8 +14,11 @@ void SampleExperiment::process()
   cerr << "This is a sample experiment with name: " 
     << this->getClassName() << endl;
 
-  random_device rdev;
-  mt19937 rgen(rdev());
+  SimulationConf simConf;
+  QueryWorkload workload = simConf.getQueryWorkload();
+  cerr << workload.toString() << endl;
+
+  mt19937 rgen;
   uniform_real_distribution<> udist(0, 10);
 
   ExperimentalData exp("sample_exp");

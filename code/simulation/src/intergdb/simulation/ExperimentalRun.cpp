@@ -1,6 +1,6 @@
 #include <intergdb/simulation/ExperimentalRun.h>
 
-#include <intergdb/simulation/AutoTimer.h>
+#include <intergdb/util/AutoTimer.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -9,6 +9,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace intergdb::util;
 using namespace intergdb::simulation;
 
 string ExperimentalRun::getFullyQualifiedClassName() 
