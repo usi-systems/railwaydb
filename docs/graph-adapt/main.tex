@@ -297,8 +297,8 @@ $\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
 \While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
   \text{max}$}{
 $\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
- $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
-  $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
+ $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - \{x, y\}$ \;
+  $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  \cup \{ x \cup y \}$ \;
 }
 \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
 \end{algorithm} 
