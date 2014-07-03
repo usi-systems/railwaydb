@@ -11,24 +11,24 @@
 
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
+GUROBI=/Library/gurobi560/mac64
+
 OBJDIR  = obj
 BINDIR  = bin
 SRCDIR  = src
 INCDIR  = include
 
-LIBRARY   = libintergdb.so
+LIBRARY   = liboptimizer.so
 
 CPPFLAGS  = 
 INCLUDES  = -isystem /opt/local/libcpp-software/include \
- -I $(THISDIR)../ext/include \
- -I $(THISDIR)../ext/src/leveldb/include
-LDFLAGS   = -L /opt/local/libcpp-software/lib \
- -L $(THISDIR)../ext/lib \
- -L $(THISDIR)../ext/src/leveldb \
- -lboost_coroutine-mt -lboost_context-mt -lboost_filesystem-mt \
- -lboost_iostreams-mt -lboost_chrono-mt -lboost_date_time-mt \
- -lboost_system-mt -lboost_thread-mt \
- -lleveldb -lspatialindex
+ -I $(GUROBI)/include 
+
+LDFLAGS   =  -L $(GUROBI)/lib \
+ -lgurobi_c++ \
+ -lgurobi56 \
+ -lpthread \
+ -lm
 
 ## Implicit Section: change the following only when necessary.
 CXX      = clang++ 
