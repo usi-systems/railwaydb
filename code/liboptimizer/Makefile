@@ -11,8 +11,6 @@
 
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-GUROBI=/Library/gurobi560/mac64
-
 OBJDIR  = obj
 BINDIR  = bin
 SRCDIR  = src
@@ -22,9 +20,9 @@ LIBRARY   = liboptimizer.so
 
 CPPFLAGS  = 
 INCLUDES  = \
- -I$(GUROBI)/include 
+ -I$(GUROBI_HOME)/include 
 
-LDFLAGS   =  -L$(GUROBI)/lib \
+LDFLAGS   =  -L$(GUROBI_HOME)/lib \
  -lgurobi_c++ \
  -lgurobi56 \
  -lpthread \
