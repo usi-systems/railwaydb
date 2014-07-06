@@ -3,6 +3,7 @@
 # The Makefile provides the following targets to make:
 #   $ make           compile and link
 #   $ make objs      compile only (no linking)
+#   $ make docs     build documentation (requires doxygen)
 #   $ make clean     clean objects and the executable file
 #   $ make help      get the usage of the makefile
 
@@ -11,42 +12,40 @@
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
 OBJDIR  = obj
-SRCDIR  = src
 BINDIR  = bin
+SRCDIR  = src
+INCDIR  = include
+
+LIBRARY   = liboptimizer.so
 
 CPPFLAGS  = 
-INCLUDES  = -isystem /opt/local/libcpp-software/include \
- -I $(THISDIR)../libintergdb/include \
- -I $(THISDIR)../ext/include \
- -I $(THISDIR)../ext/src/leveldb/include \
- -I $(THISDIR)../liboptimizer/include 
-LDFLAGS   = -L /opt/local/libcpp-software/lib \
- -L $(THISDIR)../libintergdb/bin \
- -L $(THISDIR)../ext/lib \
- -L $(THISDIR)../ext/src/leveldb \
- -L $(THISDIR)../liboptimizer/bin \
- -lboost_coroutine-mt -lboost_context-mt -lboost_filesystem-mt \
- -lboost_iostreams-mt -lboost_chrono-mt -lboost_date_time-mt \
- -lboost_system-mt -lboost_thread-mt \
- -lleveldb -lspatialindex -lintergdb \
- -loptimizer           
+INCLUDES  = \
+ -I$(GUROBI_HOME)/include 
+
+LDFLAGS   =  -L$(GUROBI_HOME)/lib \
+ -lgurobi_c++ \
+ -lgurobi56 \
+ -lpthread \
+ -lm \
+ -stdlib=libstdc++
 
 ## Implicit Section: change the following only when necessary.
-
 CXX      = clang++ 
-CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libc++ 
+CXXFLAGS = -g -O2 -fPIC -Wall -stdlib=libstdc++
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
-INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(INCLUDES)
+INCDIRS  = $(shell find $(INCDIR) -type d)
+INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)
 
 ## Stable Section: usually no need to be changed. 
 SHELL   = /bin/sh
-SRCS 	= $(wildcard $(addsuffix /*.cpp,$(SRCDIRS)))
-OBJS    = $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRCS:.cpp=.o))
+SOURCES = $(wildcard $(addsuffix /*.cpp,$(SRCDIRS)))
+OBJS    = $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.cpp=.o))
 DEPS    = $(OBJS:.o=.d)
 
 ## Define some useful variables.
+CDP	= clang++
 DEP_OPT = -MM -MP
-DEPEND  = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) $(DEP_OPT)
+DEPEND  = $(CDP) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) $(DEP_OPT)
 COMPILE = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) 
 LINK    = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
 
@@ -55,7 +54,7 @@ LINK    = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
 # Delete the default suffixes
 .SUFFIXES:
 
-all: $(BINDIR)/$(PROGRAM)
+all: $(BINDIR)/$(LIBRARY)
 
 $(OBJDIR)/%.d: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
@@ -67,9 +66,12 @@ objs: $(OBJS)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(COMPILE) -c $< -o $@
 
-$(BINDIR)/$(PROGRAM): $(OBJS)
+$(BINDIR)/$(LIBRARY): $(OBJS)
 	@mkdir -p $(dir $@)
-	$(LINK) $(OBJS) -o $@ 
+	$(LINK) $(OBJS) -shared -o "$(CURDIR)/$@"
+
+docs:
+	doxygen doc/doxy.conf
 
 ifneq ($(DEPS),)
   sinclude $(DEPS)
@@ -77,6 +79,7 @@ endif
 
 clean:
 	$(RM) -r $(OBJDIR) $(BINDIR)
+	$(RM) -r docs/html
 
 help:
 	@echo 'Usage: make [TARGET]'
@@ -89,16 +92,15 @@ help:
 	@echo '  help      print this message.'
 
 show:
-	@echo 'PROGRAM     :' $(PROGRAM)
+	@echo 'LIBRARY     :' $(LIBRARY)
 	@echo 'SRCDIRS     :' $(SRCDIRS)
-	@echo 'SRCS  	   :' $(SRCS)
+	@echo 'INCDIRS     :' $(INCDIRS)
+	@echo 'SOURCES     :' $(SOURCES)
 	@echo 'OBJS        :' $(OBJS)
 	@echo 'DEPS        :' $(DEPS)
 	@echo 'DEPEND      :' $(DEPEND)
 	@echo 'COMPILE     :' $(COMPILE)
 	@echo 'link        :' $(LINK)
-
-
 
 
 
