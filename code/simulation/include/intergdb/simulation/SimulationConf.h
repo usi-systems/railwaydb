@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intergdb/simulation/QueryWorkload.h>
+#include <intergdb/common/QueryWorkload.h>
 
 namespace intergdb { namespace simulation
 {
@@ -31,7 +31,7 @@ namespace intergdb { namespace simulation
       { queryTypeFrequencyZipfParam_ = queryTypeFrequencyZipfParam; }
     double getQueryTypeFrequencyZipfParam() const
       { return queryTypeFrequencyZipfParam_; }
-    QueryWorkload getQueryWorkload();
+    common::QueryWorkload getQueryWorkload();
   private:
     size_t attributeCount_ = 10;
     double attributeSizeZipfParam_ = 0.5;

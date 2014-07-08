@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <string>
 
-namespace intergdb { namespace simulation
+namespace intergdb { namespace common
 {
   class Attribute
   {

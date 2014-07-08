@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace intergdb;
+using namespace intergdb::common;
 using namespace intergdb::simulation;
 using namespace intergdb::util;
 

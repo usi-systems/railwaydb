@@ -15,17 +15,16 @@ OBJDIR  = obj
 BINDIR  = bin
 SRCDIR  = src
 INCDIR  = include
-EXECUTABLE   = simulation
+
+LIBRARY   = libcommon.so
 
 CPPFLAGS  = 
-INCLUDES  = -isystem /opt/local/libcpp-software/include -I ../libcommon/include
-LDFLAGS   = -L /opt/local/libcpp-software/lib -L ../libcommon/bin \
- -lboost_filesystem-mt -lboost_iostreams-mt -lboost_chrono-mt \
- -lboost_date_time-mt -lboost_system-mt -lboost_thread-mt -lcommon
+INCLUDES  = -isystem /opt/local/libcpp-software/include 
+LDFLAGS   = -L /opt/local/libcpp-software/lib
 
 ## Implicit Section: change the following only when necessary.
 CXX      = clang++ 
-CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libc++  
+CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libc++
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
 INCDIRS  = $(shell find $(INCDIR) -type d)
 INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)
@@ -48,7 +47,7 @@ LINK    = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
 # Delete the default suffixes
 .SUFFIXES:
 
-all: $(BINDIR)/$(EXECUTABLE)
+all: $(BINDIR)/$(LIBRARY)
 
 $(OBJDIR)/%.d: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
@@ -60,9 +59,9 @@ objs: $(OBJS)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(COMPILE) -c $< -o $@
 
-$(BINDIR)/$(EXECUTABLE): $(OBJS)
+$(BINDIR)/$(LIBRARY): $(OBJS)
 	@mkdir -p $(dir $@)
-	$(LINK) $(OBJS) -o "$(CURDIR)/$@"
+	$(LINK) $(OBJS) -shared -o "$(CURDIR)/$@"
 
 docs:
 	doxygen doc/doxy.conf
