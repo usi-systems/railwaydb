@@ -20,13 +20,17 @@ LIBRARY   = liboptimizer.so
 
 CPPFLAGS  = 
 INCLUDES  = \
- -I$(GUROBI_HOME)/include 
+ -I ../libcommon/include \
+ -I $(GUROBI_HOME)/include
 
-LDFLAGS   =  -L$(GUROBI_HOME)/lib \
+LDFLAGS   =  -L $(GUROBI_HOME)/lib \
+ -L ../libcommon/bin \
+ -lcommon \
  -lgurobi_c++ \
  -lgurobi56 \
  -lpthread \
  -lm 
+ 
 
 ## Implicit Section: change the following only when necessary.
 CXX      = clang++ 
