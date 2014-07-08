@@ -26,12 +26,11 @@ LDFLAGS   =  -L$(GUROBI_HOME)/lib \
  -lgurobi_c++ \
  -lgurobi56 \
  -lpthread \
- -lm \
- -stdlib=libstdc++
+ -lm 
 
 ## Implicit Section: change the following only when necessary.
 CXX      = clang++ 
-CXXFLAGS = -g -O2 -fPIC -Wall -stdlib=libstdc++
+CXXFLAGS = -g -O2 -fPIC -Wall  -std=c++11 -stdlib=libstdc++
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
 INCDIRS  = $(shell find $(INCDIR) -type d)
 INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)
