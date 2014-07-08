@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace intergdb { namespace simulation
+namespace intergdb { namespace common
 {
   class Attribute;
   class Query

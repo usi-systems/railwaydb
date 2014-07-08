@@ -1,10 +1,10 @@
 #pragma once
 
-#include <intergdb/simulation/Attribute.h>
+#include <intergdb/common/Attribute.h>
 
 #include <unordered_set>
 
-namespace intergdb { namespace simulation
+namespace intergdb { namespace common
 {
 
 class Attribute;

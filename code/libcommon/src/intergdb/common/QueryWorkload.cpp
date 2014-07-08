@@ -1,10 +1,11 @@
-#include <intergdb/simulation/QueryWorkload.h>
+#include <intergdb/common/QueryWorkload.h>
 
 #include <string>
+//#include <unordered_map>
 
 using namespace std;
 using namespace intergdb;
-using namespace intergdb::simulation;
+using namespace intergdb::common;
 
 string Attribute::toString() const
 { 
@@ -22,8 +23,7 @@ string Query::toString() const
 
 string QueryWorkload::toString() const
 { 
-  string str;
-  str += "Attributes:\n";
+  string str = "Attributes:\n";
   for (Attribute const & attribute : attributes_) 
     str += "\t" + attribute.toString() + "\n";
   str += "Queries:\n";

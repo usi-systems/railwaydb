@@ -1,11 +1,11 @@
 #pragma once
 
-#include <intergdb/simulation/Attribute.h>
-#include <intergdb/simulation/Query.h>
+#include <intergdb/common/Attribute.h>
+#include <intergdb/common/Query.h>
 
 #include <vector>
 
-namespace intergdb { namespace simulation
+namespace intergdb { namespace common
 {
   class QueryWorkload
   {

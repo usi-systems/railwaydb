@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace intergdb;
+using namespace intergdb::common;
 using namespace intergdb::simulation;
 
 void SampleExperiment::process() 
