@@ -26,27 +26,26 @@ INCLUDES  = \
 LDFLAGS   =  -L $(GUROBI_HOME)/lib \
  -L ../libcommon/bin \
  -lcommon \
- -lgurobi_c++ \
  -lgurobi56 \
  -lpthread \
  -lm 
  
 
 ## Implicit Section: change the following only when necessary.
-CXX      = clang++ 
-CXXFLAGS = -g -O2 -fPIC -Wall  -std=c++11 -stdlib=libstdc++
+CXX      = clang 
+CXXFLAGS = -g -O2 -fPIC -Wall  
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
 INCDIRS  = $(shell find $(INCDIR) -type d)
 INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)
 
 ## Stable Section: usually no need to be changed. 
 SHELL   = /bin/sh
-SOURCES = $(wildcard $(addsuffix /*.cpp,$(SRCDIRS)))
-OBJS    = $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.cpp=.o))
+SOURCES = $(wildcard $(addsuffix /*.c,$(SRCDIRS)))
+OBJS    = $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.c=.o))
 DEPS    = $(OBJS:.o=.d)
 
 ## Define some useful variables.
-CDP	= clang++
+CDP	= clang
 DEP_OPT = -MM -MP
 DEPEND  = $(CDP) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) $(DEP_OPT)
 COMPILE = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) 
@@ -59,14 +58,14 @@ LINK    = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
 
 all: $(BINDIR)/$(LIBRARY)
 
-$(OBJDIR)/%.d: $(SRCDIR)/%.cpp
+$(OBJDIR)/%.d: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
 	@/bin/echo -n $(dir $@) > $@
 	@$(DEPEND) $< >> $@ || rm $@
 
 objs: $(OBJS)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(COMPILE) -c $< -o $@
 
 $(BINDIR)/$(LIBRARY): $(OBJS)
