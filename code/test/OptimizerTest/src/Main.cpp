@@ -32,7 +32,7 @@ void createWorkLoad(QueryWorkload * workload)
 
 int main()
 {
-    cerr << "This is a test program for the solver" << endl;
+    cerr << "This is a test program for the solver." << endl;
 
     QueryWorkload workload; 
     Solver s;
