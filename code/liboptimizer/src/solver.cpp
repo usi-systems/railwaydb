@@ -10,7 +10,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "gurobi_c.h"
+#ifdef __cplusplus
+}
+#endif
 
 int
 solve(int   argc,
