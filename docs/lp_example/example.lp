@@ -1,7 +1,7 @@
 \ Example hard coded
 
 \ This doesn't quite work:
-\ v_a1_q1 * v_a1_p1 + v_a2_q1 * v_a2_p1 - v_p1_q1 >= 0  
+\ 
 
 \ K is set to 1000000
 \ ? is set to 8
@@ -30,6 +30,7 @@ Subject To
   v_a2_p1_q2 - (v_a2_p1 + v_p1_q2) >= -1
   v_a2_p2_q1 - (v_a2_p2 + v_p2_q1) >= -1
   v_a2_p2_q2 - (v_a2_p2 + v_p2_q2) >= -1
+  1 v_a1_p1 + 1 v_a2_q1 - v_p1_q1 >= 0  
 
 Binary
   v_a1_p1 v_a2_p1 v_a1_p2 v_a2_p2 v_p1_q1 v_p1_q2 v_p2_q1 v_p2_q2 
