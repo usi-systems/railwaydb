@@ -1,0 +1,8 @@
+If you have Gurobi installed, you can run this like:
+
+$ gurobi_cl ResultFile=example.sol example.lp
+
+The LP file format is:
+http://www.gurobi.com/documentation/5.5/reference-manual/node902
+
+

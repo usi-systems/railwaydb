@@ -373,7 +373,86 @@ $minDist  \gets \infty $ \;
 % \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
  \end{algorithm} 
 
+\subsection{Optimization}
 
+\begin{enumerate}
+
+   \item If an attribute is in a query:
+\begin{alltt}
+    v_a1_q1 = 1
+    v_a2_q1 = 0
+    v_a1_q2 = 0
+    v_a2_q2 = 1
+\end{alltt}
+
+
+   \item If an attribute is in a partition:
+\begin{alltt}
+    v_a1_p1 = ?
+    v_a2_p1 = ?
+    v_a1_p2 = ?
+    v_a2_p2 = ?
+\end{alltt}
+
+  
+ \item If an partition is used by a query
+
+\begin{alltt}
+    v_p1_q1 = ?
+    v_p1_q2 = ?
+    v_p2_q1 = ?
+    v_p2_q2 = ?
+\end{alltt}
+
+
+   \item If an attribute and partition are used by a query
+\begin{alltt} 
+   v_a1_p1_q1 = ?
+    v_a1_p1_q2 = ?
+    v_a2_p2_q1 = ?
+    v_a2_p2_q2 = ?
+\end{alltt}
+
+    \item add constraint that all attributes must appear in a partition
+\begin{alltt}
+    v_a1_p1 + v_a1_p2  = 1
+    v_a2_p1 + v_a2_p2 = 1
+\end{alltt}
+
+
+    \item the number of attributes use by query from a partition determines the
+      value of \texttt{v\_p1\_q1} (either 0 or 1)
+\begin{alltt}
+    (v_a1_q1 * v_a1_p1 + v_a2_q1 
+   * v_a2_p1) - v_p1_q1 >= 0
+\end{alltt}
+
+    \item To ensure that it is 0 or 1, we are going to add to the objective function, where K is some big value:
+\begin{alltt}
+   - K * v_p1_q1
+   - K * v_p1_q2
+   - K * v_p2_q1 
+   - K * v_p2_q2
+\end{alltt}
+
+
+    \item add constraint to make sure that \texttt{v\_a1\_p1} and \texttt{v\_p1\_q1} determine
+      \texttt{v\_a1\_p1\_q1}
+\begin{alltt}
+    v_a1_p1_q1 >= (v_a1_p1 + v_p1_q1) -1
+\end{alltt}
+
+
+    \item objective function : minimize the following, where the ?'s are constants
+
+   \item Here is what we want:
+\begin{alltt}
+   (? * v_a1_p1_q1 + ? * v_a2_p1_q1 + ?)
+  + (? * v_a1_p1_q2 + ? * v_a2_p1_q2 + ?)
+  + (? * v_a1_p2_q1 + ? * v_a2_p2_q1 + ?)
+  + (? * v_a1_p2_q2 + ? * v_a2_p2_q2 + ?)
+\end{alltt}
+\end{enumerate}
 
 %\begin{acknowledgements}
 %If you'd like to thank anyone, place your comments here
