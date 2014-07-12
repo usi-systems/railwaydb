@@ -128,7 +128,7 @@ $B$ and $c_e(B)$ to denote the total number of edges in the temporal
 neighborlists within the block. We overload the notation for block size and
 use $s(B)$ to denote the size of a block $B$. We have: 
 \begin{equation}
-s(B) = c_e(B) \cdot \left(16 + \sum_{a\in A} s(a)\right) + c_n(B) \cdot 12  
+s(B) = c_e(B) \cdot \left(16 + \sum_{a\in B.A} s(a)\right) + c_n(B) \cdot 12  
 \end{equation}
 Here, $16$ corresponds to the cost of storing the edge id and the timestamp,
 and $12$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
@@ -250,6 +250,32 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 }
 \Return $\mathcal{P}(B)$ \tcp*{Final set of sub-blocks}
 \end{algorithm} 
+
+\subsection{Mixed Integer Linear Program Formulation}
+$x_{a,p}$: $1$ if attribute $a$ is in partition $p$, $0$ otherwise.\\
+$y_{p,q}$: $1$ if partition $p$ is used by query $q$, $0$ otherwise.\\
+$z_{a,p,q}$: $1$ if partition $p$ is used by query $q$, and attribute $a$ is in partition $p$, $0$ otherwise.\\
+$u_{p}$: $1$ if partition $p$ is assigned at least $1$ attribute, $0$ otherwise.\\
+The formulation for ($k$ partitions):
+
+% NOTE: In the simulation we will have query weights that will factor into the objective function
+\begin{eqnarray}
+\text{minimize} 
+    \Big(\sum_{q\in Q} \sum_{p=1}^{k} (16\cdot c_e(B) &+& 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    + \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\Big) &-& \Big(K \sum_{p=1}^{k} u_p + \sum_{q\in Q} y_{p,q}\Big) \nonumber\\
+\text{subject to}\hspace{2.75cm}&&\nonumber\\
+\forall_{a\in A}, 
+    && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q},
+  && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
+\forall_{p\in[1..k]},
+   && \sum_{a\in A} y_{a,p} - u_p \geq 0 \nonumber\\
+\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) && \sum_{p=1}^{k} u_p < \alpha \nonumber
+\end{eqnarray}
+
+
 
 \subsection{Overlapping Attributes}
 
