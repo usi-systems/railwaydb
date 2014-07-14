@@ -1,41 +1,50 @@
 \ Example hard coded
 
 \ This doesn't quite work:
-\ 
-
 \ K is set to 1000000
-\ ? is set to 8
 
-Minimize
-   8 v_a1_p1_q1 + 8 v_a2_p1_q1 
-   + 8 v_a1_p1_q2 + 8 v_a2_p1_q2 
-   + 8 v_a1_p2_q1 + 8 v_a2_p2_q1 
-   + 8 v_a1_p2_q2 + 8 v_a2_p2_q2 
-   - 1000000 v_p1_q1
-   - 1000000 v_p1_q2
-   - 1000000 v_p2_q1
-   - 1000000 v_p2_q2
+\ q1_a1 = 1
+\ q1_a2 = 0
+\ q2_a1 = 0
+\ q2_a2 = 1
+
+\ assume:
+\ c_e(B) = 1
+\ c_n(B) = 1
+\ s(a1) = 8
+\ s(a2) = 8
+\ so 16 c_e(B) + 12 c_n(B) = 16 + 12 = 28
+
+
+Minimize 
+  28 y_p1_q1 + 28 y_p1_q2 + 28 y_p2_q1 + 28 y_p2_q2   
+   + 8 z_a1_p1_q1 + 8 z_a2_p1_q1 
+   + 8 z_a1_p1_q2 + 8 z_a2_p1_q2 
+   + 8 z_a1_p2_q1 + 8 z_a2_p2_q1 
+   + 8 z_a1_p2_q2 + 8 z_a2_p2_q2 
+   - 1000000 y_p1_q1
+   - 1000000 y_p1_q2
+   - 1000000 y_p2_q1
+   - 1000000 y_p2_q2
 Subject To 
-  v_a1_q1 = 1  
-  v_a2_q1 = 0
-  v_a1_q2 = 0
-  v_a2_q2 = 1
-  v_a1_p1 + v_a1_p2  = 1  
-  v_a2_p1 + v_a2_p2  = 1
-  v_a1_p1_q1 - (v_a1_p1 + v_p1_q1) >= -1
-  v_a1_p1_q2 - (v_a1_p1 + v_p1_q2) >= -1
-  v_a1_p2_q1 - (v_a1_p2 + v_p2_q1) >=  -1
-  v_a1_p2_q2 - (v_a1_p2 + v_p2_q2) >=  -1
-  v_a2_p1_q1 - (v_a2_p1 + v_p1_q1) >= -1
-  v_a2_p1_q2 - (v_a2_p1 + v_p1_q2) >= -1
-  v_a2_p2_q1 - (v_a2_p2 + v_p2_q1) >= -1
-  v_a2_p2_q2 - (v_a2_p2 + v_p2_q2) >= -1
-  1 v_a1_p1 + 1 v_a2_q1 - v_p1_q1 >= 0  
-
+  x_a1_p1 + x_a1_p2  = 1  
+  x_a2_p1 + x_a2_p2  = 1
+  1 x_p1_q1 +  0 x_p1_q1 - y_p1_q1 >= 0  
+  0 x_p1_q2 +  1 x_p1_q2 - y_p1_q2 >= 0  
+  1 x_p2_q1 +  0 x_p2_q1 - y_p2_q1 >= 0  
+  0 x_p2_q2 +  1 x_p2_q2 - y_p2_q2 >= 0  
+  z_a1_p1_q1 - (x_a2_p1 + y_p1_q1) >= -1
+  z_a1_p1_q2 - (x_a2_p1 + y_p1_q2) >= -1
+  z_a1_p2_q1 - (x_a2_p2 + y_p2_q1) >= -1
+  z_a1_p2_q2 - (x_a2_p2 + y_p2_q2) >= -1
+  z_a2_p1_q1 - (x_a2_p1 + y_p1_q1) >= -1
+  z_a2_p1_q2 - (x_a2_p1 + y_p1_q2) >= -1
+  z_a2_p2_q1 - (x_a2_p2 + y_p2_q1) >= -1
+  z_a2_p2_q2 - (x_a2_p2 + y_p2_q2) >= -1
 Binary
-  v_a1_p1 v_a2_p1 v_a1_p2 v_a2_p2 v_p1_q1 v_p1_q2 v_p2_q1 v_p2_q2 
-  v_a1_p1_q1 v_a1_p1_q2 v_a1_p2_q1 v_a1_p2_q2
-  v_a2_p1_q1 v_a2_p1_q2 v_a2_p2_q1 v_a2_p2_q2
+  x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
+  y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
+  z_a1_p1_q1 z_a1_p1_q2 z_a1_p2_q1 z_a1_p2_q2a z_a2_p1_q1 z_a2_p1_q2 z_a2_p2_q1 z_a2_p2_q2a  
 End
 
 
