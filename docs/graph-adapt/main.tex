@@ -258,6 +258,8 @@ $z_{a,p,q}$: $1$ if partition $p$ is used by query $q$, and attribute $a$ is in 
 $u_{p}$: $1$ if partition $p$ is assigned at least $1$ attribute, $0$ otherwise.\\
 The formulation for ($k$ partitions):
 
+Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
+
 % NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{eqnarray}
 \text{minimize} 
@@ -267,7 +269,7 @@ The formulation for ($k$ partitions):
 \forall_{a\in A}, 
     && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
-    &&  \sum_{a\in A} \mathbf{1}(a\in q.A)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
 \forall_{\{a,p,q\}\in A\times [1..k]\times Q},
   && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
 \forall_{p\in[1..k]},
