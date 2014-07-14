@@ -267,11 +267,11 @@ The formulation for ($k$ partitions):
 \forall_{a\in A}, 
     && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
-    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+    &&  \sum_{a\in A} \mathbf{1}(a\in q.A)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
 \forall_{\{a,p,q\}\in A\times [1..k]\times Q},
   && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
 \forall_{p\in[1..k]},
-   && \sum_{a\in A} y_{a,p} - u_p \geq 0 \nonumber\\
+   && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
 \Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) && \sum_{p=1}^{k} u_p < \alpha \nonumber
 \end{eqnarray}
 
