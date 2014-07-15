@@ -37,6 +37,10 @@ Subject To
   z_a1_p1_q2 - (x_a1_p1 + y_p1_q2) >= -1
   z_a1_p2_q1 - (x_a1_p2 + y_p2_q1) >= -1
   z_a1_p2_q2 - (x_a1_p2 + y_p2_q2) >= -1
+  z_a2_p1_q1 - (x_a2_p1 + y_p1_q1) >= -1
+  z_a2_p1_q2 - (x_a2_p1 + y_p1_q2) >= -1
+  z_a2_p2_q1 - (x_a2_p2 + y_p2_q1) >= -1
+  z_a2_p2_q2 - (x_a2_p2 + y_p2_q2) >= -1
 Binary
   x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
   y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
