@@ -3,8 +3,8 @@
 \ K is set to 1000000
 
 \ q1_a1 = 1
-\ q1_a2 = 0
-\ q2_a1 = 0
+\ q1_a2 = 1
+\ q2_a1 = 1
 \ q2_a2 = 1
 
 \ assume:
@@ -31,10 +31,10 @@ Minimize
 Subject To 
   x_a1_p1 + x_a1_p2  = 1  
   x_a2_p1 + x_a2_p2  = 1
-  1 x_a1_p1 +  0 x_a2_p1 - y_p1_q1 >= 0 
-  0 x_a1_p1 +  1 x_a2_p1 - y_p1_q2 >= 0 
-  1 x_a1_p2 +  0 x_a2_p2 - y_p2_q1 >= 0 
-  0 x_a1_p2 +  1 x_a2_p2 - y_p2_q2 >= 0
+  1 x_a1_p1 +  1 x_a2_p1 - y_p1_q1 >= 0 
+  1 x_a1_p1 +  1 x_a2_p1 - y_p1_q2 >= 0 
+  1 x_a1_p2 +  1 x_a2_p2 - y_p2_q1 >= 0 
+  1 x_a1_p2 +  1 x_a2_p2 - y_p2_q2 >= 0 
   z_a1_p1_q1 - x_a1_p1 - y_p1_q1 >= -1
   z_a1_p1_q2 - x_a1_p1 - y_p1_q2 >= -1
   z_a1_p2_q1 - x_a1_p2 - y_p2_q1 >= -1
