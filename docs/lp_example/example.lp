@@ -24,13 +24,10 @@ Minimize
    + 8 z_a1_p1_q2 + 8 z_a2_p1_q2 
    + 8 z_a1_p2_q1 + 8 z_a2_p2_q1 
    + 8 z_a1_p2_q2 + 8 z_a2_p2_q2 
-   - 1000000 u_p1 
-   - 1000000 u_p2 
    - 1000000 y_p1_q1
    - 1000000 y_p1_q2
    - 1000000 y_p2_q1
    - 1000000 y_p2_q2
-
 Subject To 
   x_a1_p1 + x_a1_p2  = 1  
   x_a2_p1 + x_a2_p2  = 1
@@ -46,9 +43,6 @@ Subject To
   z_a2_p1_q2 - x_a2_p1 - y_p1_q2 >= -1
   z_a2_p2_q1 - x_a2_p2 - y_p2_q1 >= -1
   z_a2_p2_q2 - x_a2_p2 - y_p2_q2 >= -1
-  x_a1_p1 + x_a2_p1 - u_p1 >= 0
-  x_a1_p2 + x_a2_p2 - u_p2 >= 0
-  0.36 u_p1 + 0.36 u_p2 - 0.36 <= 1
 Binary
   x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
   y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
@@ -56,7 +50,6 @@ Binary
   z_a1_p2_q1 z_a1_p2_q2 
   z_a2_p1_q1 z_a2_p1_q2 
   z_a2_p2_q1 z_a2_p2_q2  
-  u_p1 u_p2
 End
 
 
