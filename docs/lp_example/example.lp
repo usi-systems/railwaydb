@@ -15,6 +15,9 @@
 \ s(a2) = 8
 \ so 16 c_e(B) + 12 c_n(B) = 16 + 12 = 28
 
+\ s(B) = 1 * (16 + 16) + (1 * 12) = 32 + 12 = 44
+\ 1 - ((1 * 16)/44) = 0.36
+\ alpha = 16
 
 Minimize 
   28 y_p1_q1 + 28 y_p1_q2 + 28 y_p2_q1 + 28 y_p2_q2   
@@ -22,10 +25,13 @@ Minimize
    + 8 z_a1_p1_q2 + 8 z_a2_p1_q2 
    + 8 z_a1_p2_q1 + 8 z_a2_p2_q1 
    + 8 z_a1_p2_q2 + 8 z_a2_p2_q2 
+   - 1000000 u_p1 
+   - 1000000 u_p2 
    - 1000000 y_p1_q1
    - 1000000 y_p1_q2
    - 1000000 y_p2_q1
    - 1000000 y_p2_q2
+
 Subject To 
   x_a1_p1 + x_a1_p2  = 1  
   x_a2_p1 + x_a2_p2  = 1
@@ -41,6 +47,7 @@ Subject To
   z_a2_p1_q2 - x_a2_p1 - y_p1_q2 >= -1
   z_a2_p2_q1 - x_a2_p2 - y_p2_q1 >= -1
   z_a2_p2_q2 - x_a2_p2 - y_p2_q2 >= -1
+  0.36 u_p1 + 0.36 u_p2 < 16
 Binary
   x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
   y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
@@ -48,6 +55,7 @@ Binary
   z_a1_p2_q1 z_a1_p2_q2 
   z_a2_p1_q1 z_a2_p1_q2 
   z_a2_p2_q1 z_a2_p2_q2  
+  u_p1 u_p2
 End
 
 
