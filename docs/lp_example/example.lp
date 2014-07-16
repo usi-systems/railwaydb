@@ -28,7 +28,6 @@ Minimize
    - 1000000 y_p1_q2
    - 1000000 y_p2_q1
    - 1000000 y_p2_q2
-
 Subject To 
   x_a1_p1 + x_a1_p2  = 1  
   x_a2_p1 + x_a2_p2  = 1
