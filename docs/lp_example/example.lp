@@ -1,6 +1,6 @@
 \ Example hard coded
 
-\ K is set to 100000
+\ K is set to 10000
 
 \ q1_a1 = 1
 \ q1_a2 = 0
@@ -13,6 +13,10 @@
 \ s(a1) = 8
 \ s(a2) = 8
 \ so 16 c_e(B) + 12 c_n(B) = 16 + 12 = 28
+
+\ s(B) = 1 * (16 + 16) + (1 * 12) = 32 + 12 = 44
+\ 1 - ((1 * 16)/44) = 0.36
+\ alpha = 1
 
 Minimize 
   28 y_p1_q1 + 28 y_p1_q2 + 28 y_p2_q1 + 28 y_p2_q2   
@@ -39,6 +43,11 @@ Subject To
   z_a2_p1_q2 - x_a2_p1 - y_p1_q2 >= -1
   z_a2_p2_q1 - x_a2_p2 - y_p2_q1 >= -1
   z_a2_p2_q2 - x_a2_p2 - y_p2_q2 >= -1
+  x_a1_p1 + x_a2_p1 - u_p1 >= 0
+  10000 u_p1 - x_a1_p1 - x_a2_p1 >= 0
+  x_a1_p2 + x_a2_p2 - u_p2 >= 0
+  10000 u_p2 - x_a1_p2 - x_a2_p2 >= 0
+  0.36 u_p1 + 0.36 u_p2 <= 1.36
 Binary
   x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
   y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
@@ -46,6 +55,7 @@ Binary
   z_a1_p2_q1 z_a1_p2_q2 
   z_a2_p1_q1 z_a2_p1_q2 
   z_a2_p2_q1 z_a2_p2_q2  
+  u_p1 u_p2 
 End
 
 
