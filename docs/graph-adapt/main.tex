@@ -260,16 +260,18 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
 
 % NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{eqnarray}
-\text{minimize} 
-    \Big(\sum_{q\in Q} \sum_{p=1}^{k} (16\cdot c_e(B) &+& 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
-    + \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\Big) &-& \Big(K\cdot \sum_{q\in Q} y_{p,q}\Big) \nonumber\\
-\text{subject to}\hspace{2.75cm}&&\nonumber\\
+\text{minimize}  
+    \sum_{q\in Q} && \sum_{p=1}^{k}(16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
+\text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
     && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
     &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} q(a)\cdot x_{a,p}  \geq 0 \nonumber\\
 \forall_{\{a,p,q\}\in A\times [1..k]\times Q},
-  && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
+  && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber
 \end{eqnarray}
 
 We will start with $k=|A|$ and check if the number of partitions used results
