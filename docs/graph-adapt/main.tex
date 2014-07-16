@@ -147,7 +147,7 @@ overhead as $H(\mathcal{P}, B)$, our goal is to find:
 
 The storage overhead can be formalized as:
 \begin{equation}
-H(\mathcal{P}, B) = |\mathcal{P}(B)|\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
+H(\mathcal{P}, B) = (|\mathcal{P}(B)|-1)\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
 \end{equation}
 
 \subsection{Query I/O}
@@ -264,7 +264,7 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
 \begin{eqnarray}
 \text{minimize} 
     \Big(\sum_{q\in Q} \sum_{p=1}^{k} (16\cdot c_e(B) &+& 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
-    + \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\Big) &-& \Big(K \sum_{p=1}^{k} u_p + \sum_{q\in Q} y_{p,q}\Big) \nonumber\\
+    + \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\Big) &-& \Big(K\cdot \sum_{p=1}^{k} u_p + \sum_{q\in Q} y_{p,q}\Big) \nonumber\\
 \text{subject to}\hspace{2.75cm}&&\nonumber\\
 \forall_{a\in A}, 
     && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
@@ -274,7 +274,7 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
   && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
 \forall_{p\in[1..k]},
    && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
-\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) && \sum_{p=1}^{k} u_p < \alpha \nonumber
+\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) &\cdot& \Big(\sum_{p=1}^{k} u_p -1\Big) < \alpha \nonumber
 \end{eqnarray}
 
 
