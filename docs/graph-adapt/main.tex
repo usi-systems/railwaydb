@@ -255,8 +255,6 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 $x_{a,p}$: $1$ if attribute $a$ is in partition $p$, $0$ otherwise.\\
 $y_{p,q}$: $1$ if partition $p$ is used by query $q$, $0$ otherwise.\\
 $z_{a,p,q}$: $1$ if partition $p$ is used by query $q$, and attribute $a$ is in partition $p$, $0$ otherwise.\\
-$u_{p}$: $1$ if partition $p$ is assigned at least $1$ attribute, $0$ otherwise.\\
-The formulation for ($k$ partitions):
 
 Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
 
@@ -272,10 +270,14 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
     &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
 \forall_{\{a,p,q\}\in A\times [1..k]\times Q},
   && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
-\forall_{p\in[1..k]},
-   && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
-\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) &\cdot& \Big(\sum_{p=1}^{k} u_p -1\Big) < \alpha \nonumber
 \end{eqnarray}
+
+We will start with $k=|A|$ and check if the number of partitions used results
+on the overhead constraint being satisified, that is:
+$$\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) \cdot \Big(\sum_{p=1}^{k} u_p -1\Big) < \alpha$$
+
+If the constraint is satisfied, then we are done. Otherwise, we set
+$k=\sum_{p=1}^{k} u_p -1$ and repeat.
 
 \subsection{Overlapping Attributes}
 
