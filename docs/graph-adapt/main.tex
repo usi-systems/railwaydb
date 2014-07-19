@@ -262,7 +262,7 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
 % NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} \sum_{p=1}^{k}(16\cdot c_e(B) &+& 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    \sum_{q\in Q} \sum_{p=1}^{k} && (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
@@ -277,8 +277,33 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
     && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
 \forall_{p\in[1..k]},
     && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
-\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) &\cdot& \Big(\sum_{p=1}^{k} u_p -1\Big) \leq \alpha \nonumber
+ && \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}{
+1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}
+ } \nonumber
 \end{eqnarray}
+
+Here we use the following LP construction. Assume we have two variables,
+$\beta_1$ and $\beta_2$, where $\beta_2\in[0,1]$ and $\beta_1\geq 0$. We want to
+implement the following constraint: 
+$$
+\beta_2 = 
+\begin{cases}
+0 & \beta_1 = 0 \\
+1 & \beta_1 \geq 0 
+\end{cases}
+$$ 
+
+This could be expressed as a linear constraint as follows,  where $K$ is a
+large constant guaranteed to be larger  that $\beta_1$ for practical purposes:
+\begin{eqnarray}
+\hspace{2cm}&& \beta_1 - \beta_2 \geq 0\nonumber\\
+\hspace{2cm}&& K\cdot\beta_2 - \beta_1 \geq 0\nonumber
+\end{eqnarray}
+
+In our ILP formulation, we use this construction twice. The first use is shown
+in the second and third constrants, where $\beta_1=\sum_{a\in A} q(a)\cdot
+x_{a,p}$ and $\beta_2=y_{p,q}$. The second use is shown in the fifth and 
+sixth constaints, where $\beta_1=\sum_{a\in A} x_{a,p}$ and $\beta_2=u_p$.
 
 \subsection{Overlapping Attributes}
 
