@@ -38,11 +38,9 @@
 
 %\authorrunning{Short form of author list} % if too long for running head
 
-\institute{B. Gedik \at            
-              \email{bgedik@cs.bilkent.edu.tr}           %  \\
+\institute{B. Gedik \at \email{bgedik@cs.bilkent.edu.tr} 
            \and
-           R. Soul\'{e} \at
-               \email{robert.soule@usi.ch}     
+           R. Soul\'{e} \at \email{robert.soule@usi.ch}     
 }
 
 \date{Received: date / Accepted: date}
@@ -232,9 +230,6 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
       $j\leftarrow -1$ \tcp*{Best partition assignment}
       \For(\tcp*[f]{For each partition assignment}){$i\in [1..k]$} {
          $R[i]\leftarrow R[i] \cup \{a\}$\tcp*{Assign attribute}
-         \If(\tcp*[f]{If size is not feasable}){$H(R, B, Q)\geq\alpha$}{
-            \textbf{continue}
-         }
          \If(\tcp*[f]{If query cost is lower}){$L(R, B, Q)<c$}{
             $c\leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
             $j\leftarrow i$\tcp*{Update the best partition}
@@ -243,7 +238,8 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
       }
       $R[j]\leftarrow R[j] \cup \{a\}$\tcp*{Assign to best partition}
    }
-   \If(\tcp*[f]{Has lower cost}){$||R||=|A| \wedge L(R, B, Q)<c^*$}{
+   \tcp{If solution is feasable and has lower cost}
+   \If{$H(R, B, Q)\geq\alpha \wedge L(R, B, Q)<c^*$}{
       $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
       $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
    }
