@@ -203,11 +203,13 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
-    && \sum_{p=1}^{k} x_{a,p} > 0\nonumber\\
-\forall_{a\in A}, 
-    && \sum_{p=1}^{k} x_{a,p} \leq k\nonumber\\
+    && \sum_{p=1}^{k} x_{a,p} \geq 1\nonumber\\
 \forall_{\{a,q\}\in A\times Q},
     &&  \sum_{p=1}^{k} z_{a,p,q} \geq q(a) \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, 
+    && x_{a,p} - z_{a,p,q} \geq 0 \nonumber\\
+%\forall_{\{a,p\}\in A\times [1..k]},
+%    &&  \sum_{q\in Q} z_{a,p,q} \geq x_{a,p} \nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
     &&  \sum_{a\in A} z_{a,p,q} - y_{p,q} \geq 0 \nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
@@ -218,8 +220,9 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
     && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
 \forall_{p\in[1..k]},
     && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
-&& \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}
-  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
+TODO&:& storage\;overhead
+%&& \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}
+%  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
 \end{eqnarray}
 
 \subsubsection{Heuristic Solution}
