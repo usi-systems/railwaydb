@@ -23,7 +23,7 @@ $B$ and $c_e(B)$ to denote the total number of edges in the temporal
 neighborlists within the block. We overload the notation for block size and
 use $s(B)$ to denote the size of a block $B$. We have: 
 \begin{equation}
-s(B) = c_e(B) \cdot \left(16 + \sum_{a\in B.A} s(a)\right) + c_n(B) \cdot 12  
+s(B) = c_e(B) \cdot \Big(16 + \sum_{a\in B.A} s(a)\Big) + c_n(B) \cdot 12  
 \end{equation}
 Here, $16$ corresponds to the cost of storing the edge id and the timestamp,
 and $12$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
@@ -42,7 +42,7 @@ overhead as $H(\mathcal{P}, B)$, our goal is to find:
 
 The storage overhead can be formalized as follows for the non-overlapping case:
 \begin{equation}
-H(\mathcal{P}, B) = (|\mathcal{P}(B)|-1)\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
+H(\mathcal{P}, B) = (|\mathcal{P}(B)|-1)\cdot\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) 
 \end{equation}
 
 For the general case (including overlapping), we can formulate the storage

@@ -118,7 +118,7 @@ ILP variables it depends on is the $u$s. In particular, the number of
 partitions used is given by $\sum_{p=1}^{k} u_p$. This results in the
 following linear constraint:
 \begin{equation}
-\sum_{p=1}^{k} u_p - 1 \leq \frac{\alpha}
+\sum_{p=1}^{k} u_p \leq 1 + \frac{\alpha}
   {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}}
 \end{equation}
 
@@ -127,7 +127,7 @@ following linear constraint:
 \begin{mdframed}
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} \sum_{p=1}^{k} && (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    \sum_{q\in Q} \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
@@ -142,7 +142,7 @@ following linear constraint:
     && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
 \forall_{p\in[1..k]},
     && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
-&& \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}
+&& \sum_{p=1}^{k} u_p \leq 1 + \frac{\alpha}
   {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
 \end{eqnarray}
 \end{mdframed}
@@ -199,7 +199,7 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 % NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} \sum_{p=1}^{k} && (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    \sum_{q\in Q} \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
@@ -220,9 +220,8 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
     && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
 \forall_{p\in[1..k]},
     && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
-TODO&:& storage\;overhead
-%&& \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}
-%  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
+\sum_{p=1}^{k} (16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p} \leq s(B)\cdot (1+\alpha)\nonumber
 \end{eqnarray}
 
 \subsubsection{Heuristic Solution}
