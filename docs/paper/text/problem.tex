@@ -45,7 +45,13 @@ The storage overhead can be formalized as follows for the non-overlapping case:
 H(\mathcal{P}, B) = (|\mathcal{P}(B)|-1)\cdot\left(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\right) 
 \end{equation}
 
-TODO: overlapping case (also the general case)
+For the general case (including overlapping), we can formulate the storage
+overhead as follows:
+\begin{equation}
+H(\mathcal{P}, B) = \frac{\sum_{B'\in \mathcal{P}(B)} s(B')}{s(B)} - 1 
+\end{equation}
+
+%TODO: note about why we have two different cases
 
 \subsubsection{Query I/O}
 
