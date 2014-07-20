@@ -1,0 +1,4 @@
+#!/bin/bash
+
+gurobi_cl ResultFile=$1.sol $1.lp > /dev/null
+cat $1.sol
