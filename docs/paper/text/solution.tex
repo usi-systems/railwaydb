@@ -6,7 +6,62 @@ This section is still a work-in-progress. We are trying to find the algorithms.
 \paragraph*{Problem.}\emph{Find a true partitioning of attributes that minimizes
   the query I/O and bounds the storage cost by some upper limit.}
 
-%$\mathcal{P}(B) \leftarrow \emptyset$ \tcp*{Initial partitioning}
+\subsubsection{Mixed Integer Linear Program Formulation}
+$x_{a,p}$: $1$ if attribute $a$ is in partition $p$, $0$ otherwise.\\
+$y_{p,q}$: $1$ if partition $p$ is used by query $q$, $0$ otherwise.\\
+$z_{a,p,q}$: $1$ if partition $p$ is used by query $q$, and attribute $a$ is in partition $p$, $0$ otherwise.\\
+$u_{p}$: $1$ if partition $p$ is assigned at least $1$ attribute, $0$ otherwise.\\
+
+Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
+
+% NOTE: In the simulation we will have query weights that will factor into the objective function
+\begin{eqnarray}
+\text{minimize}  
+    \sum_{q\in Q} \sum_{p=1}^{k} && (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
+\text{subject to}&&\nonumber\\
+\forall_{a\in A}, 
+    && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} q(a)\cdot x_{a,p}  \geq 0 \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q},
+    && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
+\forall_{p\in[1..k]},
+    && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
+\forall_{p\in[1..k]},
+    && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
+&& \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}
+  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
+\end{eqnarray}
+
+Here we use the following LP construction. Assume we have two variables,
+$\beta_1$ and $\beta_2$, where $\beta_2\in[0,1]$ and $\beta_1\geq 0$. We want to
+implement the following constraint: 
+$$
+\beta_2 = 
+\begin{cases}
+0 & \beta_1 = 0 \\
+1 & \beta_1 \geq 0 
+\end{cases}
+$$ 
+
+This could be expressed as a linear constraint as follows,  where $K$ is a
+large constant guaranteed to be larger  that $\beta_1$ for practical purposes:
+\begin{eqnarray}
+\hspace{2cm}&& \beta_1 - \beta_2 \geq 0\nonumber\\
+\hspace{2cm}&& K\cdot\beta_2 - \beta_1 \geq 0\nonumber
+\end{eqnarray}
+
+In our ILP formulation, we use this construction twice. The first use is shown
+in the second and third constrants, where $\beta_1=\sum_{a\in A} q(a)\cdot
+x_{a,p}$ and $\beta_2=y_{p,q}$. The second use is shown in the fifth and 
+sixth constaints, where $\beta_1=\sum_{a\in A} x_{a,p}$ and $\beta_2=u_p$.
+
+\subsubsection{Heuristic Solution}
+
+\paragraph*{Approach.} TODO
 
 \begin{algorithm}[ht]
 \scriptsize
@@ -38,14 +93,12 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 \Return $\mathcal{P}(B)$ \tcp*{Final set of sub-blocks}
 \end{algorithm} 
 
-\subsection{Mixed Integer Linear Program Formulation}
-$x_{a,p}$: $1$ if attribute $a$ is in partition $p$, $0$ otherwise.\\
-$y_{p,q}$: $1$ if partition $p$ is used by query $q$, $0$ otherwise.\\
-$z_{a,p,q}$: $1$ if partition $p$ is used by query $q$, and attribute $a$ is in partition $p$, $0$ otherwise.\\
-$u_{p}$: $1$ if partition $p$ is assigned at least $1$ attribute, $0$ otherwise.\\
+\subsection{Overlapping Attributes}
 
-Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
+\paragraph*{Problem.}\emph{Find an overlapping partitioning of attributes that minimizes
+  the query I/O and bounds the storage cost by some upper limit.}
 
+\subsubsection{Mixed Integer Linear Program Formulation}
 % NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{eqnarray}
 \text{minimize}  
@@ -53,49 +106,26 @@ Let $q(a)\equiv \mathbf{1}(a \in q.A)$.
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
-    && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
+    && \sum_{p=1}^{k} x_{a,p} > 0\nonumber\\
+\forall_{a\in A}, 
+    && \sum_{p=1}^{k} x_{a,p} \leq k\nonumber\\
+\forall_{\{a,q\}\in A\times Q},
+    &&  \sum_{p=1}^{k} z_{a,p,q} \geq q(a) \nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
-    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+    &&  \sum_{a\in A} z_{a,p,q} - y_{p,q} \geq 0 \nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
-    &&  K\cdot y_{p,q} - \sum_{a\in A} q(a)\cdot x_{a,p}  \geq 0 \nonumber\\
-\forall_{\{a,p,q\}\in A\times [1..k]\times Q},
-    && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
+    &&  K\cdot y_{p,q} - \sum_{a\in A} z_{a,p,q}  \geq 0 \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, 
+    && z_{a,p,q} - (y_{p,q} + q(a)) \geq -1 \nonumber\\
 \forall_{p\in[1..k]},
     && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
 \forall_{p\in[1..k]},
     && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
- && \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}{
-1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}
- } \nonumber
+&& \sum_{p=1}^{k} u_p -1 \leq \frac{\alpha}
+  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
 \end{eqnarray}
 
-Here we use the following LP construction. Assume we have two variables,
-$\beta_1$ and $\beta_2$, where $\beta_2\in[0,1]$ and $\beta_1\geq 0$. We want to
-implement the following constraint: 
-$$
-\beta_2 = 
-\begin{cases}
-0 & \beta_1 = 0 \\
-1 & \beta_1 \geq 0 
-\end{cases}
-$$ 
-
-This could be expressed as a linear constraint as follows,  where $K$ is a
-large constant guaranteed to be larger  that $\beta_1$ for practical purposes:
-\begin{eqnarray}
-\hspace{2cm}&& \beta_1 - \beta_2 \geq 0\nonumber\\
-\hspace{2cm}&& K\cdot\beta_2 - \beta_1 \geq 0\nonumber
-\end{eqnarray}
-
-In our ILP formulation, we use this construction twice. The first use is shown
-in the second and third constrants, where $\beta_1=\sum_{a\in A} q(a)\cdot
-x_{a,p}$ and $\beta_2=y_{p,q}$. The second use is shown in the fifth and 
-sixth constaints, where $\beta_1=\sum_{a\in A} x_{a,p}$ and $\beta_2=u_p$.
-
-\subsection{Overlapping Attributes}
-
-\paragraph*{Problem.}\emph{Find an overlapping partitioning of attributes that minimizes
-  the query I/O and bounds the storage cost by some upper limit.}
+\subsubsection{Heuristic Solution}
 
 \paragraph*{Approach.} We start the algorithm with a 
  partitioning based on what queries we have seen.
