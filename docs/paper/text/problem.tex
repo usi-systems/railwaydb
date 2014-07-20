@@ -81,24 +81,21 @@ The query I/O cost for a block is then given by:
 L(\mathcal{P}, B) = \sum_{q\in Q} \mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} \!\!s(B')
 \end{equation}
 
-
-\paragraph{\textbf{Other useful equations}}
-
-\noindent The following are unused, but may be needed for the partitioning
-algorithm.
-
-Let $f: \mathbb{R}\times A \rightarrow \mathbb{N}$ be a function that maps a
-attribute-timestamp pair $(a, t)$ to the frequency of queries that access
-attribute $a$ for time $t$. More formally:
-\begin{equation}
-f(a,t) = \sum_{q\in Q} \textbf{1}(a\in q.A \wedge t\in q.T)
-\end{equation}
- 
-Let $T$ represent a time range $[T.s, T.e]$. We denote the frequency of
-attribute access for the time interval $T$ for attribute $a$ as follows:
-\begin{equation}
-f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T| 
-\end{equation}
-
+%\paragraph{\textbf{Other useful equations}}
+%\noindent The following are unused, but may be needed for the partitioning
+%algorithm.
+%
+%Let $f: \mathbb{R}\times A \rightarrow \mathbb{N}$ be a function that maps a
+%attribute-timestamp pair $(a, t)$ to the frequency of queries that access
+%attribute $a$ for time $t$. More formally:
+%\begin{equation}
+%f(a,t) = \sum_{q\in Q} \textbf{1}(a\in q.A \wedge t\in q.T)
+%\end{equation}
+%
+%Let $T$ represent a time range $[T.s, T.e]$. We denote the frequency of
+%attribute access for the time interval $T$ for attribute $a$ as follows:
+%\begin{equation}
+%f(a, T) = \int_{T.s}^{T.e} f(a, t)\cdot dt =  \sum_{q\in Q} |q.T \cap T| 
+%\end{equation}
 
 
