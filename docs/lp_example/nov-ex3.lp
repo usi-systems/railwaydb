@@ -28,12 +28,12 @@ Subject To
   x_a1_p1 + x_a1_p2  = 1  
   x_a2_p1 + x_a2_p2  = 1
   1 x_a1_p1 + 1 x_a2_p1 - y_p1_q1 >= 0 
-  10000 y_p1_q1 - 1 x_a1_p1 - 1 x_a2_p1 >= 0
   1 x_a1_p1 + 1 x_a2_p1 - y_p1_q2 >= 0 
-  10000 y_p1_q2 - 1 x_a1_p1 - 1 x_a2_p1 >= 0 
   1 x_a1_p2 + 1 x_a2_p2 - y_p2_q1 >= 0 
-  10000 y_p2_q1 - 1 x_a1_p2 - 1 x_a2_p2 >= 0
   1 x_a1_p2 + 1 x_a2_p2 - y_p2_q2 >= 0
+  10000 y_p1_q1 - 1 x_a1_p1 - 1 x_a2_p1 >= 0
+  10000 y_p1_q2 - 1 x_a1_p1 - 1 x_a2_p1 >= 0 
+  10000 y_p2_q1 - 1 x_a1_p2 - 1 x_a2_p2 >= 0
   10000 y_p2_q2 - 1 x_a1_p2 - 1 x_a2_p2 >= 0
   z_a1_p1_q1 - x_a1_p1 - y_p1_q1 >= -1
   z_a1_p1_q2 - x_a1_p1 - y_p1_q2 >= -1
@@ -44,8 +44,8 @@ Subject To
   z_a2_p2_q1 - x_a2_p2 - y_p2_q1 >= -1
   z_a2_p2_q2 - x_a2_p2 - y_p2_q2 >= -1
   x_a1_p1 + x_a2_p1 - u_p1 >= 0
-  10000 u_p1 - x_a1_p1 - x_a2_p1 >= 0
   x_a1_p2 + x_a2_p2 - u_p2 >= 0
+  10000 u_p1 - x_a1_p1 - x_a2_p1 >= 0
   10000 u_p2 - x_a1_p2 - x_a2_p2 >= 0
   0.36 u_p1 + 0.36 u_p2 <= 1.36  
 Binary
