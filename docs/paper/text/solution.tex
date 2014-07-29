@@ -8,7 +8,7 @@ This section is still a work-in-progress. We are trying to find the algorithms.
 \paragraph*{Problem.$\,$} \emph{Find a true partitioning of attributes that
 minimizes the query I/O and bounds the storage cost by some upper limit.}
 
-\subsubsection{Integer Linear Program Formulation}
+\subsubsection{Integer Linear Program Formulation}\label{subsubsec:nov-ilp}
 We present an ILP formuation of the problem. For this purpose, we define a 
 number of binary ($0$ or $1$) variables: 
 \begin{itemize}
@@ -69,7 +69,7 @@ follows, where $K$ is a large constant guaranteed to be larger than $\beta_1$
 for practical purposes:
 \begin{eqnarray}
 && \beta_1 - \beta_2 \geq 0\nonumber\\
-&& K\cdot\beta_2 - \beta_1 \geq 0\nonumber
+&& K\cdot\beta_2 - \beta_1 \geq 0\label{eq:beta-ilp}
 \end{eqnarray}
 
 We now apply this construction to our second constraint, where
@@ -147,11 +147,11 @@ following linear constraint:
 \end{eqnarray}
 \end{mdframed}
 \caption{ILP formulation for the non-overlapping partitioning}
-\label{fig:no-ilp}
+\label{fig:nov-ilp}
 \end{figure}
 
 The final ILP formulation for the non-overlapping partitioning is given in
-Figure~\ref{fig:no-ilp}.
+Figure~\ref{fig:nov-ilp}.
 
 \subsubsection{Heuristic Solution}
 
@@ -192,11 +192,77 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 \newpage
 \subsection{Overlapping Attributes}
 
-\paragraph*{Problem.} \emph{Find an overlapping partitioning of attributes that minimizes
-  the query I/O and bounds the storage cost by some upper limit.}
+\paragraph*{Problem.$\,$} \emph{Find an overlapping partitioning of attributes
+that minimizes the query I/O and bounds the storage cost by some upper
+limit.}
 
 \subsubsection{Integer Linear Program Formulation}
+We present an ILP formuation of the problem, as we did for the case of
+non-overlapping partitions in Section~\ref{subsubsec:nov-ilp}. We use the same
+set of variables and the same objective function. However, the formulation of
+the constraints differ. 
+
+Our first constraint is that, each attribute must be assigned to at leat one
+partition. Formally:
+\begin{eqnarray}
+\forall_{a\in A}, \sum_{p=1}^{k} x_{a,p} \geq 1
+\end{eqnarray}
+
+As our second constraint, we require that for each attribute used by a query,
+there needs to be a partition that is used by that query and that contains the
+attribute in question. Formally:
+\begin{eqnarray}
+\forall_{\{a,q\}\in A\times Q}, \sum_{p=1}^{k} z_{a,p,q} \geq q(a) 
+\end{eqnarray}
+
+\begin{sloppypar}
+As our third constraint, we require that if a query is using an attribute from
+a partition, then that partition must contain the attribute. I.e., we need
+to link the $z$ variables with the $x$ variables as
+$\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, (z_{a,p,q} = 1) \implies 
+(x_{a,p} = 1)$. This can be state as linear constraints:
+\begin{eqnarray}
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, x_{a,p} - z_{a,p,q} \geq 0 
+\end{eqnarray}
+\end{sloppypar}
+
+As our fourth constraint, we require that if a query is using at least one
+attribute from a partition, then that partition must be used by the query.
+I.e., we need to link the $z$ variables with the $y$ variables as
+$\forall_{\{p,q\}\in [1..k]\times Q}, y_{p,q} = \mathbf{1}(\sum_{a\in A}
+z_{a,p,q}>0)$. As before, we use the ILP construction from
+Eq.~\ref{eq:beta-ilp} for this, where $\beta_2=y_{p,q}$ and $\beta_1 =
+\sum_{a\in A} z_{a,p,q}$. We get:
+\begin{eqnarray}
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} z_{a,p,q} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} z_{a,p,q} \geq 0 
+\end{eqnarray}
+
+Our fifth constraint is that, if an attribute $a$ is assigned to a partition
+$p$, and partition $p$ is used by a query $q$, then the corresponding $z$
+variable must be set to $1$. This is same as the formulation for the
+non-overlapping case from Eq.~\ref{eq:no-z}.
+
+Our sixth constraint is that, if a partition is non-empty, then its
+corresponding $u$ variable must be set to $0$. Again, this is same as the
+formulation for the non-overlapping case from Eq.~\ref{eq:no-u}.
+
+Our seventh, and the last, constraint deals with the storage overhead. However,
+the storage overhead formulation for the overlapping case is different from 
+the one for the non-overlapping. This is because the overhead does not merely
+depend on the number of partitions, as attributes might have to be loaded
+multiple times from different partitions. As a result, we express the overhead
+using base variables as in the objective function. Formally:
+\begin{eqnarray}
+\sum_{p=1}^{k} (16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p} \leq s(B)\cdot (1+\alpha)
+\end{eqnarray}
+
 % NOTE: In the simulation we will have query weights that will factor into the objective function
+\begin{figure}[!t]
+\begin{mdframed}
 \begin{eqnarray}
 \text{minimize}  
     \sum_{q\in Q} \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
@@ -208,8 +274,6 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
     &&  \sum_{p=1}^{k} z_{a,p,q} \geq q(a) \nonumber\\
 \forall_{\{a,p,q\}\in A\times [1..k]\times Q}, 
     && x_{a,p} - z_{a,p,q} \geq 0 \nonumber\\
-%\forall_{\{a,p\}\in A\times [1..k]},
-%    &&  \sum_{q\in Q} z_{a,p,q} \geq x_{a,p} \nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
     &&  \sum_{a\in A} z_{a,p,q} - y_{p,q} \geq 0 \nonumber\\
 \forall_{\{p,q\}\in [1..k]\times Q}, 
@@ -223,10 +287,17 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 \sum_{p=1}^{k} (16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
 + \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p} \leq s(B)\cdot (1+\alpha)\nonumber
 \end{eqnarray}
+\end{mdframed}
+\caption{ILP formulation for the overlapping partitioning}
+\label{fig:ov-ilp}
+\end{figure}
+
+The final ILP formulation for the overlapping partitioning is given in
+Figure~\ref{fig:ov-ilp}.
 
 \subsubsection{Heuristic Solution}
 
-\paragraph*{Approach.} We start the algorithm with a 
+\paragraph*{Approach.$\,$} We start the algorithm with a 
  partitioning based on what queries we have seen.
 Every query gets its own sub-block. This is the``ideal'' partitioning,
 because the I/O cost would be minimized for every query that we would
