@@ -1,2 +1,15 @@
+#pragma once
 
-int solve(int argc, char *argv[]);
+#include <intergdb/common/QueryWorkload.h>
+
+using namespace intergdb::common;
+
+class Solver
+{
+public:
+    Solver() {}
+    int solve(QueryWorkload * workload);
+
+};
+
+
