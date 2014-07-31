@@ -57,6 +57,100 @@ int Solver::u(var_env *e, int p)
     return (e->u_offset) + p;
 }
 
+double Solver::K()
+{
+    return 1000;
+}
+
+double Solver::alpha()
+{
+    return 3.78;
+}
+
+
+int Solver::accesses(std::vector<Query> const & queries, int q, int a)
+{
+    for (auto & attribute : queries[q].getAttributes()) {
+        if (attribute->getIndex() == a) return 1;
+    }
+    return 0;
+}
+
+void Solver::name_variables(var_env *e, char** vname)
+{
+    int j = 0;
+    
+    for (int a = 0; a < e->A; ++a) {
+        for (int p = 0; p < e->P; ++p) {
+            sprintf(vname[j], "x_a%d_p%d", a+1, p+1);
+            j++;
+        }
+    }
+
+    for (int p = 0; p < e->P; ++p) {
+        for (int q = 0; q < e->Q; ++q) {
+            sprintf(vname[j], "y_p%d_q%d", p+1, q+1);
+            j++;
+        }
+    }
+
+    for (int a = 0; a < e->A; ++a) {
+        for (int p = 0; p < e->P; ++p) {
+            for (int q = 0; q < e->Q; ++q) {
+                sprintf(vname[j], "z_a%d_p%d_q%d", a+1, p+1, q+1);
+                j++;
+            }
+        }
+    }
+
+    for (int p = 0; p < e->P; ++p) {
+        sprintf(vname[j], "u_p%d", p+1);
+        j++;
+    }
+
+    cout << "----" << endl;
+    cout << "printing xs" << endl;
+    for (int a = 0; a < e->A; ++a) {
+        for (int p = 0; p < e->P; ++p) {
+            cout << vname[x(e,a,p)] << endl;
+        }
+    }
+    cout << "----" << endl;
+
+    cout << "----" << endl;
+    cout << "printing ys" << endl;
+
+    for (int p = 0; p < e->P; ++p) {
+        for (int q = 0; q < e->Q; ++q) {
+            cout << vname[y(e,p,q)] << endl;
+        }
+    }
+    cout << "----" << endl;
+
+
+    cout << "----" << endl;
+    cout << "printing zs" << endl;
+    for (int a = 0; a < e->A; ++a) {
+        for (int p = 0; p < e->P; ++p) {
+            for (int q = 0; q < e->Q; ++q) {
+                cout << vname[z(e,a,p,q)] << endl;
+                
+            }
+        }
+    }
+    cout << "----" << endl;
+
+    cout << "----" << endl;
+    cout << "printing us" << endl;
+    
+    for (int p = 0; p < e->P; ++p) {
+        cout << vname[u(e,p)] << endl;
+    }
+
+    cout << "----" << endl;
+
+}
+
 
 int Solver::solve_nov(QueryWorkload * workload) 
 {
@@ -110,7 +204,7 @@ int Solver::solve_nov(QueryWorkload * workload)
     val = new double[e.num_vars];
     vname = new char*[e.num_vars];
     for(int i = 0; i < e.num_vars; ++i) {
-        vname[i] = new char[10];
+        vname[i] = new char[20];
     }
     error = GRBloadenv(&env, "storage_optimizer.log");
     if (error) goto QUIT;
@@ -120,20 +214,11 @@ int Solver::solve_nov(QueryWorkload * workload)
 
 
     /* Add variables */
-/*
-  x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
-  y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
-  z_a1_p1_q1 z_a1_p1_q2 
-  z_a1_p2_q1 z_a1_p2_q2 
-  z_a2_p1_q1 z_a2_p1_q2 
-  z_a2_p2_q1 z_a2_p2_q2  
-  u_p1 u_p2 
-*/
-
     for (int i = 0; i < e.num_vars; ++i) {
         vtype[i] = GRB_BINARY;
     }
 
+    /* objective coefficients for each of the variables */
     for (int a = 0; a < e.A; ++a) {
         for (int p = 0; p < e.P; ++p) {
             obj[x(&e,a,p)] = 0;
@@ -159,76 +244,8 @@ int Solver::solve_nov(QueryWorkload * workload)
         obj[u(&e,p)] = 0;
     }
 
-
-    for (int a = 0; a < e.A; ++a) {
-        for (int p = 0; p < e.P; ++p) {
-            sprintf(vname[j], "x_a%d_p%d", a+1, p+1);
-            j++;
-        }
-    }
-
-    for (int p = 0; p < e.P; ++p) {
-        for (int q = 0; q < e.Q; ++q) {
-            sprintf(vname[j], "y_p%d_q%d", p+1, q+1);
-            j++;
-        }
-    }
-
-    for (int a = 0; a < e.A; ++a) {
-        for (int p = 0; p < e.P; ++p) {
-            for (int q = 0; q < e.Q; ++q) {
-                sprintf(vname[j], "z_a%d_p%d_q%d", a+1, p+1, q+1);
-                j++;
-            }
-        }
-    }
-
-    for (int p = 0; p < e.P; ++p) {
-        sprintf(vname[j], "u_p%d", p+1);
-        j++;
-    }
-
-    cout << "----" << endl;
-    cout << "printing xs" << endl;
-    for (int a = 0; a < e.A; ++a) {
-        for (int p = 0; p < e.P; ++p) {
-            cout << vname[x(&e,a,p)] << endl;
-        }
-    }
-    cout << "----" << endl;
-
-    cout << "----" << endl;
-    cout << "printing ys" << endl;
-
-    for (int p = 0; p < e.P; ++p) {
-        for (int q = 0; q < e.Q; ++q) {
-            cout << vname[y(&e,p,q)] << endl;
-        }
-    }
-    cout << "----" << endl;
-
-
-    cout << "----" << endl;
-    cout << "printing zs" << endl;
-    for (int a = 0; a < e.A; ++a) {
-        for (int p = 0; p < e.P; ++p) {
-            for (int q = 0; q < e.Q; ++q) {
-                cout << vname[z(&e,a,p,q)] << endl;
-                
-            }
-        }
-    }
-    cout << "----" << endl;
-
-    cout << "----" << endl;
-    cout << "printing us" << endl;
-    
-    for (int p = 0; p < e.P; ++p) {
-        cout << vname[u(&e,p)] << endl;
-    }
-
-    cout << "----" << endl;
-
+    /* give variables meaningful names */
+    name_variables(&e, vname);
 
     error = GRBaddvars(model, e.num_vars, 0, NULL, NULL, NULL, obj, NULL, NULL, vtype,
                        vname /*NULL*/);
@@ -245,52 +262,115 @@ int Solver::solve_nov(QueryWorkload * workload)
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
 
-
-    int t;
     /* First set of constraints */    
     for (int a = 0; a < e.A; ++a) {
-        cout << "****" << endl;
         j = 0;
         for (int p = 0; p < e.P; ++p) {
-            t = x(&e,a,p);
-            cout << a << " " << p  << " " << t << endl;
-            ind[j] = t;
-            cout << vname[t] << endl;
+            ind[j] = x(&e,a,p);
             val[j] = 1.0;
             j++;
         }
-        cout << "****" << endl;
         error = GRBaddconstr(model, e.P, ind, val, GRB_EQUAL, 1.0, NULL);
         if (error) goto QUIT;
     }
 
+    /* Second set of constraints */    
+    for (int p = 0; p < e.P; ++p) {
+        for (int q = 0; q < e.Q; ++q) {
+            j = 0;
+            for (int a = 0; a < e.A; ++a) {
+                ind[j] = x(&e,a,p);
+                val[j] = accesses(queries,q,a);
+                j++;
+            }
+            ind[j] = y(&e,p,q);
+            val[j] = -1.0;
+            error = GRBaddconstr(model, e.A + 1, ind, val, GRB_GREATER_EQUAL, 0.0, NULL);
+            if (error) goto QUIT;
+        }
+    }
+
+
+    /* Second set of constraints */    
+    for (int p = 0; p < e.P; ++p) {
+        for (int q = 0; q < e.Q; ++q) {
+            j = 0;
+            ind[j] = y(&e,p,q);
+            val[j] = K();
+            j++;
+            for (int a = 0; a < e.A; ++a) {
+                ind[j] = x(&e,a,p);
+                val[j] = -(accesses(queries,q,a));
+                j++;
+            }
+            error = GRBaddconstr(model, e.A + 1, ind, val, GRB_GREATER_EQUAL, 0.0, NULL);
+            if (error) goto QUIT;
+        }
+    }
+
+    /* Third set of constraints */    
+    for (int a = 0; a < e.A; ++a) {
+        for (int p = 0; p < e.P; ++p) {
+            for (int q = 0; q < e.Q; ++q) {
+                ind[0] = z(&e,a,p,q);
+                val[0] = 1.0;
+                ind[1] = x(&e,a,p);
+                val[1] = -1.0;
+                ind[2] = y(&e,p,q);
+                val[2] = -1.0;
+                error = GRBaddconstr(model, 3, ind, val, GRB_GREATER_EQUAL, -1.0, NULL);
+                if (error) goto QUIT;                
+            }
+        }
+    }
+    
+    /* Fourth set of constraints */    
+    for (int p = 0; p < e.P; ++p) {
+        j = 0;
+        for (int a = 0; a < e.A; ++a) {
+            ind[j] = x(&e,a,p);
+            val[j] = 1.0;
+            j++;
+        }
+        ind[j] = u(&e,p);
+        val[j] = -1.0;
+        error = GRBaddconstr(model, e.A+1, ind, val, GRB_GREATER_EQUAL, 0.0, NULL);
+        if (error) goto QUIT;
+
+    }
+
+    /* Fifth set of constraints */    
+    for (int p = 0; p < e.P; ++p) {
+        j = 0;
+        ind[j] = u(&e,p);
+        val[j] = K();
+        j++;
+        for (int a = 0; a < e.A; ++a) {
+            ind[j] = x(&e,a,p);
+            val[j] = -1.0;
+            j++;
+        }       
+        error = GRBaddconstr(model, e.A+1, ind, val, GRB_GREATER_EQUAL, 0.0, NULL);
+        if (error) goto QUIT;    
+    }
+
+    /* Sixth set of constraints */    
+    j = 0;
+    for (int p = 0; p < e.P; ++p) {
+        ind[j] = u(&e,p);
+        val[j] = -1.0;
+    }
+    error = GRBaddconstr(model, e.P, ind, val, GRB_LESS_EQUAL, alpha(), NULL);
+    if (error) goto QUIT;
 
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
-
 
     error = GRBwrite(model, "temp.lp");
     if (error) goto QUIT;
 
     if (1<2)
         goto QUIT;
-
-
-    /* First constraint: x + 2 y + 3 z <= 4 */
-
-    ind[0] = 0; ind[1] = 1; ind[2] = 2;
-    val[0] = 1; val[1] = 2; val[2] = 3;
-
-    error = GRBaddconstr(model, 3, ind, val, GRB_LESS_EQUAL, 4.0, "c0");
-    if (error) goto QUIT;
-
-    /* Second constraint: x + y >= 1 */
-
-    ind[0] = 0; ind[1] = 1;
-    val[0] = 1; val[1] = 1;
-
-    error = GRBaddconstr(model, 2, ind, val, GRB_GREATER_EQUAL, 1.0, "c1");
-    if (error) goto QUIT;
 
     /* Optimize model */
 
