@@ -2,6 +2,7 @@
 
 #include <intergdb/common/QueryWorkload.h>
 
+
 using namespace intergdb::common;
 
 #define EDGE_ID_SIZE 8
@@ -9,16 +10,8 @@ using namespace intergdb::common;
 #define HEAD_VERTEX_SIZE 8
 #define NUM_ENTRIES 4 
 
-typedef struct var_env {
-    int num_vars;
-    int x_offset;
-    int y_offset;
-    int z_offset;
-    int u_offset;
-    int A;
-    int P;
-    int Q;
-} var_env;
+struct var_env;
+struct gurobi_ctx;
 
 class Solver
 {
@@ -39,8 +32,8 @@ private:
     double alpha();
     int accesses(std::vector<Query> const & queries, int q, int a);   
     void name_variables(var_env *e, char** vname);
-
-
+    void create_env(var_env *e, QueryWorkload * workload);
+    void init_ctx(var_env *e, gurobi_ctx* ctx);
 };
 
 
