@@ -40,7 +40,7 @@ int main()
 
     cerr << workload.toString() << endl;
 
-    s.solve_nov(&workload);
+    s.solve(&workload, 0);
     return 0;    
 }
  

@@ -1,0 +1,71 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: main.aux
+The style file: abbrv.bst
+Database file #1: main.bib
+Warning--string name "eurosys12" is undefined
+--line 3086 of file main.bib
+Warning--string name "osdi12" is undefined
+--line 5363 of file main.bib
+Warning--string name "sigmod10" is undefined
+--line 8162 of file main.bib
+Warning--string name "usenix12" is undefined
+--line 9944 of file main.bib
+Warning--string name "sosp13" is undefined
+--line 10548 of file main.bib
+Warning--string name "ssdbm13" is undefined
+--line 10635 of file main.bib
+Warning--string name "sigmod13" is undefined
+--line 11066 of file main.bib
+Warning--string name "sigmod12" is undefined
+--line 12241 of file main.bib
+Warning--empty booktitle in cheng12
+Warning--empty booktitle in gonzalez12
+Warning--empty booktitle in malewicz10
+Warning--empty booktitle in prabhakaran12
+Warning--empty booktitle in roy13
+Warning--empty booktitle in salihoglu13
+Warning--empty booktitle in shao13
+Warning--empty booktitle in venkataramani12
+You've used 15 entries,
+            2118 wiz_defined-function locations,
+            1497 strings with 33694 characters,
+and the built_in function-call counts, 6062 in all, are:
+= -- 561
+> -- 342
+< -- 8
++ -- 137
+- -- 122
+* -- 415
+:= -- 924
+add.period$ -- 41
+call.type$ -- 15
+change.case$ -- 110
+chr.to.int$ -- 0
+cite$ -- 23
+duplicate$ -- 227
+empty$ -- 463
+format.name$ -- 122
+if$ -- 1303
+int.to.chr$ -- 0
+int.to.str$ -- 15
+missing$ -- 11
+newline$ -- 74
+num.names$ -- 22
+pop$ -- 154
+preamble$ -- 1
+purify$ -- 95
+quote$ -- 0
+skip$ -- 201
+stack$ -- 0
+substring$ -- 317
+swap$ -- 76
+text.length$ -- 8
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 60
+warning$ -- 8
+while$ -- 48
+width$ -- 17
+write$ -- 142
+(There were 16 warnings)

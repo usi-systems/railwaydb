@@ -17,8 +17,7 @@ class Solver
 {
 public:
     Solver() {}
-    int solve_nov(QueryWorkload * workload);
-    int solve_ov(QueryWorkload * workload);
+    int solve(QueryWorkload * workload, int option);
 
 private:
     int x(var_env *e, int a, int p);
@@ -34,6 +33,12 @@ private:
     void name_variables(var_env *e, char** vname);
     void create_env(var_env *e, QueryWorkload * workload);
     void init_ctx(var_env *e, gurobi_ctx* ctx);
+    void variables(var_env *e, gurobi_ctx *ctx);   
+    void objective(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload);
+    int nov_constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload);
+    int ov_constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload);
+    int solve_model(var_env *e, gurobi_ctx *ctx);
+    void cleanup(var_env *e, gurobi_ctx *ctx);
 };
 
 
