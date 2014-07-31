@@ -56,6 +56,15 @@ int Solver::u(var_env *e, int p)
 {
     return (e->u_offset) + p;
 }
+int Solver::c_e()
+{
+    return 1;
+}
+
+int Solver::c_n()
+{
+    return 1;
+}
 
 double Solver::K()
 {
@@ -67,6 +76,14 @@ double Solver::alpha()
     return 3.78;
 }
 
+int Solver::s(std::vector<Attribute> const & attributes)
+{
+    int sum = 0;
+    for (auto & attribute : attributes) {
+        sum += attribute.getSize();
+    }
+    return sum;
+}
 
 int Solver::accesses(std::vector<Query> const & queries, int q, int a)
 {
@@ -166,7 +183,7 @@ int Solver::solve_nov(QueryWorkload * workload)
     GRBenv   *env   = NULL;
     GRBmodel *model = NULL;
     int       error = 0;
-    double    sol[3];
+    double    *sol;
     int       *ind = NULL;
     double    *val = NULL;
     double    *obj = NULL;
@@ -194,7 +211,7 @@ int Solver::solve_nov(QueryWorkload * workload)
     e.y_offset = e.P * e.Q ;
     e.z_offset = e.y_offset + e.A * e.Q;
     e.u_offset = e.z_offset + e.P * e.Q * e.A;
-
+    int sa = s(attributes);
 
     int j = 0;
 
@@ -202,6 +219,7 @@ int Solver::solve_nov(QueryWorkload * workload)
     vtype = new char[e.num_vars];
     ind = new int[e.num_vars];
     val = new double[e.num_vars];
+    sol = new double[e.num_vars];
     vname = new char*[e.num_vars];
     for(int i = 0; i < e.num_vars; ++i) {
         vname[i] = new char[20];
@@ -227,14 +245,14 @@ int Solver::solve_nov(QueryWorkload * workload)
     
     for (int p = 0; p < e.P; ++p) {
         for (int q = 0; q < e.Q; ++q) {
-            obj[y(&e,p,q)] = 28;
+            obj[y(&e,p,q)] = (EDGE_ID_SIZE + TIMESTAMP_SIZE) * c_e() + (HEAD_VERTEX_SIZE + NUM_ENTRIES) * c_n();
         }
     }
     
     for (int a = 0; a < e.A; ++a) {
         for (int p = 0; p < e.P; ++p) {
             for (int q = 0; q < e.Q; ++q) {
-                obj[z(&e,a,p,q)] = 8;
+                obj[z(&e,a,p,q)] = sa * c_e() ;
 
             }
         }
@@ -250,7 +268,6 @@ int Solver::solve_nov(QueryWorkload * workload)
     error = GRBaddvars(model, e.num_vars, 0, NULL, NULL, NULL, obj, NULL, NULL, vtype,
                        vname /*NULL*/);
     if (error) goto QUIT;
-
 
     for (int q = 0; q < e.num_vars; ++q) {
         cout << vname[q] << endl;
@@ -289,7 +306,6 @@ int Solver::solve_nov(QueryWorkload * workload)
             if (error) goto QUIT;
         }
     }
-
 
     /* Second set of constraints */    
     for (int p = 0; p < e.P; ++p) {
@@ -366,20 +382,13 @@ int Solver::solve_nov(QueryWorkload * workload)
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
 
-    error = GRBwrite(model, "temp.lp");
-    if (error) goto QUIT;
-
-    if (1<2)
-        goto QUIT;
-
     /* Optimize model */
-
     error = GRBoptimize(model);
     if (error) goto QUIT;
 
     /* Write model to 'mip1.lp' */
 
-    error = GRBwrite(model, "mip1.lp");
+    error = GRBwrite(model, "temp.lp");
     if (error) goto QUIT;
 
     /* Capture solution information */
@@ -390,18 +399,22 @@ int Solver::solve_nov(QueryWorkload * workload)
     error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
     if (error) goto QUIT;
 
-    error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, 3, sol);
+    error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, e.num_vars, sol);
     if (error) goto QUIT;
 
     printf("\nOptimization complete\n");
     if (optimstatus == GRB_OPTIMAL) {
-        printf("Optimal objective: %.4e\n", objval);
-
-        printf("  x=%.0f, y=%.0f, z=%.0f\n", sol[0], sol[1], sol[2]);
+        cout << "Optimal objective:" << objval << endl;
+        for (int a = 0; a < e.A; ++a) {
+            for (int p = 0; p < e.P; ++p) {
+                j = x(&e,a,p);
+                cout << vname[j] << " " << sol[j] << endl;
+            }
+        }
     } else if (optimstatus == GRB_INF_OR_UNBD) {
-        printf("Model is infeasible or unbounded\n");
+        cout << "Model is infeasible or unbounded" << endl;
     } else {
-        printf("Optimization was stopped early\n");
+        cout << "Optimization was stopped early" << endl;
     }
 
 QUIT:
@@ -416,8 +429,7 @@ QUIT:
     if (vtype) delete [] vtype;
     if (ind) delete [] ind;
     if (val) delete [] val;
-
-
+    if (sol) delete [] sol; 
 
     /* Error reporting */
 
