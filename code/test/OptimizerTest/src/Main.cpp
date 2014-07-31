@@ -12,10 +12,10 @@ using namespace std;
 using namespace intergdb::common;
 
 
-void createWorkLoad(QueryWorkload * workload)
+// nov-ex1.lp 
+void nov_ex1(QueryWorkload * workload)
 {
-
-    for (size_t i=0, iu=4; i<iu; ++i)  { 
+    for (size_t i=0, iu=2; i<iu; ++i)  { 
         workload->addAttribute(Attribute(i, 8));    
     }
     auto const & attributes = workload->getAttributes();
@@ -29,7 +29,6 @@ void createWorkLoad(QueryWorkload * workload)
     }
 }
 
-
 int main()
 {
     cerr << "This is a test program for the solver." << endl;
@@ -37,11 +36,11 @@ int main()
     QueryWorkload workload; 
     Solver s;
 
-    createWorkLoad(&workload);
+    nov_ex1(&workload);
 
     cerr << workload.toString() << endl;
 
-    s.solve(&workload);
+    s.solve_nov(&workload);
     return 0;    
 }
  
