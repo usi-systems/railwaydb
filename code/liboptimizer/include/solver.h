@@ -27,6 +27,12 @@ private:
     int y(var_env *e, int p, int q);
     int z(var_env *e, int a, int p, int q);
     int u(var_env *e, int p);
+    double K();
+    double alpha();
+    int accesses(std::vector<Query> const & queries, int q, int a);   
+    void name_variables(var_env *e, char** vname);
+
+
 };
 
 
