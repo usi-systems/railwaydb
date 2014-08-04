@@ -16,6 +16,8 @@
 #include <solver.h>
 #include <iostream>
 
+#include <intergdb/common/SystemConstants.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -197,8 +199,8 @@ void Solver::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload)
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             ctx->obj[y(e,p,q)] 
-                = (EDGE_ID_SIZE + TIMESTAMP_SIZE) * c_e() 
-                + (HEAD_VERTEX_SIZE + NUM_ENTRIES) * c_n();
+                = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
+                + (SystemConstants::headVertexSize + SystemConstants::numEntries) * c_n();
         }
     }
     
