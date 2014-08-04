@@ -5,10 +5,6 @@
 
 using namespace intergdb::common;
 
-#define EDGE_ID_SIZE 8
-#define TIMESTAMP_SIZE 8
-#define HEAD_VERTEX_SIZE 8
-#define NUM_ENTRIES 4 
 
 struct var_env;
 struct gurobi_ctx;
@@ -39,6 +35,7 @@ private:
     int ov_constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload);
     int solve_model(var_env *e, gurobi_ctx *ctx);
     void cleanup(var_env *e, gurobi_ctx *ctx);
+
 };
 
 
