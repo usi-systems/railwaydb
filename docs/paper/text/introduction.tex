@@ -1,4 +1,60 @@
 \section{Introduction}
+
+Query workload and disk layout have a significant impact on database
+performance.  For table-based, relational databases, this fact has led database
+designers to develop alternative approaches for storage layout: row-oriented
+storage is more efficient when queries access many attributes from a small
+number of records, and column-oriented storage is more efficient when queries
+access a small number of attributes from many records.  
+
+Recently, there has been increased interest in graph databases in general, and
+\emph{interaction graph} databases in particular.  An \emph{interaction graph}
+is an append-only graph, where new edges and vertices are added as time
+progresses.  Thus, interaction graph encode the relationships over time between
+entities in their structure, making them ideal for use in social networking,
+telecommunications, or modeling the world-wide web.
+
+Unfortunately, although interaction graph databases, like relational databases,
+are the target of diverse query workloads, there is no clear correspondence to a
+row-oriented or column-oriented storage layout.
+Typical interaction graphs have data (i.e., \emph{attributes} ) associated with
+their vertices and edges. Most algorithms access this data as they traverse the
+graph.
+
+
+In an interaction graph database organized as blocks of temporal neighbor lists
+(as in Gedik et al.~\cite{gedik14}), it is important to store the edge and
+vertex attributes locally. For  instance, if the edge properties were kept separately
+in a relational table, there will be almost no benefit to the locality
+optimizations performed for block organization (discussed in Gedik et
+al.~\cite{gedik14}, as we would have to go back and forth between the disk
+blocks to access the edge attributes).%
+
+
+On the other hand, putting all the edge attributes into the disk blocks
+containing the graph structure is expected to cause significant overhead when
+only a few of these attributes are read. This is somewhat similar to the 
+
+% However, not all of the data is
+% accessed by all the queries. Typically, there are correlations among the
+% attributes accessed by different queries, such as Q1 and Q5 accessing
+% attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and so on.%
+
+
+
+
+Typically, a graph database stores entities as vertices,
+relationships as edges, and additional information in labels that may be
+associated with either vertices or edges.
+
+
+
+
+They store entities as vertices,
+relationships as edges, and additional information in labels that may be
+associated with either vertices or edges. 
+
+
 An \emph{interaction graph} is an append-only graph, where new edges and
 vertices are added as time progresses.%
 
@@ -9,13 +65,13 @@ accessed by all the queries. Typically, there are correlations among the
 attributes accessed by different queries, such as Q1 and Q5 accessing
 attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and so on.%
 
-In an interaction graph database organized as blocks of temporal neighborlists
-(as in Gedik et al.~\cite{gedik14}), it is important to store the edge and
-vertex properties locally. For  instance, if the edge properties are kept away
-in a relational table, there will be almost no benefit to the locality
-optimizations performed for block organization (discussed in Gedik et
-al.~\cite{gedik14}, as we would have to go back and forth between the disk
-blocks to access the edge attributes).%
+% In an interaction graph database organized as blocks of temporal neighbor lists
+% (as in Gedik et al.~\cite{gedik14}), it is important to store the edge and
+% vertex properties locally. For  instance, if the edge properties are kept away
+% in a relational table, there will be almost no benefit to the locality
+% optimizations performed for block organization (discussed in Gedik et
+% al.~\cite{gedik14}, as we would have to go back and forth between the disk
+% blocks to access the edge attributes).%
 
 On the other hand, putting all the edge attributes into the disk blocks
 containing the graph structure is expected to cause significant overhead when
