@@ -12,36 +12,25 @@
 
 \title{Adaptive Disk Storage for Interaction Graphs}
 
-\numberofauthors{2} %  in this sample file, there are a *total*
-% of EIGHT authors. SIX appear on the 'first-page' (for formatting
-% reasons) and the remaining two appear in the \additionalauthors section.
-%
+\numberofauthors{2}
+
 \author{
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
-% The command \alignauthor (no curly braces needed) should
-% precede each author name, affiliation/snail-mail address and
-% e-mail address. Additionally, tag each line of
-% affiliation/address with \affaddr, and tag the
-% e-mail address with \email.
-%
 % 1st. author
 \alignauthor
 Robert Soul\'{e}\\
        \affaddr{University of Lugano}\\
-       \affaddr{1932 Wallamaloo Lane}\\
-       \affaddr{Wallamaloo, New Zealand}\\
+       \affaddr{Faculty of Informatics}\\
+       \affaddr{Lugano 6904, Switzerland}\\
        \email{robert.soule@usi.ch}
 % 2nd. author
 \alignauthor
 Bu\u{g}ra Gedik\\
        \affaddr{Bilkent University}\\
-       \affaddr{P.O. Box 1212}\\
-       \affaddr{Dublin, Ohio 43017-6221}\\
+       \affaddr{Department of Computer Engineering}\\
+       \affaddr{Bilkent, Ankara 06800, Turkey}
        \email{bgedik@cs.bilkent.edu.tr}
 }
+
 
 \maketitle
 \begin{abstract}
@@ -59,101 +48,63 @@ TODO
 
 \section{Introduction}
 
-Query workload and disk layout have a significant impact on database
-performance.  For table-based, relational databases, this fact has led database
-designers to develop alternative approaches for storage layout: row-oriented
-storage is more efficient when queries access many attributes from a small
-number of records, and column-oriented storage is more efficient when queries
-access a small number of attributes from many records.  
 
-Recently, there has been increased interest in graph databases in general, and
-\emph{interaction graph} databases in particular.  An \emph{interaction graph}
-is an append-only graph, where new edges and vertices are added as time
-progresses.  Thus, interaction graph encode the relationships over time between
-entities in their structure, making them ideal for use in social networking,
-telecommunications, or modeling the world-wide web.
+Graph databases, and \emph{interaction graph} databases in
+particular, are a critical component for many of today's most popular
+applications.  Graph databases store entities as vertices, relationships as
+edges, and have data associated with either vertices or edges, called
+\emph{attributes} or \emph{properties}.  Interaction graphs differ from general
+graphs in that they are \emph{append-only}, and edges are assigned a
+\emph{temporal value}.  Thus, interaction graphs encode the relationships over
+time between entities in their structure, making them ideal for use in social
+networking, telecommunications, or modeling the world-wide web.
 
-Unfortunately, although interaction graph databases, like relational databases,
-are the target of diverse query workloads, there is no clear correspondence to a
-row-oriented or column-oriented storage layout.
-Typical interaction graphs have data (i.e., \emph{attributes} ) associated with
-their vertices and edges. Most algorithms access this data as they traverse the
-graph.
+To query an interaction graph, most algorithms traverse the graph structure to
+access the relevant attributes.  Frequently, there are correlations among the
+attributes accessed by different queries. For example, queries $q_1$ and $q_5$
+might access attributes $a_1$ and $a_2$, while queries $q_2$, $q_3$ and $q_4$
+access attributes $a_3$ and $a_4$. Because interaction graphs are temporal, the
+co-access correlations for the attributes can vary for different
+temporal regions.  Moreover, the co-access correlations might be unknown at the
+insertion time, but be discovered later, when the workload is known.
 
+It is widely recognized that query workload and disk layout have a significant
+impact on database performance~\cite{alagiannis14,grund10,stonebraker05}.  For
+table-based, relational databases, this fact has led database designers to
+develop alternative approaches for storage layout: row-oriented storage is more
+efficient when queries access many attributes from a small number of records,
+and column-oriented storage is more efficient when queries access a small number
+of attributes from many records~\cite{stonebraker05}.  Unfortunately, although
+interaction graph databases, like relational databases, are the target of
+diverse query workloads, there is no clear correspondence to a row-oriented or
+column-oriented storage layout.
 
-In an interaction graph database organized as blocks of temporal neighbor lists
-(as in Gedik et al.~\cite{gedik14}), it is important to store the edge and
-vertex attributes locally. For  instance, if the edge properties were kept separately
-in a relational table, there will be almost no benefit to the locality
-optimizations performed for block organization (discussed in Gedik et
-al.~\cite{gedik14}, as we would have to go back and forth between the disk
-blocks to access the edge attributes).%
+Typically, an interaction graph database is organized as blocks of temporal
+neighbor lists.  Attributes can be stored in two ways, either separately (e.g., in a relational
+table), or locally with the temporal neighbor lists.  If they are stored
+separately, then the graph database cannot take advantage of locality
+optimizations performed for block organization.  As discussed in Gedik et
+al.~\cite{gedik14}, the database must go back and forth between the disk blocks
+to access the edge attributes.  On the other hand, if attributes are stored
+locally in the disk blocks containing the graph structure, then there can be
+significant overhead due to disk I/O if only a few attributes are needed to
+answer a query.
 
-
-On the other hand, putting all the edge attributes into the disk blocks
-containing the graph structure is expected to cause significant overhead when
-only a few of these attributes are read. This is somewhat similar to the 
-
-% However, not all of the data is
-% accessed by all the queries. Typically, there are correlations among the
-% attributes accessed by different queries, such as Q1 and Q5 accessing
-% attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and so on.%
-
-
-
-
-Typically, a graph database stores entities as vertices,
-relationships as edges, and additional information in labels that may be
-associated with either vertices or edges.
-
-
-
-
-They store entities as vertices,
-relationships as edges, and additional information in labels that may be
-associated with either vertices or edges. 
-
-
-An \emph{interaction graph} is an append-only graph, where new edges and
-vertices are added as time progresses.%
-
-Typical interaction graphs have data associated with their vertices and edges.
-We call this data \emph{attributes} or \emph{properties}. Most algorithms
-access this data as they traverse the graph. However, not all of the data is
-accessed by all the queries. Typically, there are correlations among the
-attributes accessed by different queries, such as Q1 and Q5 accessing
-attributes a and b, and Q2, Q3, Q4 accessing attributes c and d, and so on.%
-
-% In an interaction graph database organized as blocks of temporal neighbor lists
-% (as in Gedik et al.~\cite{gedik14}), it is important to store the edge and
-% vertex properties locally. For  instance, if the edge properties are kept away
-% in a relational table, there will be almost no benefit to the locality
-% optimizations performed for block organization (discussed in Gedik et
-% al.~\cite{gedik14}, as we would have to go back and forth between the disk
-% blocks to access the edge attributes).%
-
-On the other hand, putting all the edge attributes into the disk blocks
-containing the graph structure is expected to cause significant overhead when
-only a few of these attributes are read. This is somewhat similar to the 
-problem with row-oriented databases, where the entire row needs to be accessed
-from the disk despite the query needing only a small fraction of it.
-Unfortunately, there is no clear correspondence to a column-oriented database
-layout for the graph databases.%
-
-An important characteristic of interaction graphs are that they are temporal.
-As such, the co-access correlations for the attributes can be different for
-different temporal regions. It might also be unknown at the insertion time and
-may be discovered later depending on the workload. This points to the need for
-adaptively optimizing the layout (somewhat similar to H2O \cite{alagiannis14}
-and HYRISE~\cite{grund10}).%
-
-I imagine a solution to this problem, which I name the `rail layout'. The idea
-is to start with large blocks that contain the entire data. As we learn about
-the access properties for different time regions, we might start splitting
-such blocks into smaller blocks that run parallel to each other, almost like
+This paper presents an algorithm for adaptively optimizing disk block storage
+for interaction graphs. The key idea behind the approach is a novel storage
+scheme, called a \emph{rail layout}.  Initially, attributes are stored with
+their neighbor lists in large blocks. Over time, the blocks are split into
+smaller-blocks that contain the neighbor lists, but only subsets of the
+attributes, depending on the query workload. Intuitively, this is almost like
 having two or more graph databases for certain time regions, each containing a
- different subset of the attributes, but with a link between them in case a
-query needs to access both.
+different subset of the attributes, but with a link between them in case a query
+needs to access both.
+
+% This points to the need for
+% adaptively optimizing the layout (somewhat similar to H2O \cite{alagiannis14}
+% and HYRISE~\cite{grund10}).%
+
+
 
 
 \section{Problem Description}
@@ -418,40 +369,6 @@ following linear constraint:
 The final ILP formulation for the non-overlapping partitioning is given in
 Figure~\ref{fig:nov-ilp}.
 
-\subsubsection{Heuristic Solution}
-
-\paragraph*{Approach.$\,$}
-TODO
-
-\begin{algorithm}[ht]
-\scriptsize
-\caption{Algorithm for partitioning blocks into sub-blocks with non-overlapping attributes.}
-\label{alg:overlappingP}
-\KwData{$B$: block, $Q$: set of queries}
-$c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
-\For(\tcp*[f]{For each possible \# of partitions}){$k=1$ to $|A|$}{
-   $R[i]\leftarrow \emptyset, \forall i\in [1..k]$ \tcp*{Initialize partitions}
-   \For(\tcp*[f]{For each attribute}){$a \in A$\textnormal{, in decr.\/ order of }$f(a)$}{
-      $c\leftarrow \infty$ \tcp*{Lowest cost over all assignments}  
-      $j\leftarrow -1$ \tcp*{Best partition assignment}
-      \For(\tcp*[f]{For each partition assignment}){$i\in [1..k]$} {
-         $R[i]\leftarrow R[i] \cup \{a\}$\tcp*{Assign attribute}
-         \If(\tcp*[f]{If query cost is lower}){$L(R, B, Q)<c$}{
-            $c\leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
-            $j\leftarrow i$\tcp*{Update the best partition}
-         }
-         $R[i]\leftarrow R[i] \setminus \{a\}$\tcp*{Un-assign attribute}
-      }
-      $R[j]\leftarrow R[j] \cup \{a\}$\tcp*{Assign to best partition}
-   }
-   \tcp{If solution is feasable and has lower cost}
-   \If{$H(R, B, Q)\geq\alpha \wedge L(R, B, Q)<c^*$}{
-      $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
-      $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
-   }
-}
-\Return $\mathcal{P}(B)$ \tcp*{Final set of sub-blocks}
-\end{algorithm} 
 
 \subsection{Overlapping Attributes}
 
@@ -558,90 +475,14 @@ using base variables as in the objective function. Formally:
 The final ILP formulation for the overlapping partitioning is given in
 Figure~\ref{fig:ov-ilp}.
 
-\subsubsection{Heuristic Solution}
 
-\paragraph*{Approach.$\,$} We start the algorithm with a 
- partitioning based on what queries we have seen.
-Every query gets its own sub-block. This is the``ideal'' partitioning,
-because the I/O cost would be minimized for every query that we would
-have seen. As input to the algorithm, we provide a function $\dist$, which
-is used to compute the distance between two blocks.
-
-$$
-\dist: block \rightarrow block \rightarrow int
-$$
-
-Note that the $\dist$ function can be chosen arbitrarily.  Examples of useful
-$\dist$ functions are the frequencies with which the queries are accessed, or the Jaccard index, which measures the set-similarity of
-the attributes.
-
-Using this function, the algorithm iteratively combines the two partitions that
-are closest together. Algorithm~\ref{alg:closestBF} shows the pseudocode for a brute-force approach
-  to finding the closest paris that runs in $O(n^2)$ time. However, there is
-  also a divide-and-conquer algorithm~\cite{cormen01} for solving closest pair
-  of points problem in $O(n \log n)$.
-After each combination of partitions, the algorithm calculate the storage cost
-for the partitioning. The algorithm stops when the  storage cost is below some
-specified threshold.  The result is the block partitioning.
-
-
-
-\begin{algorithm}[ht]
-\SetKwFunction{closestPair}{closestPair}
-\scriptsize
-\caption{Algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
-\label{alg:closestPair}
-\KwData{$B$: block, $Q$: set of queries}
-$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
-
-\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
- $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
-}
-
-\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
-  \text{max}$}{
-$\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
- $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - \{x, y\}$ \;
-  $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  \cup \{ x \cup y \}$ \;
-}
-\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
-\end{algorithm} 
-
-
-
- \begin{algorithm}[ht]
-\SetKwFunction{length}{length}
-\SetKwFunction{dist}{dist}
- \scriptsize
- \caption{Brute-force algorithm for closest points in $O(n^2)$.}
- \label{alg:closestBF}
-$minDist  \gets \infty $ \;
-\For{$i \gets 1$ \textbf{to} $\length(P)-1$} {
-\For{$j \gets i+ 1$ \textbf{to} $\length(P)$} {
-
-  $p \gets P[i]$ \;
-  $q \gets P[j]$ \;
-  \If{$\dist(p,q) < minDist$} {
-    $minDist \gets \dist(p,q)$\;
-    $closestPair \gets (p,q)$\;
-  }
-}
-}
-\Return $closestPair$
-% \KwData{$B$: block, $Q$: set of queries}
-% $\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
-% \For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
-%  $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
-% }
-% \While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
-%   \text{max}$}{
-% $\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
-%  $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
-%   $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
-% \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
- \end{algorithm} 
-
+\section{Evaluation}
 \section{Related Work}
+
+\begin{alltt}\scriptsize
+- H2O \cite{alagiannis14}
+- HYRISE~\cite{grund10}).%
+\end{alltt}
 \section{Conclusion}
 
 
