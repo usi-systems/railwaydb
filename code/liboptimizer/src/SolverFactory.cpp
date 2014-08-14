@@ -2,7 +2,10 @@
 #include <SolverFactory.h>
 #include <OptimalOverlapping.h>
 #include <OptimalNonOverlapping.h>
-
+#include <SinglePartition.h>
+#include <PartitionPerAttribute.h>
+#include <HeuristicOverlapping.h>
+#include <HeuristicNonOverlapping.h>
 
 SolverFactory* SolverFactory::factory_ = NULL;
 
@@ -26,22 +29,22 @@ Solver * SolverFactory::makeOptimalNonOverlapping()
 
 Solver * SolverFactory::makeHeuristicOverlapping()
 {
-    return NULL;
+    return new HeuristicOverlapping();
 }
 
 Solver * SolverFactory:: makeHeuristicNonOverlapping()
 {
-    return NULL;
+    return new HeuristicNonOverlapping();
 }
 
 Solver * SolverFactory::makeSinglePartition()
 {
-    return NULL;
+    return new SinglePartition();
 }
 
 Solver * SolverFactory::makePartitionPerAttribute()
 {
-    return NULL;
+    return new PartitionPerAttribute();
 }
 
 
