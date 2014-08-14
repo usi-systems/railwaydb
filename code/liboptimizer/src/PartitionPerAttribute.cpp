@@ -10,6 +10,13 @@ using namespace std;
 
 Partitioning * PartitionPerAttribute::solve(QueryWorkload * workload) 
 {
-    assert(false);
-    return NULL;
+    Partitioning * partitioning = new Partitioning();
+    Partition * partition;
+    for (auto & attribute : workload->getAttributes()) {
+        partition = new Partition();
+        partition->addAttribute(&attribute);
+        partitioning->addPartition(partition);
+    }  
+    return partitioning;
 }
+   
