@@ -8,8 +8,8 @@
 
 using namespace std;
 
-int HeuristicOverlapping::solve(QueryWorkload * workload, Partitioning * partitioning) 
+Partitioning * HeuristicOverlapping::solve(QueryWorkload * workload) 
 {
     assert(false);
-    return 0;
+    return NULL;
 }

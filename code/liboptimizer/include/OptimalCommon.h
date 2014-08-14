@@ -43,7 +43,7 @@ class OptimalCommon : public Solver
 public:
     OptimalCommon() {}
     virtual ~OptimalCommon() {}
-    int solve(QueryWorkload * workload, Partitioning * partitioning);
+    Partitioning * solve(QueryWorkload * workload);
 
 protected:
     virtual int constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload) = 0;   

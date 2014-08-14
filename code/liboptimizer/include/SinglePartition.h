@@ -12,7 +12,7 @@ class SinglePartition : public Solver
 public:
     SinglePartition() { }
     ~SinglePartition() { }
-    int solve(QueryWorkload * workload, Partitioning * partitioning);
+    Partitioning * solve(QueryWorkload * workload);
 };
 
 
