@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <solver.h>
+#include <Solver.h>
 #include <iostream>
 
 #include <intergdb/common/SystemConstants.h>
