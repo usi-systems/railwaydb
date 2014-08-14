@@ -6,7 +6,7 @@
 #include <intergdb/common/QueryWorkload.h>
 #include <intergdb/common/Query.h>
 
-#include <solver.h>
+#include <Solver.h>
 
 using namespace std;
 using namespace intergdb::common;
