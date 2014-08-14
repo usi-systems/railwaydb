@@ -236,7 +236,7 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 }
 
 
-int OptimalCommon::solve(QueryWorkload * workload, Partitioning * partitioning) 
+Partitioning * OptimalCommon::solve(QueryWorkload * workload)
 {
     int error = 0;
     gurobi_ctx ctx;
@@ -281,6 +281,6 @@ QUIT:
     }
 
     cleanup(&e, &ctx);
-    return 0;
+    return NULL;
 }
 

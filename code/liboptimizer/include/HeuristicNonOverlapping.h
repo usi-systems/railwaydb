@@ -12,7 +12,7 @@ class HeuristicNonOverlapping : public Solver
 public:
     HeuristicNonOverlapping() { }
     ~HeuristicNonOverlapping() { }
-    int solve(QueryWorkload * workload, Partitioning * partitioning);
+    Partitioning * solve(QueryWorkload * workload);
 };
 
 

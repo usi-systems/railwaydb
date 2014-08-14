@@ -12,7 +12,7 @@ class PartitionPerAttribute : public Solver
 public:
     PartitionPerAttribute() { }
     ~PartitionPerAttribute() { }
-    int solve(QueryWorkload * workload, Partitioning * partitioning);
+    Partitioning * solve(QueryWorkload * workload);
 };
 
 

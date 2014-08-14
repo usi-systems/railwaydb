@@ -8,8 +8,8 @@
 
 using namespace std;
 
-int SinglePartition::solve(QueryWorkload * workload, Partitioning * partitioning) 
+Partitioning * SinglePartition::solve(QueryWorkload * workload) 
 {
     assert(false);
-    return 0;
+    return NULL;
 }

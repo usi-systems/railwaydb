@@ -9,7 +9,7 @@ class Solver
 {
 public:
     virtual ~Solver() { }
-    virtual int solve(QueryWorkload * workload, Partitioning * partitioning) = 0;  
+    virtual Partitioning * solve(QueryWorkload * workload) = 0;  
 };
 
 

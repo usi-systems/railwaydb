@@ -36,16 +36,16 @@ int main()
     cerr << "This is a test program for the solver." << endl;
 
     QueryWorkload workload; 
-    Partitioning partitioning; 
 
-    Solver * s = SolverFactory::instance()->makeOptimalOverlapping();    
+    Solver * solver = SolverFactory::instance()->makeOptimalOverlapping();    
 
     nov_ex1(&workload);
 
     cerr << workload.toString() << endl;
 
-    s->solve(&workload, 0);
-    delete(s);
+    Partitioning * partitioning = solver->solve(&workload);
+    delete(solver);
+    delete(partitioning);
     return 0;    
 }
  
