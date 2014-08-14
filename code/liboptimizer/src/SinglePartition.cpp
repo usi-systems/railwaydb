@@ -10,6 +10,11 @@ using namespace std;
 
 Partitioning * SinglePartition::solve(QueryWorkload * workload) 
 {
-    assert(false);
-    return NULL;
+    Partition * partition = new Partition();
+    for (auto & attribute : workload->getAttributes()) {
+        partition->addAttribute(&attribute);
+    }
+    Partitioning * partitioning = new Partitioning();
+    partitioning->addPartition(partition);
+    return partitioning;
 }
