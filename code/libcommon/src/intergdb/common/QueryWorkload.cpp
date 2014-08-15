@@ -14,6 +14,8 @@ string Attribute::toString() const
 
 string Query::toString() const
 { 
+  if (attributes_.size()==0)
+    return "[attributes: ]";
   string str = "[attributes: " + to_string(attributes_[0]->getIndex());
   for (size_t i=1, iu=attributes_.size(); i<iu; ++i) 
     str += "," + to_string(attributes_[i]->getIndex());    
