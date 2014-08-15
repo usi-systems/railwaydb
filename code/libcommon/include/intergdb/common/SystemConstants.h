@@ -13,7 +13,11 @@ namespace intergdb { namespace common
       
       static const int headVertexSize = 8;
       
-      static const int numEntries = 4;
+      static const int numEntriesSize = 4;
+
+      static const int numberOfEdgesInABlock = 1; // TODO
+
+      static const int numberOfNeighborListsInABlock = 1; // TODO
       
       SystemConstants() = default;
   };
