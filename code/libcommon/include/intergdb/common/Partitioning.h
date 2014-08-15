@@ -15,6 +15,7 @@ public:
     partitions_.push_back(partition); 
   }
   std::vector<Partition> const & getPartitions() const { return partitions_; }
+  std::string toString() const;
 private:
   std::vector<Partition> partitions_;
 };
