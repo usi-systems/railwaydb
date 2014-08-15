@@ -63,7 +63,17 @@ double Cost::getPartitionSize(Partition const & partition)
 
 double Cost::getIOCost(Partitioning const & partitioning, QueryWorkload const & workload) 
 {
-  return 0.0;
+  double totalIOCost = 0.0;
+  auto const & queries = workload.getQueries();
+  auto const & attributes = workload.getAttributes();
+  for (Query const & query : queries) {
+    double partitionIOCost = 0.0;
+    vector<Partition const *> partitions = getUsedPartitions(partitioning, attributes, query);
+    for (Partition const * partition : partitions) 
+      partitionIOCost += getPartitionSize(*partition);
+    totalIOCost += query.getFrequency() * partitionIOCost;
+  }
+  return totalIOCost;
 }
 
 double Cost::getStorageOverhead(Partitioning const & partitioning, QueryWorkload const & workload)

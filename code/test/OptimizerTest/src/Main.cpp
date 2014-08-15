@@ -63,7 +63,7 @@ void nov_ex1_verify(Partitioning const & partitioning)
 void nov_ex2(QueryWorkload & workload, double & storageOverheadThreshold)
 {
     nov_ex1(workload, storageOverheadThreshold);
-    storageOverheadThreshold = 0.0;
+    storageOverheadThreshold = 0.1;
 }
 
 void nov_ex2_verify(Partitioning const & partitioning)
@@ -200,7 +200,7 @@ void ov_ex1_verify(Partitioning const & partitioning)
 void ov_ex2(QueryWorkload & workload, double & storageOverheadThreshold)
 {
     ov_ex1(workload, storageOverheadThreshold);
-    storageOverheadThreshold = 0.0;
+    storageOverheadThreshold = 0.1;
 }
 
 void ov_ex2_verify(Partitioning const & partitioning)
