@@ -304,7 +304,6 @@ QUIT:
         exit(1);
     }
 
-    cleanup(&e, &ctx);
     Partitioning partitioning;
     int j;
     for (int p = 0; p < e.P; ++p) {
@@ -319,6 +318,9 @@ QUIT:
             partitioning.addPartition(partition);
         }
     }
+    
+    cleanup(&e, &ctx);
+
     return partitioning;
 }
 
