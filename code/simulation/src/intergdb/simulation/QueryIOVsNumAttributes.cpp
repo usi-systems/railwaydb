@@ -64,7 +64,7 @@ void QueryIOVsNumAttributes::process()
       exp.addRecord();
       exp.setFieldValue("solver", solver->getClassName());
       exp.setFieldValue("attributes", workload.getAttributes().size());
-      exp.setFieldValue("io", cost.io(&partitioning, &workload));
+      exp.setFieldValue("io", cost.getIOCost(partitioning, workload));
   }
 
   exp.close();
