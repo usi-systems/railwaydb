@@ -68,5 +68,14 @@ double Cost::getIOCost(Partitioning const & partitioning, QueryWorkload const & 
 
 double Cost::getStorageOverhead(Partitioning const & partitioning, QueryWorkload const & workload)
 {
-  return 0.0;
+  auto const & attributes = workload.getAttributes();
+  Partition wholePartition;
+  for (Attribute const & attribute : attributes)
+    wholePartition.addAttribute(&attribute);
+  double blockSize = getPartitionSize(wholePartition);
+  double totalPartitionSize = 0.0;
+  for (Partition const & partition : partitioning.getPartitions())
+    totalPartitionSize += getPartitionSize(partition);
+  return totalPartitionSize/blockSize - 1.0;
 }
+
