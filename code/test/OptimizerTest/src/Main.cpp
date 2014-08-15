@@ -4,9 +4,11 @@
 #include <numeric>
 
 #include <intergdb/common/QueryWorkload.h>
+#include <intergdb/common/Partitioning.h>
 #include <intergdb/common/Query.h>
 
-#include <solver.h>
+#include <Solver.h>
+#include <SolverFactory.h>
 
 using namespace std;
 using namespace intergdb::common;
@@ -34,13 +36,16 @@ int main()
     cerr << "This is a test program for the solver." << endl;
 
     QueryWorkload workload; 
-    Solver s;
+
+    Solver * solver = SolverFactory::instance()->makeOptimalOverlapping();    
 
     nov_ex1(&workload);
 
     cerr << workload.toString() << endl;
 
-    s.solve_nov(&workload);
+    Partitioning * partitioning = solver->solve(&workload);
+    delete(solver);
+    delete(partitioning);
     return 0;    
 }
  

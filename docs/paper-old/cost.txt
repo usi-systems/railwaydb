@@ -1,5 +1,0 @@
-
-Q.A is the set of {q_0.A ... q_n.A}
-and we have associaged with each query, a frequency in the range of 0-1:
-
-F.A is {f_0.A ... q_n.A }
