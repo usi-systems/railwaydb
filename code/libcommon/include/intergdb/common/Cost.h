@@ -6,15 +6,12 @@
 namespace intergdb { namespace common
 {
 
-class Partitioning;
-class QueryWorkload;
-
 class Cost
 {
 public:
     Cost() {}
-    int io(Partitioning partitioning, QueryWorkload workload) ;
-    int storage(Partitioning partitioning, QueryWorkload workload);
+    double io(Partitioning * partitioning, QueryWorkload * workload) ;
+    double storage(Partitioning * partitioning, QueryWorkload * workload);
 };
 
 } }
