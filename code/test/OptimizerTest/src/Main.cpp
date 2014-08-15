@@ -235,10 +235,10 @@ bool test(TestFunct testFunc, VerifyFunct verifyFunc, Solver solver, string cons
     double storageOverheadThreshold;
     testFunc(workload, storageOverheadThreshold);
     cout << "Test started [" << testName << "]" << endl;
-    cout << "==Query workload==\n" << workload.toString() << endl;
+    cout << "==Query workload==\n" << workload.toString();
     cout << "==Storage overhead threshold==\n" << storageOverheadThreshold << endl;
     Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-    cout << "==Partitioning==\n" << partitioning.toString() << "\n"<< endl;
+    cout << "==Partitioning==\n" << partitioning.toString() << endl;
     try {
         verifyFunc(partitioning);
     } catch(runtime_error const & e) {
