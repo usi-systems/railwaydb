@@ -13,6 +13,7 @@ class HeuristicOverlapping : public Solver
 public:
     HeuristicOverlapping() { }
     ~HeuristicOverlapping() { }
+    std::string getClassName() { return "HeuristicOverlapping"; }
     intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
 };
 

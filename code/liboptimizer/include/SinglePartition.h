@@ -12,6 +12,7 @@ class SinglePartition : public Solver
 public:
     SinglePartition() { }
     ~SinglePartition() { } 
+    std::string getClassName() { return "SinglePartition"; }
     intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
 };
 
