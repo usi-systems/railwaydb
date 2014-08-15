@@ -56,7 +56,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
         }
     }
 
-    /* Second set of constraints */    
+    /* Third set of constraints */    
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             j = 0;
@@ -74,7 +74,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
         }
     }
 
-    /* Third set of constraints */    
+    /* Fourth set of constraints */    
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             for (int q = 0; q < e->Q; ++q) {
@@ -91,7 +91,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
         }
     }
     
-    /* Fourth set of constraints */    
+    /* Fifth set of constraints */    
     for (int p = 0; p < e->P; ++p) {
         j = 0;
         for (int a = 0; a < e->A; ++a) {
@@ -107,7 +107,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
 
     }
 
-    /* Fifth set of constraints */    
+    /* Sixth set of constraints */    
     for (int p = 0; p < e->P; ++p) {
         j = 0;
         ctx->ind[j] = u(e,p);
@@ -130,9 +130,10 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
     for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
             part.addAttribute(&attr);            
         });
+    cerr << 
     double limit = 1 + alpha() / (1 - (s(workload->getAttributes()) * c_e()) / cost.getPartitionSize(part));
 
-    /* Sixth set of constraints */    
+    /* 6th set of constraints */    
     j = 0;
     for (int p = 0; p < e->P; ++p) {
         int index = u(e,p);
