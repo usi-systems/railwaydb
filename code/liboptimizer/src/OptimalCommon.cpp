@@ -12,6 +12,31 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
+class GRBEnvironment
+{
+private:
+    GRBEnvironment()
+    {
+        GRBloadenv(&env_, NULL);
+    }
+public:
+    ~GRBEnvironment() 
+    {
+        GRBfreeenv(env_);
+    }
+    GRBenv * getNativeHandle()
+    {
+        return env_;
+    }
+    static GRBEnvironment & instance() 
+    {
+        static GRBEnvironment genv;
+        return genv;
+    }
+private:
+    GRBenv * env_;
+};
+
 int OptimalCommon::x(var_env *e, int a, int p)
 {
     return (e->x_offset) + (a * e->A + p);
@@ -131,6 +156,7 @@ void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx)
     for(int i = 0; i < e->num_vars; ++i) {
         ctx->vname[i] = new char[20];
     }
+    ctx->env = GRBEnvironment::instance().getNativeHandle();
 }
 
 void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
@@ -181,7 +207,6 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
 {
     int error = 0;
 
-
     /* Optimize model */
     error = GRBoptimize(ctx->model);
     if (error) return error;
@@ -204,7 +229,7 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
     if (error) return error;
 
     // printf("\nOptimization complete\n");
-    
+
     if (ctx->optimstatus == GRB_OPTIMAL) {
         error = 0;
     } else if (ctx->optimstatus == GRB_INF_OR_UNBD) {
@@ -233,25 +258,16 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
     if (ctx->val) delete [] ctx->val;
     if (ctx->sol) delete [] ctx->sol; 
     GRBfreemodel(ctx->model);
-    GRBfreeenv(ctx->env);
 }
-
 
 Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storageThreshold)
 {
     int error = 0;
     gurobi_ctx ctx;
     var_env e;
-
     storageThreshold_ = storageThreshold;
-
     create_env(&e, &workload);
-
     init_ctx(&e, &ctx);
-
-    //error = GRBloadenv(&ctx.env, "storage_optimizer.log");
-    error = GRBloadenv(&ctx.env, NULL);
-    if (error) goto QUIT;
 
     error = GRBnewmodel(ctx.env, &ctx.model, "storage_optimizer", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) goto QUIT;

@@ -254,12 +254,12 @@ int main()
 {
     cout << "This is a test program for the solver." << endl;
     auto solverNov = SolverFactory::instance().makeOptimalNonOverlapping();    
-    bool success = true;
+    auto solverOv = SolverFactory::instance().makeOptimalOverlapping();    
+
+    bool success = true; 
     success &= test(nov_ex1, nov_ex1_verify, solverNov, "nov_ex1");
     success &= test(nov_ex2, nov_ex2_verify, solverNov, "nov_ex2");
     success &= test(nov_ex3, nov_ex3_verify, solverNov, "nov_ex3");
-
-    auto solverOv = SolverFactory::instance().makeOptimalOverlapping();    
     success &= test(ov_ex1, ov_ex1_verify, solverOv, "ov_ex1"); 
     success &= test(ov_ex2, ov_ex2_verify, solverOv, "ov_ex2");
 
@@ -268,7 +268,7 @@ int main()
     else
         return EXIT_FAILURE;
 }
- 
+  
 
 
 
