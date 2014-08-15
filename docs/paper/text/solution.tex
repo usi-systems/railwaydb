@@ -38,7 +38,7 @@ than there are attributes.
 We are now ready to state the ILP formulation. We start with the objective
 function, that is the total query I/O:
 \begin{eqnarray}
-\sum_{q\in Q} \sum_{p=1}^{k} && (16\cdot c_e(B) + 12\cdot c_n(B))\cdot
+\sum_{q\in Q} w(q)\cdot \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot
 y_{p,q}\nonumber\\ 
 &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\label{eq:no-obj}
 \end{eqnarray}
@@ -122,12 +122,11 @@ following linear constraint:
   {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}}
 \end{equation}
 
-% NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{figure}[!t]
 \begin{mdframed}
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    \sum_{q\in Q} w(q)\cdot\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
@@ -265,7 +264,7 @@ using base variables as in the objective function. Formally:
 \begin{mdframed}
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    \sum_{q\in Q} w(q)\cdot\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
     &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
