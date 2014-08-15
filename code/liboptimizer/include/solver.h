@@ -2,7 +2,6 @@
 
 #include <intergdb/common/QueryWorkload.h>
 
-
 using namespace intergdb::common;
 
 #define EDGE_ID_SIZE 8
