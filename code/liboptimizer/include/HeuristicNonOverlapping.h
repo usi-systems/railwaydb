@@ -12,7 +12,7 @@ class HeuristicNonOverlapping : public Solver
 public:
     HeuristicNonOverlapping() { }
     ~HeuristicNonOverlapping() { }
-    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload);
 };
 
 } }

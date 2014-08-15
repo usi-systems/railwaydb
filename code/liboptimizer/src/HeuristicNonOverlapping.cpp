@@ -10,8 +10,9 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning * HeuristicNonOverlapping::solve(QueryWorkload * workload) 
+Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload) 
 {
+    Partitioning part;
     assert(false);
-    return NULL;
+    return part;
 }

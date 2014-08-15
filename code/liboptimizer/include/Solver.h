@@ -10,8 +10,7 @@ class Solver
 {
 public:
     virtual ~Solver() { }
-    // TODO: I think this should take a const & and return a non-pointer
-    virtual intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload) = 0;  
+    virtual intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload) = 0;  
 };
 
 } }

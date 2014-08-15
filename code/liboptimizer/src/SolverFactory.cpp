@@ -17,34 +17,34 @@ SolverFactory & SolverFactory::instance()
     return *factory_;
 }
 
-Solver * SolverFactory::makeOptimalOverlapping()
+shared_ptr<Solver> SolverFactory::makeOptimalOverlapping()
 {
-    return new OptimalOverlapping();
+    return shared_ptr<Solver>(new OptimalOverlapping());
 }
 
-Solver * SolverFactory::makeOptimalNonOverlapping()
+shared_ptr<Solver> SolverFactory::makeOptimalNonOverlapping()
 {
-    return new OptimalNonOverlapping();
+    return shared_ptr<Solver>(new OptimalNonOverlapping());
 }
 
-Solver * SolverFactory::makeHeuristicOverlapping()
+shared_ptr<Solver> SolverFactory::makeHeuristicOverlapping()
 {
-    return new HeuristicOverlapping();
+    return shared_ptr<Solver>(new HeuristicOverlapping());
 }
 
-Solver * SolverFactory:: makeHeuristicNonOverlapping()
+shared_ptr<Solver> SolverFactory:: makeHeuristicNonOverlapping()
 {
-    return new HeuristicNonOverlapping();
+    return shared_ptr<Solver>(new HeuristicNonOverlapping());
 }
 
-Solver * SolverFactory::makeSinglePartition()
+shared_ptr<Solver> SolverFactory::makeSinglePartition()
 {
-    return new SinglePartition();
+    return shared_ptr<Solver>(new SinglePartition());
 }
 
-Solver * SolverFactory::makePartitionPerAttribute()
+shared_ptr<Solver> SolverFactory::makePartitionPerAttribute()
 {
-    return new PartitionPerAttribute();
+    return shared_ptr<Solver>(new PartitionPerAttribute());
 }
 
 

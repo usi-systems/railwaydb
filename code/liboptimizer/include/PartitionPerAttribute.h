@@ -12,7 +12,7 @@ class PartitionPerAttribute : public Solver
 public:
     PartitionPerAttribute() { }
     ~PartitionPerAttribute() { }
-    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload);
 };
 
 } }

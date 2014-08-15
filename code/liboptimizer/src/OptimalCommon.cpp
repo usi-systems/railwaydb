@@ -101,7 +101,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
 
 }
 
-void OptimalCommon::create_env(var_env *e, QueryWorkload * workload) 
+void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
 {
     e->P = workload->getAttributes().size();
     e->Q = workload->getQueries().size();
@@ -145,7 +145,7 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
 }
 
 /* objective coefficients for each of the variables */
-void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload) 
+void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload) 
 {
     int sa = s(workload->getAttributes());
 
@@ -238,13 +238,13 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 }
 
 
-Partitioning * OptimalCommon::solve(QueryWorkload * workload)
+Partitioning OptimalCommon::solve(QueryWorkload const & workload)
 {
     int error = 0;
     gurobi_ctx ctx;
     var_env e;
  
-    create_env(&e, workload);
+    create_env(&e, &workload);
 
     init_ctx(&e, &ctx);
 
@@ -256,7 +256,7 @@ Partitioning * OptimalCommon::solve(QueryWorkload * workload)
 
     variables(&e, &ctx);
 
-    objective(&e, &ctx, workload);
+    objective(&e, &ctx, &workload);
 
     /* Add variables */
     error = GRBaddvars(ctx.model, e.num_vars, 0, NULL, NULL, NULL, 
@@ -270,7 +270,7 @@ Partitioning * OptimalCommon::solve(QueryWorkload * workload)
     error = GRBupdatemodel(ctx.model);
     if (error) goto QUIT;
 
-    error = constraints(&e, &ctx, workload);
+    error = constraints(&e, &ctx, &workload);
     if (error) goto QUIT;
 
     error = solve_model(&e, &ctx);
@@ -283,6 +283,8 @@ QUIT:
     }
 
     cleanup(&e, &ctx);
-    return NULL;
+    Partitioning part;
+    // TODO: fill partitioning
+    return part;
 }
 
