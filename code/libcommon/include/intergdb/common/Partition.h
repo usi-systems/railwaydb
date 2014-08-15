@@ -16,6 +16,7 @@ public:
   void clearAttributes() { attributes_.clear(); }
   void addAttribute(Attribute const * attribute) { attributes_.insert(attribute); }
   void removeAttribute(Attribute const * attribute) { attributes_.erase(attribute); }
+  int numAttributes() { return attributes_.size(); }
   std::unordered_set<Attribute const *> const & getAttributes() const { return attributes_; }
   std::string toString() const;
 private:

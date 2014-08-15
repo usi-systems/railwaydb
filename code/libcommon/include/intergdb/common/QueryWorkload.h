@@ -17,6 +17,7 @@ namespace intergdb { namespace common
         std::vector<Query> const & queries) 
       : attributes_(attributes), queries_(queries) {} 
     void addAttribute(Attribute const & attribute) { attributes_.push_back(attribute); }
+    Attribute const & getAttribute(int index) const { return attributes_.at(index); }
     void setAttributes(std::vector<Attribute> const & attributes) { attributes_ = attributes; }
     std::vector<Attribute> const & getAttributes() const { return attributes_; }
     std::vector<Attribute> & getAttributes() { return attributes_; }
