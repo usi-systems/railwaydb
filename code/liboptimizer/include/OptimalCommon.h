@@ -37,7 +37,6 @@ typedef struct gurobi_ctx {
     int       optimstatus;
     double    objval;
 } gurobi_ctx;
-  
 
 class OptimalCommon : public Solver
 {
