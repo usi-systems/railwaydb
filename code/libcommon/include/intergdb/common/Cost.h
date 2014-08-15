@@ -10,8 +10,14 @@ class Cost
 {
 public:
     Cost() {}
-    double io(Partitioning * partitioning, QueryWorkload * workload) ;
-    double storage(Partitioning * partitioning, QueryWorkload * workload);
+    std::vector<Partition *> getUsedPartitionsOverlapping(
+      Partitioning const & partitioning, std::vector<Attribute> const & attributes, 
+      Query const & query);
+    std::vector<Partition *> getUsedPartitionsNonOverlapping(
+      Partitioning const & partitioning, std::vector<Attribute> const & attributes, 
+      Query const & query);
+    double getIOCost(Partitioning const & partitioning, QueryWorkload const & workload) ;
+    double getStorageOverhead(Partitioning const & partitioning, QueryWorkload const &workload);
 };
 
 } }
