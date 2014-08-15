@@ -34,15 +34,10 @@ void nov_ex1(QueryWorkload * workload)
 int main()
 {
     cerr << "This is a test program for the solver." << endl;
-
     QueryWorkload workload; 
-
     auto solver = SolverFactory::instance().makeOptimalOverlapping();    
-
     nov_ex1(&workload);
-
     cerr << workload.toString() << endl;
-
     Partitioning partitioning = solver->solve(workload);
     return 0;    
 }
