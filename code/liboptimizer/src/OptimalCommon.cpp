@@ -1,9 +1,12 @@
+#include <OptimalCommon.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-
-#include <OptimalCommon.h>
 #include <iostream>
+#include <string>       
+#include <iostream>     
+#include <sstream>      
 
 #include <intergdb/common/SystemConstants.h>
 #include <intergdb/common/Partition.h>
@@ -97,16 +100,21 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
 {
     int j = 0;
     
+    std::stringbuf buffer; 
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
-            sprintf(vname[j], "x_a%d_p%d", a+1, p+1);
+            std::ostringstream oss;
+            oss << "x_a" << a+1 << "_p" << p+1;
+            vname[j] = const_cast <char*>(oss.str().c_str());
             j++;
         }
     }
 
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
-            sprintf(vname[j], "y_p%d_q%d", p+1, q+1);
+            std::ostringstream oss;
+            oss << "y_p" << p+1 << "_q" << q+1;
+            vname[j] = const_cast <char*>(oss.str().c_str());
             j++;
         }
     }
@@ -114,14 +122,18 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             for (int q = 0; q < e->Q; ++q) {
-                sprintf(vname[j], "z_a%d_p%d_q%d", a+1, p+1, q+1);
+                std::ostringstream oss;
+                oss << "z_a" << a+1 << "_p" << p+1 << "_q" << q+1;
+                vname[j] = const_cast <char*>(oss.str().c_str());
                 j++;
             }
         }
     }
 
     for (int p = 0; p < e->P; ++p) {
-        sprintf(vname[j], "u_p%d", p+1);
+        std::ostringstream oss;
+        oss << "u_p" << p+1;
+        vname[j] = const_cast <char*>(oss.str().c_str());
         j++;
     }
 
@@ -153,9 +165,6 @@ void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx)
     ctx->val = new double[e->num_vars];
     ctx->sol = new double[e->num_vars];
     ctx->vname = new char*[e->num_vars];
-    for(int i = 0; i < e->num_vars; ++i) {
-        ctx->vname[i] = new char[20];
-    }
     ctx->env = GRBEnvironment::instance().getNativeHandle();
 }
 
@@ -247,9 +256,6 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
 void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 {
     if (ctx->vname) {
-        for(int i = 0; i < e->num_vars; ++i) {
-            delete [] ctx->vname[i];
-        }
         delete [] ctx->vname;
     }
     if (ctx->obj) delete [] ctx->obj;

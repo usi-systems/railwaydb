@@ -46,20 +46,31 @@ void RunningTimeVsNumAttributes::process()
   exp.setKeepValues(false);
   exp.open();
 
-  for (auto solver : { SolverFactory::instance().makeSinglePartition(), 
-              SolverFactory::instance().makePartitionPerAttribute()  }) {
-//              SolverFactory::instance().makeOptimalOverlapping(),
-//              SolverFactory::instance().makeOptimalNonOverlapping() }) {
-      cerr << "Running with solver: "
-           << solver->getClassName() << endl;
+  int numRuns = 3;
+  
+  auto solvers = { SolverFactory::instance().makeSinglePartition(), 
+                   SolverFactory::instance().makePartitionPerAttribute(),
+                   SolverFactory::instance().makeOptimalOverlapping(), 
+                   SolverFactory::instance().makeOptimalNonOverlapping() };
 
-      timer.start();
-      solver->solve(workload, storageOverheadThreshold); 
-      timer.stop();
-      exp.addRecord();
-      exp.setFieldValue("solver", solver->getClassName());
-      exp.setFieldValue("attributes", workload.getAttributes().size());
-      exp.setFieldValue("time", timer.getRealTimeInSeconds());
+  auto attributeCounts = {10, 20, 30, 40, 50};
+
+
+  for (int attributeCount : attributeCounts) {
+      simConf.setAttributeCount(attributeCount);
+      QueryWorkload workload = simConf.getQueryWorkload();
+      for (auto solver : solvers) {
+          for (int i = 0; i < numRuns; i++) {
+
+              timer.start();
+              solver->solve(workload, storageOverheadThreshold); 
+              timer.stop();
+              exp.addRecord();
+              exp.setFieldValue("solver", solver->getClassName());
+              exp.setFieldValue("attributes", workload.getAttributes().size());
+              exp.setFieldValue("time", timer.getRealTimeInSeconds());
+          }
+      }
   }
 
   exp.close();
