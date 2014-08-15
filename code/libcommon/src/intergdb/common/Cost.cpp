@@ -4,24 +4,24 @@ using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
 
-vector<Partition *> Cost::getUsedPartitions(Partitioning const & partitioning, 
+vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partitioning, 
   std::vector<Attribute> const & attributes, Query const & query)
 {
   unordered_set<Attribute const *> selectedAttributes;
   unordered_set<Attribute const *> remainingAttributes; 
   for (Attribute const & attribute : attributes)
     remainingAttributes.insert(&attribute);
-  vector<Partition *> usedPartitions;
+  vector<Partition const *> usedPartitions;
   unordered_set<Partition const *> unusedPartitions;
   for (Partition const partition: partitioning.getPartitions())
     unusedPartitions.insert(&partition);
   while (selectedAttributes.size()!= attributes.size()) {
-    Partition * bestPartition = nullptr;
+    Partition const * bestPartition = nullptr;
     double bestPartitionScore = -1.0;
     for (Partition const * partition : unusedPartitions) {
       double partitionScore = 0.0;
-      double partitionSize = getPartitionSize(part);
-      for (Attribute const * attribute : partition.getAttributes()) {
+      double partitionSize = 0.0; // getPartitionSize(part);
+      for (Attribute const * attribute : partition->getAttributes()) {
         if (selectedAttributes.count(attribute)>0) 
           continue;
         partitionScore += attribute->getSize() / partitionSize;
