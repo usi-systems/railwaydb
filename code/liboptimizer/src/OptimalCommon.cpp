@@ -301,9 +301,6 @@ QUIT:
             partitioning.addPartition(partition);
         }
     }
-
-    cout << "the number of partitions is: " << partitioning.numPartitions() << endl;
-
     return partitioning;
 }
 
