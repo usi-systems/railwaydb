@@ -33,12 +33,12 @@ int OptimalCommon::u(var_env *e, int p)
 }
 int OptimalCommon::c_e()
 {
-    return 1;
+    return SystemConstants::numberOfEdgesInABlock;
 }
 
 int OptimalCommon::c_n()
 {
-    return 1;
+    return SystemConstants::numberOfNeighborListsInABlock;
 }
 
 double OptimalCommon::K()
@@ -160,7 +160,7 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
         for (int q = 0; q < e->Q; ++q) {
             ctx->obj[y(e,p,q)] 
                 = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
-                + (SystemConstants::headVertexSize + SystemConstants::numEntries) * c_n();
+                + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
         }
     }
     
