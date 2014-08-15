@@ -12,6 +12,7 @@ class HeuristicNonOverlapping : public Solver
 public:
     HeuristicNonOverlapping() { }
     ~HeuristicNonOverlapping() { }
+    std::string getClassName() { return "HeuristicNonOverlapping"; }
     intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
 };
 
