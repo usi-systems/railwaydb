@@ -148,8 +148,6 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
 /* objective coefficients for each of the variables */
 void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload) 
 {
-    //int sa = s(workload->getAttributes());
-
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             ctx->obj[x(e,a,p)] = 0;
