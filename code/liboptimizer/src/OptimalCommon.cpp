@@ -154,11 +154,12 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
         }
     }
     
+    double val = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
+        + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             ctx->obj[y(e,p,q)] 
-                = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
-                + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
+                = val;
         }
     }
     
