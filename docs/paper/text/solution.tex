@@ -38,9 +38,9 @@ than there are attributes.
 We are now ready to state the ILP formulation. We start with the objective
 function, that is the total query I/O:
 \begin{eqnarray}
-\sum_{q\in Q} w(q)\cdot \sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot
+\sum_{q\in Q} w(q) \cdot \Big(\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot
 y_{p,q}\nonumber\\ 
-&+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\label{eq:no-obj}
+&+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\Big)\label{eq:no-obj}
 \end{eqnarray}
 
 In Eq.~\ref{eq:no-obj}, we simply sum for each query and each partition, and
@@ -126,8 +126,8 @@ following linear constraint:
 \begin{mdframed}
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} w(q)\cdot\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
-    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
+    \sum_{q\in Q} w(q)\cdot \Big(\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \Big) \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
     && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
@@ -255,17 +255,16 @@ depend on the number of partitions, as attributes might have to be loaded
 multiple times from different partitions. As a result, we express the overhead
 using base variables as in the objective function. Formally:
 \begin{eqnarray}
-\sum_{p=1}^{k} (16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
-+ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p} \leq s(B)\cdot (1+\alpha)
+\sum_{p=1}^{k} \Big((16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p} \Big) \leq s(B)\cdot (1+\alpha)
 \end{eqnarray}
 
-% NOTE: In the simulation we will have query weights that will factor into the objective function
 \begin{figure}[!t]
 \begin{mdframed}
 \begin{eqnarray}
 \text{minimize}  
-    \sum_{q\in Q} w(q)\cdot\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
-    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \nonumber\\
+    \sum_{q\in Q} w(q)\cdot \Big(\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \Big) \nonumber\\
 \text{subject to}&&\nonumber\\
 \forall_{a\in A}, 
     && \sum_{p=1}^{k} x_{a,p} \geq 1\nonumber\\
