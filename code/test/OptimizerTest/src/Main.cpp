@@ -259,10 +259,10 @@ int main()
     bool success = true;
 
     //success &= test(nov_ex1, nov_ex1_verify, solverNov, "nov_ex1");
-    success &= test(nov_ex2, nov_ex2_verify, solverNov, "nov_ex2");
+    //success &= test(nov_ex2, nov_ex2_verify, solverNov, "nov_ex2");
     //success &= test(nov_ex3, nov_ex3_verify, solverNov, "nov_ex3");
     //success &= test(ov_ex1, ov_ex1_verify, solverOv, "ov_ex1");
-    //success &= test(ov_ex2, ov_ex2_verify, solverOv, "ov_ex2");
+    success &= test(ov_ex2, ov_ex2_verify, solverOv, "ov_ex2");
 
 
     if (success)
