@@ -14,7 +14,10 @@ extern "C" {
 
 namespace intergdb { namespace optimizer {
 
-typedef struct var_env {
+class OptimalCommon : public Solver
+{
+private:
+  typedef struct var_env {
     int num_vars;
     int x_offset;
     int y_offset;
@@ -23,9 +26,9 @@ typedef struct var_env {
     int A;
     int P;
     int Q;
-} var_env;
+  } var_env;
 
-typedef struct gurobi_ctx {
+  typedef struct gurobi_ctx {
     GRBenv   *env;
     GRBmodel *model;
     double    *sol;
@@ -36,10 +39,8 @@ typedef struct gurobi_ctx {
     char      **vname;
     int       optimstatus;
     double    objval;
-} gurobi_ctx;
-
-class OptimalCommon : public Solver
-{
+  } gurobi_ctx;
+  
 public:
     OptimalCommon() {}
     virtual ~OptimalCommon() {}
