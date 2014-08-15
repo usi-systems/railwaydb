@@ -1,4 +1,5 @@
 #include <intergdb/common/Cost.h>
+#include <intergdb/common/SystemConstants.h>
 
 using namespace std;
 using namespace intergdb;
@@ -15,16 +16,22 @@ vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partition
   unordered_set<Partition const *> unusedPartitions;
   for (Partition const partition: partitioning.getPartitions())
     unusedPartitions.insert(&partition);
-  while (selectedAttributes.size()!= attributes.size()) {
+  unordered_set<Attribute const *> queryAttributes;
+  for (Attribute const * attribute : query.getAttributes())
+    queryAttributes.insert(attribute);
+  while (selectedAttributes.size()!=attributes.size()) {
     Partition const * bestPartition = nullptr;
     double bestPartitionScore = -1.0;
     for (Partition const * partition : unusedPartitions) {
       double partitionScore = 0.0;
-      double partitionSize = 0.0; // getPartitionSize(part);
+      double partitionSize = getPartitionSize(*partition);
       for (Attribute const * attribute : partition->getAttributes()) {
         if (selectedAttributes.count(attribute)>0) 
           continue;
-        partitionScore += attribute->getSize() / partitionSize;
+        if (queryAttributes.count(attribute)==0)
+          continue;
+        partitionScore += (attribute->getSize() * 
+          SystemConstants::numberOfEdgesInABlock) / partitionSize;
       }
       if (partitionScore > bestPartitionScore) {
         bestPartitionScore = partitionScore;
@@ -39,6 +46,19 @@ vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partition
     unusedPartitions.erase(bestPartition);
   }
   return usedPartitions;
+}
+
+double Cost::getPartitionSize(Partition const & partition)
+{
+  double attributesSize = 0.0;
+  for (Attribute const * attribute : partition.getAttributes())
+    attributesSize += attribute->getSize();
+  return 
+    SystemConstants::numberOfEdgesInABlock * 
+      ((SystemConstants::edgeIdSize + SystemConstants::timestampSize) + attributesSize)
+     +
+    SystemConstants::numberOfNeighborListsInABlock * 
+      (SystemConstants::headVertexSize + SystemConstants::numEntriesSize);
 }
 
 double Cost::getIOCost(Partitioning const & partitioning, QueryWorkload const & workload) 
