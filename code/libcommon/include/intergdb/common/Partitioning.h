@@ -2,22 +2,21 @@
 
 #include <intergdb/common/Partition.h>
 
-#include <unordered_set>
+#include <vector>
 
 namespace intergdb { namespace common
 {
-
-class Partition;
 
 class Partitioning
 {
 public:
   Partitioning() {}
-  void addPartition(Partition * partition) { partitions_.insert(partition); }
-  void removePartition(Partition * partition) { partitions_.erase(partition); }
-  std::unordered_set<Partition *> const & getPartitions() const { return partitions_; }
+  void addPartition(Partition const & partition) { 
+    partitions_.push_back(partition); 
+  }
+  std::vector<Partition> const & getPartitions() const { return partitions_; }
 private:
-  std::unordered_set<Partition *> partitions_;
+  std::vector<Partition> partitions_;
 };
 
 } }

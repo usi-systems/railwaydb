@@ -12,11 +12,11 @@ using namespace intergdb::optimizer;
 
 Partitioning PartitionPerAttribute::solve(QueryWorkload const & workload) 
 {
+    Partition partition;
     Partitioning partitioning;
-    Partition * partition;
     for (auto & attribute : workload.getAttributes()) {
-        partition = new Partition();
-        partition->addAttribute(&attribute);
+        partition.clearAttributes();
+        partition.addAttribute(&attribute);
         partitioning.addPartition(partition);
     }  
     return partitioning;
