@@ -32,6 +32,7 @@ Subject To
   z_a2_p1_q1 + z_a2_p2_q1 >= 1
   z_a2_p1_q2 + z_a2_p2_q2 >= 1
   x_a1_p1 - z_a1_p1_q1 >= 0
+  x_a1_p1 - z_a1_p1_q2 >= 0
   x_a1_p2 - z_a1_p2_q1 >= 0
   x_a1_p2 - z_a1_p2_q2 >= 0
   x_a2_p1 - z_a2_p1_q1 >= 0
