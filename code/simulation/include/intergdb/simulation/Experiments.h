@@ -9,6 +9,11 @@ namespace intergdb { namespace simulation
     void process() override;
   };
 
+ class RunningTimeVsNumAttributes : public ExperimentalRun 
+  {
+    void process() override;
+  };
+
  class QueryIOVsNumAttributes : public ExperimentalRun 
   {
     void process() override;
