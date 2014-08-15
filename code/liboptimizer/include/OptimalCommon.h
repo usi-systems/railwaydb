@@ -12,7 +12,7 @@ extern "C" {
 }
 #endif
 
-using namespace intergdb::common;
+namespace intergdb { namespace optimizer {
 
 typedef struct var_env {
     int num_vars;
@@ -43,10 +43,10 @@ class OptimalCommon : public Solver
 public:
     OptimalCommon() {}
     virtual ~OptimalCommon() {}
-    Partitioning * solve(QueryWorkload * workload);
+    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
 
 protected:
-    virtual int constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload) = 0;   
+    virtual int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload * workload) = 0;   
 
     int x(var_env *e, int a, int p);
     int y(var_env *e, int p, int q);
@@ -54,18 +54,18 @@ protected:
     int u(var_env *e, int p);
     int c_e();
     int c_n();
-    int s(std::vector<Attribute> const & attributes);
+    int s(std::vector<intergdb::common::Attribute> const & attributes);
     double K();
     double alpha();
-    int accesses(std::vector<Query> const & queries, int q, int a);   
+    int accesses(std::vector<intergdb::common::Query> const & queries, int q, int a);   
     void name_variables(var_env *e, char** vname);
-    void create_env(var_env *e, QueryWorkload * workload);
+    void create_env(var_env *e, intergdb::common::QueryWorkload * workload);
     void init_ctx(var_env *e, gurobi_ctx* ctx);
     void variables(var_env *e, gurobi_ctx *ctx);   
-    void objective(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload);
+    void objective(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload * workload);
     int solve_model(var_env *e, gurobi_ctx *ctx);
     void cleanup(var_env *e, gurobi_ctx *ctx);
 
 };
 
-
+} }

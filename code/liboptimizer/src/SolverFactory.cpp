@@ -7,14 +7,14 @@
 #include <HeuristicOverlapping.h>
 #include <HeuristicNonOverlapping.h>
 
-SolverFactory* SolverFactory::factory_ = NULL;
+using namespace std;
+using namespace intergdb::optimizer;
 
-SolverFactory * SolverFactory::instance() 
+unique_ptr<SolverFactory> SolverFactory::factory_(new SolverFactory());
+
+SolverFactory & SolverFactory::instance() 
 {
-    if (factory_ == NULL) {
-        factory_ = new SolverFactory();
-    }
-    return factory_;
+    return *factory_;
 }
 
 Solver * SolverFactory::makeOptimalOverlapping()

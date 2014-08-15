@@ -8,6 +8,8 @@
 #include <intergdb/common/SystemConstants.h>
 
 using namespace std;
+using namespace intergdb::common;
+using namespace intergdb::optimizer;
 
 int OptimalCommon::x(var_env *e, int a, int p)
 {

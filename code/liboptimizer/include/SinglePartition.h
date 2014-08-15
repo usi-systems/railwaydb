@@ -5,14 +5,14 @@
 
 #include <Solver.h>
 
-using namespace intergdb::common;
+namespace intergdb { namespace optimizer {
 
 class SinglePartition : public Solver
 {
 public:
     SinglePartition() { }
-    ~SinglePartition() { }
-    Partitioning * solve(QueryWorkload * workload);
+    ~SinglePartition() { } 
+    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
 };
 
-
+} }

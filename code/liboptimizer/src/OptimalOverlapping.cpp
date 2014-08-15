@@ -16,6 +16,8 @@ extern "C" {
 #endif
 
 using namespace std;
+using namespace intergdb::common;
+using namespace intergdb::optimizer;
 
 int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload * workload)
 {
