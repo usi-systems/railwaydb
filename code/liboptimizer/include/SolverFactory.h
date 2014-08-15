@@ -2,11 +2,15 @@
 
 #include <Solver.h>
 
+#include <memory>
+
+namespace intergdb { namespace optimizer {
+
 class SolverFactory
 {
 public:
-    static SolverFactory * instance();
-    Solver * makeOptimalOverlapping();
+    static SolverFactory & instance(); // TODO: this better returns a reference
+    Solver * makeOptimalOverlapping(); // TODO: These could all return references
     Solver * makeOptimalNonOverlapping();
     Solver * makeHeuristicOverlapping();
     Solver * makeHeuristicNonOverlapping();
@@ -15,6 +19,7 @@ public:
 
 private:
     SolverFactory() {}
-    static SolverFactory* factory_;
+    static std::unique_ptr<SolverFactory> factory_;
 };
 
+} }

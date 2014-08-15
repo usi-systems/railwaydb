@@ -7,6 +7,8 @@
 #include <intergdb/common/SystemConstants.h>
 
 using namespace std;
+using namespace intergdb::common;
+using namespace intergdb::optimizer;
 
 Partitioning * PartitionPerAttribute::solve(QueryWorkload * workload) 
 {

@@ -3,13 +3,16 @@
 #include <intergdb/common/QueryWorkload.h>
 #include <intergdb/common/Partitioning.h>
 
-using namespace intergdb::common;
+
+namespace intergdb { namespace optimizer {
 
 class Solver
 {
 public:
     virtual ~Solver() { }
-    virtual Partitioning * solve(QueryWorkload * workload) = 0;  
+    // TODO: I think this should take a const & and return a non-pointer
+    virtual intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload) = 0;  
 };
 
+} }
 

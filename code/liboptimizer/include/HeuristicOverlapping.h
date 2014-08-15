@@ -5,14 +5,15 @@
 
 #include <Solver.h>
 
-using namespace intergdb::common;
+namespace intergdb { namespace optimizer {
+
 
 class HeuristicOverlapping : public Solver
 {
 public:
     HeuristicOverlapping() { }
     ~HeuristicOverlapping() { }
-    Partitioning * solve(QueryWorkload * workload);
+    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
 };
 
-
+} }
