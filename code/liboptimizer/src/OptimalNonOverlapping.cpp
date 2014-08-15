@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-// <algorithms>
 #include <numeric>
 #include <OptimalNonOverlapping.h>
 #include <iostream>
@@ -128,12 +127,10 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
     auto attributes = workload->getAttributes();
     Cost cost;
     Partition part; 
-
     for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
             part.addAttribute(&attr);            
         });
     double limit = 1 + (alpha() / (1 - ((s(workload->getAttributes()) * c_e()) / cost.getPartitionSize(part))));
-
 
 
     /* Sixth set of constraints */    

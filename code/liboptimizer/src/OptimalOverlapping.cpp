@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <intergdb/common/SystemConstants.h>
+#include <intergdb/common/Cost.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -156,14 +157,37 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
     }
 
 
+
+    auto attributes = workload->getAttributes();
+    Cost cost;
+    Partition part; 
+    for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
+            part.addAttribute(&attr);            
+        });
+
+    double limit =  cost.getPartitionSize(part) * (1 + alpha());
+    double u_const =
+        (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
+        + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
+
     /* 9th set of constraints */    
     j = 0;
     for (int p = 0; p < e->P; ++p) {
         ctx->ind[j] = u(e,p);
-        ctx->val[j] = -1.0;
+        ctx->val[j] = u_const;
+        j++;
     }
-    error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val, 
-                         GRB_LESS_EQUAL, alpha(), NULL);
+
+    for (int p = 0; p < e->P; ++p) {   
+        for (int a = 0; a < e->A; ++a) {
+            ctx->ind[j] = x(e,a,p);
+            ctx->val[j] = workload->getAttribute(a).getSize() * c_n();
+            j++;
+        }
+    }
+
+    error = GRBaddconstr(ctx->model, e->P + e->A, ctx->ind, ctx->val, 
+                         GRB_LESS_EQUAL, limit, NULL);
     if (error) return error;
 
 
