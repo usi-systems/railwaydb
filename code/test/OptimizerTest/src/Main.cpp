@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace intergdb::common;
-
+using namespace intergdb::optimizer;
 
 // nov-ex1.lp 
 void nov_ex1(QueryWorkload * workload)
@@ -37,15 +37,15 @@ int main()
 
     QueryWorkload workload; 
 
-    Solver * solver = SolverFactory::instance()->makeOptimalOverlapping();    
+    Solver * solver = SolverFactory::instance().makeOptimalOverlapping();    
 
     nov_ex1(&workload);
 
     cerr << workload.toString() << endl;
 
     Partitioning * partitioning = solver->solve(&workload);
-    delete(solver);
-    delete(partitioning);
+    delete solver;
+    delete partitioning;
     return 0;    
 }
  
