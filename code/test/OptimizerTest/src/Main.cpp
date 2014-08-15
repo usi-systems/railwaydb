@@ -229,11 +229,12 @@ void ov_ex2_verify(Partitioning const & partitioning)
 }
 
 template <typename TestFunct, typename VerifyFunct, typename Solver>
-bool test(TestFunct testFunc, VerifyFunct verifyFunc, Solver solver)
+bool test(TestFunct testFunc, VerifyFunct verifyFunc, Solver solver, string const & testName)
 {
     QueryWorkload workload; 
     double storageOverheadThreshold;
     testFunc(workload, storageOverheadThreshold);
+    cout << "Test started [" << testName << "]" << endl;
     cout << "==Query workload==\n" << workload.toString() << endl;
     cout << "==Storage overhead threshold==\n" << storageOverheadThreshold << endl;
     Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
@@ -241,24 +242,26 @@ bool test(TestFunct testFunc, VerifyFunct verifyFunc, Solver solver)
     try {
         verifyFunc(partitioning);
     } catch(runtime_error const & e) {
-        cerr << e.what() << endl;
+        cout << e.what() << endl;
+        cout << "test FAILED [" << testName << "]" << "\n" << endl;
         return false;
     }
+    cout << "test SUCCESS [" << testName << "]" << "\n" << endl;
     return true;
 }
 
 int main()
 {
-    cerr << "This is a test program for the solver." << endl;
+    cout << "This is a test program for the solver." << endl;
     auto solverOv = SolverFactory::instance().makeOptimalOverlapping();    
     auto solverNov = SolverFactory::instance().makeOptimalNonOverlapping();    
 
     bool success = true;
-    success &= test(nov_ex1, nov_ex1_verify, solverNov);
-    success &= test(nov_ex2, nov_ex2_verify, solverNov);
-    success &= test(nov_ex3, nov_ex3_verify, solverNov);
-    success &= test(ov_ex1, ov_ex1_verify, solverOv);
-    success &= test(ov_ex2, ov_ex2_verify, solverOv);
+    success &= test(nov_ex1, nov_ex1_verify, solverNov, "nov_ex1");
+    success &= test(nov_ex2, nov_ex2_verify, solverNov, "nov_ex2");
+    success &= test(nov_ex3, nov_ex3_verify, solverNov, "nov_ex3");
+    success &= test(ov_ex1, ov_ex1_verify, solverOv, "ov_ex1");
+    success &= test(ov_ex2, ov_ex2_verify, solverOv, "ov_ex2");
 
     if (success)
         return EXIT_SUCCESS;    
