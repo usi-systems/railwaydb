@@ -257,7 +257,6 @@ int main()
     auto solverNov = SolverFactory::instance().makeOptimalNonOverlapping();    
 
     bool success = true;
-
     //success &= test(nov_ex1, nov_ex1_verify, solverNov, "nov_ex1");
     success &= test(nov_ex2, nov_ex2_verify, solverNov, "nov_ex2");
     //success &= test(nov_ex3, nov_ex3_verify, solverNov, "nov_ex3");
