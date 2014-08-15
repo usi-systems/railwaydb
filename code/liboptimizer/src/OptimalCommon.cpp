@@ -32,12 +32,12 @@ int OptimalCommon::u(var_env *e, int p)
 }
 int OptimalCommon::c_e()
 {
-    return 1;
+    return SystemConstants::numberOfEdgesInANeighborList;
 }
 
 int OptimalCommon::c_n()
 {
-    return 1;
+    return SystemConstants::numberOfNeighborLists;
 }
 
 double OptimalCommon::K()
