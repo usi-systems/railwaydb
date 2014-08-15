@@ -203,7 +203,8 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
     error = GRBgetdblattrarray(ctx->model, GRB_DBL_ATTR_X, 0, e->num_vars, ctx->sol);
     if (error) return error;
 
-    printf("\nOptimization complete\n");
+    // printf("\nOptimization complete\n");
+    
     if (ctx->optimstatus == GRB_OPTIMAL) {
         error = 0;
     } else if (ctx->optimstatus == GRB_INF_OR_UNBD) {
