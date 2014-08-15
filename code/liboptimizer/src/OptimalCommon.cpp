@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <intergdb/common/SystemConstants.h>
+#include <intergdb/common/Partition.h>
 
 using namespace std;
 using namespace intergdb::common;
@@ -180,15 +181,15 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
 int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
 {
     int error = 0;
-    int j = 0;
+
 
     /* Optimize model */
     error = GRBoptimize(ctx->model);
     if (error) return error;
 
     /* Write model to 'temp.lp' */
-    error = GRBwrite(ctx->model, "temp.lp");
-    if (error) return error;
+    //error = GRBwrite(ctx->model, "temp.lp");
+    //if (error) return error;
 
     /* Capture solution information */
 
@@ -203,17 +204,13 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
 
     printf("\nOptimization complete\n");
     if (ctx->optimstatus == GRB_OPTIMAL) {
-        cout << "Optimal objective:" << ctx->objval << endl;
-        for (int a = 0; a < e->A; ++a) {
-            for (int p = 0; p < e->P; ++p) {
-                j = x(e,a,p);
-                cout << ctx->vname[j] << " " << ctx->sol[j] << endl;
-            }
-        }
+        error = 0;
     } else if (ctx->optimstatus == GRB_INF_OR_UNBD) {
         cout << "Model is infeasible or unbounded" << endl;
+        error = 1;
     } else {
         cout << "Optimization was stopped early" << endl;
+        error = 1;
     }
 
     return error;
@@ -250,11 +247,16 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
 
     init_ctx(&e, &ctx);
 
-    error = GRBloadenv(&ctx.env, "storage_optimizer.log");
+    //error = GRBloadenv(&ctx.env, "storage_optimizer.log");
+    error = GRBloadenv(&ctx.env, NULL);
     if (error) goto QUIT;
 
     error = GRBnewmodel(ctx.env, &ctx.model, "storage_optimizer", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) goto QUIT;
+
+
+//#define GRB_INT_PAR_OUTPUTFLAG 0
+    GRBsetintparam(GRBgetenv(ctx.model), GRB_INT_PAR_OUTPUTFLAG, 0);
 
     variables(&e, &ctx);
 
@@ -285,8 +287,23 @@ QUIT:
     }
 
     cleanup(&e, &ctx);
-    Partitioning part;
-    // TODO: fill partitioning
-    return part;
+    Partitioning partitioning;
+    int j;
+    for (int p = 0; p < e.P; ++p) {
+        Partition partition;
+        for (int a = 0; a < e.A; ++a) {
+            j = x(&e,a,p);
+            if (ctx.sol[j] == 1) {
+                partition.addAttribute(&workload.getAttribute(a));
+            }
+        }
+        if (partition.numAttributes() > 0) {
+            partitioning.addPartition(partition);
+        }
+    }
+
+    cout << "the number of partitions is: " << partitioning.numPartitions() << endl;
+
+    return partitioning;
 }
 

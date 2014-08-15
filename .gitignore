@@ -3,6 +3,7 @@
 *~
 *.log
 *.swp
+*.lp
 code/libcommon/bin/
 code/libintergdb/bin/
 code/liboptimizer/bin/
