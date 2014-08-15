@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-
+// <algorithms>
+#include <numeric>
 #include <OptimalNonOverlapping.h>
 #include <iostream>
 
 #include <intergdb/common/SystemConstants.h>
+#include <intergdb/common/Cost.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -122,14 +124,27 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
         if (error) return error;    
     }
 
+    
+    auto attributes = workload->getAttributes();
+    Cost cost;
+    Partition part; 
+
+    for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
+            part.addAttribute(&attr);            
+        });
+    double limit = 1 + (alpha() / 1 - ((s(workload->getAttributes()) * c_e()) / cost.getPartitionSize(part)));
+
     /* Sixth set of constraints */    
     j = 0;
     for (int p = 0; p < e->P; ++p) {
-        ctx->ind[j] = u(e,p);
-        ctx->val[j] = -1.0;
+        int index = u(e,p);
+        cout << "INDEX: " << index << endl;
+        ctx->ind[j] = index;
+        ctx->val[j] = 1;
+        j++;
     }
     error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val, 
-                         GRB_LESS_EQUAL, alpha(), NULL);
+                         GRB_LESS_EQUAL, limit, NULL);
     if (error) return error;
 
     error = GRBupdatemodel(ctx->model);
