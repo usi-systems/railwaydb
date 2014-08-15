@@ -8,6 +8,7 @@ using namespace intergdb::simulation;
 
 int main()
 {
+    (QueryIOVsNumAttributes()).run();
     (SampleExperiment()).run();
     return EXIT_SUCCESS;
 }

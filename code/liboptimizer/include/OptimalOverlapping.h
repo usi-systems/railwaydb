@@ -15,7 +15,7 @@ class OptimalOverlapping : public OptimalCommon
 public:
     OptimalOverlapping() {}
     ~OptimalOverlapping() {}
-
+    std::string getClassName() { return "OptimalOverlapping"; }
 private:
     int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload) ;
 
