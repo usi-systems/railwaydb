@@ -1,0 +1,813 @@
+
+Gurobi 5.6.0 (mac64) logging started Sat Jul 12 14:04:04 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 28 columns, 32 nonzeros
+Optimize a model with 14 rows, 28 columns and 32 nonzeros
+Found heuristic solution: objective -4e+06
+Presolve removed 14 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.000000000000e+06, best bound -4.000000000000e+06, gap 0.0%
+
+Gurobi 5.6.0 (mac64) logging started Sat Jul 12 14:04:20 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 28 columns, 32 nonzeros
+Optimize a model with 14 rows, 28 columns and 32 nonzeros
+Found heuristic solution: objective -4e+06
+Presolve removed 14 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.000000000000e+06, best bound -4.000000000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Sat Jul 12 14:46:46 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Error reading LP format file example.lp at line 37
+Malformed term in expression
+Neighboring tokens: " 1 * v_a1_p1 + 1 * v_a2_q1 - v_p1_q1 >= "
+
+
+ERROR 10012: Unable to read file
+
+
+Gurobi 5.6.0 (mac64) logging started Sat Jul 12 14:47:10 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 28 columns, 35 nonzeros
+Optimize a model with 15 rows, 28 columns and 35 nonzeros
+Found heuristic solution: objective -3e+06
+Presolve removed 15 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.000000000000e+06, best bound -4.000000000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Mon Jul 14 11:11:34 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 18 rows, 28 columns, 44 nonzeros
+Optimize a model with 18 rows, 28 columns and 44 nonzeros
+Found heuristic solution: objective -3e+06
+Presolve removed 18 rows and 28 columns
+Presolve time: 0.01s
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.000000000000e+06, best bound -3.000000000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Mon Jul 14 11:13:11 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 18 rows, 28 columns, 42 nonzeros
+Optimize a model with 18 rows, 28 columns and 42 nonzeros
+Found heuristic solution: objective -3e+06
+Presolve removed 18 rows and 28 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.000000000000e+06, best bound -3.000000000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Mon Jul 14 17:58:32 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 18 rows, 38 columns, 40 nonzeros
+Optimize a model with 18 rows, 38 columns and 40 nonzeros
+Found heuristic solution: objective -3.9959e+06
+Presolve removed 18 rows and 38 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.995904000000e+06, best bound -3.995904000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Mon Jul 14 17:59:22 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 26 columns, 36 nonzeros
+Optimize a model with 14 rows, 26 columns and 36 nonzeros
+Found heuristic solution: objective -3.9959e+06
+Presolve removed 14 rows and 26 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.995904000000e+06, best bound -3.995904000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Mon Jul 14 18:15:18 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 26 columns, 36 nonzeros
+Optimize a model with 14 rows, 26 columns and 36 nonzeros
+Found heuristic solution: objective -3.99989e+06
+Presolve removed 14 rows and 26 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.999888000000e+06, best bound -3.999888000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 10:34:11 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 26 columns, 34 nonzeros
+Optimize a model with 14 rows, 26 columns and 34 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 26 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 10:39:39 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 22 columns, 36 nonzeros
+Optimize a model with 14 rows, 22 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 22 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 10:41:40 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 22 columns, 36 nonzeros
+Optimize a model with 14 rows, 22 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 22 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 10:46:06 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 22 columns, 36 nonzeros
+Optimize a model with 14 rows, 22 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 22 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:00:56 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Warning: unknown variable 'z_a1_p2_q2a' in integer section
+Warning: unknown variable 'z_a2_p2_q2a' in integer section
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 24 columns, 36 nonzeros
+Optimize a model with 14 rows, 24 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:02:19 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 24 columns, 36 nonzeros
+Optimize a model with 14 rows, 24 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:08:06 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 24 columns, 36 nonzeros
+Optimize a model with 14 rows, 24 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:15:48 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 10 rows, 22 columns, 24 nonzeros
+Optimize a model with 10 rows, 22 columns and 24 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 10 rows and 22 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:43:13 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 24 columns, 36 nonzeros
+Optimize a model with 14 rows, 24 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:44:23 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 24 columns, 36 nonzeros
+Optimize a model with 14 rows, 24 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 11:46:50 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 24 columns, 36 nonzeros
+Optimize a model with 14 rows, 24 columns and 36 nonzeros
+Found heuristic solution: objective -1.99994e+06
+Presolve removed 14 rows and 24 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999944000000e+06, best bound -1.999944000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 15:53:30 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 14 rows, 16 columns, 36 nonzeros
+Optimize a model with 14 rows, 16 columns and 36 nonzeros
+Found heuristic solution: objective -1.99993e+06
+Presolve removed 6 rows and 6 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 20 nonzeros
+Variable types: 0 continuous, 10 integer (10 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -1999928.0 -1999930.0  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.01 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.999928000000e+06, best bound -1.999928000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 16:21:38 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 18 columns, 38 nonzeros
+Optimize a model with 15 rows, 18 columns and 38 nonzeros
+Found heuristic solution: objective -4.44444e+07
+Presolve removed 15 rows and 18 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.444444444444e+07, best bound -4.444444444444e+07, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 16:22:15 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 18 columns, 38 nonzeros
+Optimize a model with 15 rows, 18 columns and 38 nonzeros
+Found heuristic solution: objective -4.64444e+07
+Presolve removed 7 rows and 8 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 20 nonzeros
+Variable types: 0 continuous, 10 integer (10 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -4.644e+07 -4.644e+07  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.644437244444e+07, best bound -4.644437244444e+07, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 16:24:14 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 18 columns, 38 nonzeros
+Optimize a model with 15 rows, 18 columns and 38 nonzeros
+Found heuristic solution: objective -4.64444e+07
+Presolve removed 7 rows and 8 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 20 nonzeros
+Variable types: 0 continuous, 10 integer (10 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -4.644e+07 -4.644e+07  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.644437244444e+07, best bound -4.644437244444e+07, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 16:24:41 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 18 columns, 38 nonzeros
+Optimize a model with 15 rows, 18 columns and 38 nonzeros
+Found heuristic solution: objective -4.64444e+07
+Presolve removed 7 rows and 8 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 20 nonzeros
+Variable types: 0 continuous, 10 integer (10 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -4.644e+07 -4.644e+07  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.644437244444e+07, best bound -4.644437244444e+07, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 16:25:33 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 18 columns, 38 nonzeros
+Optimize a model with 15 rows, 18 columns and 38 nonzeros
+Found heuristic solution: objective -4.64444e+07
+Presolve removed 7 rows and 8 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 20 nonzeros
+Variable types: 0 continuous, 10 integer (10 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -4.644e+07 -4.644e+07  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.644437244444e+07, best bound -4.644437244444e+07, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Tue Jul 15 16:30:50 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 15 rows, 18 columns, 38 nonzeros
+Optimize a model with 15 rows, 18 columns and 38 nonzeros
+Found heuristic solution: objective -3.99993e+06
+Presolve removed 7 rows and 8 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 20 nonzeros
+Variable types: 0 continuous, 10 integer (10 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -3999928.0 -3999928.0  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.999928000000e+06, best bound -3.999928000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Wed Jul 16 16:22:03 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+WARNING: Numeric variable name in LP file ('0.36') - often the result
+         of a constant term in the left-hand side of a constraint.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 17 rows, 19 columns, 45 nonzeros
+Optimize a model with 17 rows, 19 columns and 45 nonzeros
+Found heuristic solution: objective -3.99993e+06
+Presolve removed 7 rows and 7 columns
+Presolve time: 0.00s
+Presolved: 10 rows, 12 columns, 26 nonzeros
+Variable types: 0 continuous, 12 integer (12 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -3999928.0 -3999928.0  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.01 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.999928000000e+06, best bound -3.999928000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Wed Jul 16 16:31:10 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 17 rows, 18 columns, 44 nonzeros
+Optimize a model with 17 rows, 18 columns and 44 nonzeros
+Found heuristic solution: objective -3.99993e+06
+Presolve removed 7 rows and 6 columns
+Presolve time: 0.00s
+Presolved: 10 rows, 12 columns, 26 nonzeros
+Variable types: 0 continuous, 12 integer (12 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -3999928.0 -3999928.0  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.999928000000e+06, best bound -3.999928000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Wed Jul 16 16:31:23 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+WARNING: Numeric variable name in LP file ('.3') - often the result
+         of a constant term in the left-hand side of a constraint.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 17 rows, 19 columns, 45 nonzeros
+Optimize a model with 17 rows, 19 columns and 45 nonzeros
+Found heuristic solution: objective -3.99993e+06
+Presolve removed 7 rows and 7 columns
+Presolve time: 0.00s
+Presolved: 10 rows, 12 columns, 26 nonzeros
+Variable types: 0 continuous, 12 integer (12 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -3999928.0 -3999928.0  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.999928000000e+06, best bound -3.999928000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
+
+Gurobi 5.6.0 (mac64) logging started Wed Jul 16 16:31:32 2014
+
+
+Gurobi Optimizer version 5.6.0 build 12784 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file example.lp
+Reading time = 0.00 seconds
+(null): 17 rows, 18 columns, 44 nonzeros
+Optimize a model with 17 rows, 18 columns and 44 nonzeros
+Found heuristic solution: objective -3.99993e+06
+Presolve removed 7 rows and 6 columns
+Presolve time: 0.00s
+Presolved: 10 rows, 12 columns, 26 nonzeros
+Variable types: 0 continuous, 12 integer (12 binary)
+
+Root relaxation: cutoff, 3 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0     cutoff    0      -3999928.0 -3999928.0  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.999928000000e+06, best bound -3.999928000000e+06, gap 0.0%
+
+Wrote result file 'example.sol'
+
