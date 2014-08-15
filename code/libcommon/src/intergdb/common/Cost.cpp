@@ -4,24 +4,13 @@ using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
 
-vector<Partition *> Cost::getUsedPartitionsOverlapping(
-  Partitioning const & partitioning, std::vector<Attribute> const & attributes, 
-  Query const & query)
+vector<Partition *> Cost::getUsedPartitions(Partitioning const & partitioning, 
+  std::vector<Attribute> const & attributes, Query const & query)
 {
   vector<Partition *> usedPartitions;
   // TODO
   return usedPartitions;
 }
-
-vector<Partition *> Cost::getUsedPartitionsNonOverlapping(
-  Partitioning const & partitioning, std::vector<Attribute> const & attributes, 
-  Query const & query)
-{
-  vector<Partition *> usedPartitions;
-  // TODO
-  return usedPartitions;
-}
-
 
 double Cost::getIOCost(Partitioning const & partitioning, QueryWorkload const & workload) 
 {
