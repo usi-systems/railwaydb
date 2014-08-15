@@ -10,7 +10,7 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload) 
+Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double storageThreshold) 
 {
     Partitioning part;
     assert(false);

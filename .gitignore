@@ -2,11 +2,15 @@
 *.d
 *~
 *.log
+*.swp
 code/libcommon/bin/
 code/libintergdb/bin/
 code/liboptimizer/bin/
 code/simulation/bin/
 code/simulation/expData/
 code/test/OptimizerTest/bin/
+code/test/ClusteringCoefficientTest/bin/
+code/test/SimpleTest/bin/
+code/test/SpanningTreeTest/bin/
 docs/paper/output/
 docs/workshop/output/

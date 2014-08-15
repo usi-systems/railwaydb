@@ -47,7 +47,7 @@ double OptimalCommon::K()
 
 double OptimalCommon::alpha()
 {
-    return 3.78;
+    return storageThreshold_;
 }
 
 int OptimalCommon::s(std::vector<Attribute> const & attributes)
@@ -238,12 +238,14 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 }
 
 
-Partitioning OptimalCommon::solve(QueryWorkload const & workload)
+Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storageThreshold)
 {
     int error = 0;
     gurobi_ctx ctx;
     var_env e;
- 
+
+    storageThreshold_ = storageThreshold;
+
     create_env(&e, &workload);
 
     init_ctx(&e, &ctx);
