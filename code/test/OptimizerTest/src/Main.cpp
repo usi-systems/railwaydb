@@ -87,7 +87,7 @@ void test(TestFunct testFunc, Solver solver)
     testFunc(workload, storageOverheadThreshold);
     cout << "query workload: " << workload.toString() << endl;
     cout << "storage overhead threshold: " << storageOverheadThreshold << endl;
-    Partitioning partitioning = solver->solve(workload); //, storageOverheadThreshold);
+    Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
     // TODO: verification
 }
 

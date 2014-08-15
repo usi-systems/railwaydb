@@ -43,7 +43,7 @@ class OptimalCommon : public Solver
 public:
     OptimalCommon() {}
     virtual ~OptimalCommon() {}
-    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
 
 protected:
     virtual int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload) = 0;   
@@ -65,7 +65,7 @@ protected:
     void objective(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload);
     int solve_model(var_env *e, gurobi_ctx *ctx);
     void cleanup(var_env *e, gurobi_ctx *ctx);
-
+    double storageThreshold_;
 };
 
 } }
