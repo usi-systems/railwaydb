@@ -37,15 +37,13 @@ int main()
 
     QueryWorkload workload; 
 
-    Solver * solver = SolverFactory::instance().makeOptimalOverlapping();    
+    auto solver = SolverFactory::instance().makeOptimalOverlapping();    
 
     nov_ex1(&workload);
 
     cerr << workload.toString() << endl;
 
-    Partitioning * partitioning = solver->solve(&workload);
-    delete solver;
-    delete partitioning;
+    Partitioning partitioning = solver->solve(workload);
     return 0;    
 }
  

@@ -12,7 +12,7 @@ class SinglePartition : public Solver
 public:
     SinglePartition() { }
     ~SinglePartition() { } 
-    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload);
 };
 
 } }

@@ -10,14 +10,14 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning * PartitionPerAttribute::solve(QueryWorkload * workload) 
+Partitioning PartitionPerAttribute::solve(QueryWorkload const & workload) 
 {
-    Partitioning * partitioning = new Partitioning();
+    Partitioning partitioning;
     Partition * partition;
-    for (auto & attribute : workload->getAttributes()) {
+    for (auto & attribute : workload.getAttributes()) {
         partition = new Partition();
         partition->addAttribute(&attribute);
-        partitioning->addPartition(partition);
+        partitioning.addPartition(partition);
     }  
     return partitioning;
 }

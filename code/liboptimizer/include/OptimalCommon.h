@@ -43,10 +43,10 @@ class OptimalCommon : public Solver
 public:
     OptimalCommon() {}
     virtual ~OptimalCommon() {}
-    intergdb::common::Partitioning * solve(intergdb::common::QueryWorkload * workload);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload);
 
 protected:
-    virtual int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload * workload) = 0;   
+    virtual int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload) = 0;   
 
     int x(var_env *e, int a, int p);
     int y(var_env *e, int p, int q);
@@ -59,10 +59,10 @@ protected:
     double alpha();
     int accesses(std::vector<intergdb::common::Query> const & queries, int q, int a);   
     void name_variables(var_env *e, char** vname);
-    void create_env(var_env *e, intergdb::common::QueryWorkload * workload);
+    void create_env(var_env *e, intergdb::common::QueryWorkload const * workload);
     void init_ctx(var_env *e, gurobi_ctx* ctx);
     void variables(var_env *e, gurobi_ctx *ctx);   
-    void objective(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload * workload);
+    void objective(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload);
     int solve_model(var_env *e, gurobi_ctx *ctx);
     void cleanup(var_env *e, gurobi_ctx *ctx);
 

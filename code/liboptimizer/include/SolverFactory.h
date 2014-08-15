@@ -10,12 +10,12 @@ class SolverFactory
 {
 public:
     static SolverFactory & instance(); // TODO: this better returns a reference
-    Solver * makeOptimalOverlapping(); // TODO: These could all return references
-    Solver * makeOptimalNonOverlapping();
-    Solver * makeHeuristicOverlapping();
-    Solver * makeHeuristicNonOverlapping();
-    Solver * makeSinglePartition();
-    Solver * makePartitionPerAttribute();
+    std::shared_ptr<Solver> makeOptimalOverlapping(); // TODO: These could all return references
+    std::shared_ptr<Solver> makeOptimalNonOverlapping();
+    std::shared_ptr<Solver> makeHeuristicOverlapping();
+    std::shared_ptr<Solver> makeHeuristicNonOverlapping();
+    std::shared_ptr<Solver> makeSinglePartition();
+    std::shared_ptr<Solver> makePartitionPerAttribute();
 
 private:
     SolverFactory() {}

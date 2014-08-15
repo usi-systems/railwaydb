@@ -17,7 +17,7 @@ public:
     ~OptimalOverlapping() {}
 
 private:
-    int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload * workload) ;
+    int constraints(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload) ;
 
 };
 
