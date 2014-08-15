@@ -60,7 +60,7 @@ Subject To
   10000 u_p2 - x_a1_p2 - x_a2_p2 >= 0
   28 u_p1 + 28 u_p2 
   + 8 x_a1_p1 + 8 x_a2_p1 
-  + 8 x_a1_p2 + 8 x_a2_p2 <= 44
+  + 8 x_a1_p2 + 8 x_a2_p2 <= 48.4
 Binary
   x_a1_p1 x_a2_p1 x_a1_p2 x_a2_p2 
   y_p1_q1 y_p1_q2 y_p2_q1 y_p2_q2 
