@@ -76,14 +76,14 @@ void nov_ex2_verify(Partitioning const & partitioning)
          throw runtime_error("nov_ex2_verify: partition size is not equal to 2");
     auto const & attributes = part->getAttributes();
     Attribute const * smallAttribute, * largeAttribute;
-    if ((*attributes.begin())->getIndex()==(*attributes.end())->getIndex()) {
+    if ((*attributes.begin())->getIndex()==(*(++attributes.begin()))->getIndex()) {
         throw runtime_error("nov_ex2_verify: attributes in partition has same index");
-    } else if ((*attributes.begin())->getIndex()>(*attributes.end())->getIndex()) {
-        largeAttribute = (*attributes.begin());
-        smallAttribute = (*attributes.end());
+    } else if ((*attributes.begin())->getIndex()>(*(++attributes.begin()))->getIndex()) {
+        largeAttribute = *attributes.begin();
+        smallAttribute = *(++attributes.begin());
     } else {
-        smallAttribute = (*attributes.begin());
-        largeAttribute = (*attributes.end());
+        smallAttribute = *attributes.begin();
+        largeAttribute = *(++attributes.begin());
     }
     if (smallAttribute->getIndex()!=0)
         throw runtime_error("nov_ex2_verify: small attribute has index other than 0");
@@ -116,14 +116,14 @@ void nov_ex3_verify(Partitioning const & partitioning)
          throw runtime_error("nov_ex3_verify: partition size is not equal to 2");
     auto const & attributes = part->getAttributes();
     Attribute const * smallAttribute, * largeAttribute;
-    if ((*attributes.begin())->getIndex()==(*attributes.end())->getIndex()) {
+    if ((*attributes.begin())->getIndex()==(*(++attributes.begin()))->getIndex()) {
         throw runtime_error("nov_ex3_verify: attributes in partition has same index");
-    } else if ((*attributes.begin())->getIndex()>(*attributes.end())->getIndex()) {
-        largeAttribute = (*attributes.begin());
-        smallAttribute = (*attributes.end());
+    } else if ((*attributes.begin())->getIndex()>(*(++attributes.begin()))->getIndex()) {
+        largeAttribute = *attributes.begin();
+        smallAttribute = *(++attributes.begin());
     } else {
-        smallAttribute = (*attributes.begin());
-        largeAttribute = (*attributes.end());
+        smallAttribute = *attributes.begin();
+        largeAttribute = *(++attributes.begin());
     }
     if (smallAttribute->getIndex()!=0)
         throw runtime_error("nov_ex3_verify: small attribute has index other than 0");
@@ -175,14 +175,14 @@ void ov_ex1_verify(Partitioning const & partitioning)
      {
         auto const & attributes = largePart->getAttributes();
         Attribute const * smallAttribute, * largeAttribute;
-        if ((*attributes.begin())->getIndex()==(*attributes.end())->getIndex()) {
+        if ((*attributes.begin())->getIndex()==(*(++attributes.begin()))->getIndex()) {
             throw runtime_error("ov_ex1_verify: attributes in large partition has same index");
-        } else if ((*attributes.begin())->getIndex()>(*attributes.end())->getIndex()) {
+        } else if ((*attributes.begin())->getIndex()>(*(++attributes.begin()))->getIndex()) {
             largeAttribute = *attributes.begin();
-            smallAttribute = *attributes.end();
+            smallAttribute = *(++attributes.begin());
         } else {
             smallAttribute = *attributes.begin();
-            largeAttribute = *attributes.end();
+            largeAttribute = *(++attributes.begin());
         }
         if (smallAttribute->getIndex()!=0)
             throw runtime_error("ov_ex1_verify: small attribute in large partition has index other than 0");
@@ -213,14 +213,14 @@ void ov_ex2_verify(Partitioning const & partitioning)
          throw runtime_error("ov_ex2_verify: partition size is not equal to 2");
     auto const & attributes = part->getAttributes();
     Attribute const * smallAttribute, * largeAttribute;
-    if ((*attributes.begin())->getIndex()==(*attributes.end())->getIndex()) {
+    if ((*attributes.begin())->getIndex()==(*(++attributes.begin()))->getIndex()) {
         throw runtime_error("ov_ex2_verify: attributes in partition has same index");
-    } else if ((*attributes.begin())->getIndex()>(*attributes.end())->getIndex()) {
-        largeAttribute = (*attributes.begin());
-        smallAttribute = (*attributes.end());
+    } else if ((*attributes.begin())->getIndex()>(*(++attributes.begin()))->getIndex()) {
+        largeAttribute = *attributes.begin();
+        smallAttribute = *(++attributes.begin());
     } else {
         smallAttribute = (*attributes.begin());
-        largeAttribute = (*attributes.end());
+        largeAttribute = *(++attributes.begin());
     }
     if (smallAttribute->getIndex()!=0)
         throw runtime_error("ov_ex2_verify: small attribute has index other than 0");
