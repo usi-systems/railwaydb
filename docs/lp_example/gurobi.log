@@ -811,3 +811,172 @@ Best objective -3.999928000000e+06, best bound -3.999928000000e+06, gap 0.0%
 
 Wrote result file 'example.sol'
 
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:39:28 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+
+ERROR 10003: Unable to open file '.lp' for input
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:39:34 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+
+ERROR 10003: Unable to open file '.lp' for input
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:39:54 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+
+ERROR 10003: Unable to open file 'nov-ex1.lp.lp' for input
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:39:59 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file nov-ex1.lp
+Reading time = 0.05 seconds
+(null): 23 rows, 18 columns, 58 nonzeros
+Optimize a model with 23 rows, 18 columns and 58 nonzeros
+Found heuristic solution: objective 88
+Presolve removed 15 rows and 11 columns
+Presolve time: 0.01s
+Presolved: 8 rows, 7 columns, 22 nonzeros
+Variable types: 0 continuous, 7 integer (6 binary)
+
+Root relaxation: objective 7.200000e+01, 3 iterations, 0.01 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0      72.0000000   72.00000  0.00%     -    0s
+
+Explored 0 nodes (3 simplex iterations) in 0.05 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.200000000000e+01, best bound 7.200000000000e+01, gap 0.0%
+
+Wrote result file 'nov-ex1.sol'
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:40:01 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file nov-ex2.lp
+Reading time = 0.00 seconds
+(null): 23 rows, 18 columns, 58 nonzeros
+Optimize a model with 23 rows, 18 columns and 58 nonzeros
+Found heuristic solution: objective 88
+Presolve removed 23 rows and 18 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 8.800000000000e+01, best bound 8.800000000000e+01, gap 0.0%
+
+Wrote result file 'nov-ex2.sol'
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:40:03 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file nov-ex3.lp
+Reading time = 0.00 seconds
+(null): 23 rows, 18 columns, 66 nonzeros
+Optimize a model with 23 rows, 18 columns and 66 nonzeros
+Found heuristic solution: objective 88
+Presolve removed 19 rows and 15 columns
+Presolve time: 0.00s
+Presolved: 4 rows, 3 columns, 10 nonzeros
+Variable types: 0 continuous, 3 integer (2 binary)
+
+Root relaxation: cutoff, 0 iterations, 0.00 seconds
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 8.800000000000e+01, best bound 8.800000000000e+01, gap 0.0%
+
+Wrote result file 'nov-ex3.sol'
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:40:08 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file ov-ex1.lp
+Reading time = 0.00 seconds
+(null): 34 rows, 18 columns, 92 nonzeros
+Optimize a model with 34 rows, 18 columns and 92 nonzeros
+Found heuristic solution: objective 108
+Presolve removed 4 rows and 0 columns
+Presolve time: 0.00s
+Presolved: 30 rows, 18 columns, 92 nonzeros
+Variable types: 0 continuous, 18 integer (18 binary)
+
+Root relaxation: objective 6.600000e+01, 18 iterations, 0.00 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   66.00000    0    1  108.00000   66.00000  38.9%     -    0s
+H    0     0                      80.0000000   66.00000  17.5%     -    0s
+     0     0 infeasible    0        80.00000   76.00008  5.00%     -    0s
+
+Explored 0 nodes (31 simplex iterations) in 0.03 seconds
+Thread count was 8 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 8.000000000000e+01, best bound 8.000000000000e+01, gap 0.0%
+
+Wrote result file 'ov-ex1.sol'
+
+
+Gurobi 5.6.3 (mac64) logging started Fri Aug 15 12:40:09 2014
+
+
+Gurobi Optimizer version 5.6.3 build v5.6.3rc2 (mac64)
+Copyright (c) 2013, Gurobi Optimization, Inc.
+
+Read LP format model from file ov-ex2.lp
+Reading time = 0.00 seconds
+(null): 34 rows, 18 columns, 92 nonzeros
+Optimize a model with 34 rows, 18 columns and 92 nonzeros
+Found heuristic solution: objective 88
+Presolve removed 34 rows and 18 columns
+Presolve time: 0.00s
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 8 available processors)
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 8.800000000000e+01, best bound 8.800000000000e+01, gap 0.0%
+
+Wrote result file 'ov-ex2.sol'
+
