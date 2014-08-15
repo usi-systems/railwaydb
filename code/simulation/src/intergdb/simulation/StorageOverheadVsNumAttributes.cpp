@@ -19,14 +19,10 @@ using namespace intergdb::optimizer;
 
 void StorageOverheadVsNumAttributes::process() 
 {
-  cerr << "This is a sample experiment with name: " 
-    << this->getClassName() << endl;
-  
+
   SimulationConf simConf;
   Cost cost;
-  QueryWorkload workload = simConf.getQueryWorkload();
   double storageOverheadThreshold = 0.0;
-  cerr << workload.toString() << endl;
 
   mt19937 rgen;
   uniform_real_distribution<> udist(0, 10);
@@ -40,18 +36,28 @@ void StorageOverheadVsNumAttributes::process()
   exp.setKeepValues(false);
   exp.open();
 
-  for (auto solver : { SolverFactory::instance().makeSinglePartition(), 
-              SolverFactory::instance().makePartitionPerAttribute(), 
-              SolverFactory::instance().makeOptimalOverlapping()
-              }) {
-      cerr << "Running with solver: "
-           << solver->getClassName() << endl;
-      Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-      exp.addRecord();
-      exp.setFieldValue("solver", solver->getClassName());
-      exp.setFieldValue("attributes", workload.getAttributes().size());
-      exp.setFieldValue("storage", cost.getStorageOverhead(partitioning, workload));
-  }
+  int numRuns = 3;
 
+  auto solvers = { SolverFactory::instance().makeSinglePartition(), 
+                     SolverFactory::instance().makePartitionPerAttribute()};
+
+
+  auto attributeCounts = {10, 20, 30, 40, 50};
+
+  for (int attributeCount : attributeCounts) {
+      simConf.setAttributeCount(attributeCount);
+      QueryWorkload workload = simConf.getQueryWorkload();
+      for (auto solver : solvers) {
+          for (int i = 0; i < numRuns; i++) {
+              Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
+              exp.addRecord();
+              exp.setFieldValue("solver", solver->getClassName());
+              exp.setFieldValue("attributes", workload.getAttributes().size());
+              exp.setFieldValue("storage", cost.getStorageOverhead(partitioning, workload));
+          }         
+      }
+  }
+  
   exp.close();
+
 };
