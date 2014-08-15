@@ -10,6 +10,7 @@ int main()
 {
     (RunningTimeVsNumAttributes()).run();
     (QueryIOVsNumAttributes()).run();
+    (StorageOverheadVsNumAttributes()).run();
     return EXIT_SUCCESS;
 }
 

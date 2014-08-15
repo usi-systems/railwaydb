@@ -17,7 +17,7 @@ using namespace intergdb::common;
 using namespace intergdb::simulation;
 using namespace intergdb::optimizer;
 
-void QueryIOVsNumAttributes::process() 
+void StorageOverheadVsNumAttributes::process() 
 {
   cerr << "This is a sample experiment with name: " 
     << this->getClassName() << endl;
@@ -32,23 +32,25 @@ void QueryIOVsNumAttributes::process()
   uniform_real_distribution<> udist(0, 10);
 
   ExperimentalData exp(getClassName());
-  exp.setDescription("This experiment compares the query io vs. the number of attributes for each of the partitioning methods.");
+  exp.setDescription("This experiment compares the query storage vs. the number of attributes for each of the partitioning methods.");
 
   exp.addField("solver");
   exp.addField("attributes");
-  exp.addField("io");
+  exp.addField("storage");
   exp.setKeepValues(false);
   exp.open();
 
   for (auto solver : { SolverFactory::instance().makeSinglePartition(), 
-                       SolverFactory::instance().makePartitionPerAttribute()}) {
+              SolverFactory::instance().makePartitionPerAttribute(), 
+              SolverFactory::instance().makeOptimalOverlapping()
+              }) {
       cerr << "Running with solver: "
            << solver->getClassName() << endl;
       Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
       exp.addRecord();
       exp.setFieldValue("solver", solver->getClassName());
       exp.setFieldValue("attributes", workload.getAttributes().size());
-      exp.setFieldValue("io", cost.getIOCost(partitioning, workload));
+      exp.setFieldValue("storage", cost.getStorageOverhead(partitioning, workload));
   }
 
   exp.close();
