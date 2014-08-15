@@ -130,8 +130,8 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
     for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
             part.addAttribute(&attr);            
         });
-    cerr << 
-    double limit = 1 + alpha() / (1 - (s(workload->getAttributes()) * c_e()) / cost.getPartitionSize(part));
+    
+    double limit = 1.0 + alpha() /  (1.0 - (s(workload->getAttributes()) * c_e()) / cost.getPartitionSize(part));
 
     /* 6th set of constraints */    
     j = 0;
