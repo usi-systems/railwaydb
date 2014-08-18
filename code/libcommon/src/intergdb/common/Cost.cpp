@@ -1,6 +1,8 @@
 #include <intergdb/common/Cost.h>
 #include <intergdb/common/SystemConstants.h>
 
+#include <iostream>
+
 using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
@@ -14,7 +16,7 @@ vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partition
     remainingAttributes.insert(&attribute);
   vector<Partition const *> usedPartitions;
   unordered_set<Partition const *> unusedPartitions;
-  for (Partition const partition: partitioning.getPartitions())
+  for (Partition const & partition: partitioning.getPartitions()) 
     unusedPartitions.insert(&partition);
   unordered_set<Attribute const *> queryAttributes;
   for (Attribute const * attribute : query.getAttributes())
