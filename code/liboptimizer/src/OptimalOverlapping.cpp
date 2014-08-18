@@ -22,6 +22,7 @@ using namespace intergdb::optimizer;
 
 int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload)
 {
+    cerr << "A" << endl;
     int error = 0;
     int j = 0;
     std::vector<Query> const & queries = workload->getQueries();
@@ -38,6 +39,7 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
                               GRB_GREATER_EQUAL, 1.0, NULL);
         if (error) return error;
     }
+    cerr << "B" << endl;
 
     /* Second set of constraints */    
     for (int a = 0; a < e->A; ++a) {
@@ -55,6 +57,7 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
 
         }
     }
+    cerr << "C" << endl;
 
     /* Third set of constraints */    
     for (int a = 0; a < e->A; ++a) {
@@ -70,6 +73,8 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
             }
         }
     }
+    cerr << "D" << endl;
+
 
     /* Fourth set of constraints */    
     for (int p = 0; p < e->P; ++p) {
@@ -87,7 +92,8 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
             if (error) return error;
         }
     }
-    
+    cerr << "E" << endl;
+
     /* Fifth set of constraints */    
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {

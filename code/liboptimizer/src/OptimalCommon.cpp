@@ -46,17 +46,17 @@ private:
 
 int OptimalCommon::x(var_env *e, int a, int p)
 {
-    return (e->x_offset) + (a * e->A + p);
+    return (e->x_offset) + (a * e->P + p);
 }
 
 int OptimalCommon::y(var_env *e, int p, int q)
 {
-    return (e->y_offset) + (p * e->P + q);
+    return (e->y_offset) + (p * e->Q + q);
 }
 
 int OptimalCommon::z(var_env *e, int a, int p, int q)
 {
-    return (e->z_offset) + ((a * e->A * e->P) + (p * e->P) + q);
+    return (e->z_offset) + ((q * e->A * e->P) + (a * e->P) + p);
 }
 
 int OptimalCommon::u(var_env *e, int p)
