@@ -33,7 +33,7 @@ LDFLAGS   =  -L $(GUROBI_HOME)/lib \
 
 ## Implicit Section: change the following only when necessary.
 CXX      = clang++ 
-CXXFLAGS = -g -fPIC -Wall -stdlib=libc++ -std=c++11 
+CXXFLAGS = -g -O2 -fPIC -Wall -stdlib=libc++ -std=c++11 
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
 INCDIRS  = $(shell find $(INCDIR) -type d)
 INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)
