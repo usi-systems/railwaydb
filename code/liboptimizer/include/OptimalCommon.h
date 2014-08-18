@@ -59,6 +59,7 @@ protected:
     double alpha();
     int accesses(std::vector<intergdb::common::Query> const & queries, int q, int a);   
     void name_variables(var_env *e, char** vname);
+    void print_name_variables(var_env *e, char** vname);
     void create_env(var_env *e, intergdb::common::QueryWorkload const * workload);
     void init_ctx(var_env *e, gurobi_ctx* ctx);
     void variables(var_env *e, gurobi_ctx *ctx);   
