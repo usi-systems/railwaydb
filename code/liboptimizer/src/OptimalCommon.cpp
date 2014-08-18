@@ -109,7 +109,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
         for (int p = 0; p < e->P; ++p) {
             std::ostringstream oss;
             oss << "x_a" << (a+1) << "_p" << (p+1);
-             vname[j] = strdup(oss.str().c_str());
+            vname[j] = strdup(oss.str().c_str());
             j++;
         }
     }
@@ -220,7 +220,7 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
     
     /* give variables meaningful names */    
     name_variables(e, ctx->vname);
-    print_name_variables(e, ctx->vname);
+//    print_name_variables(e, ctx->vname);
 
 }
 
@@ -301,8 +301,8 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 {
     if (ctx->vname) {
         delete [] ctx->vname;
-        for(int i = 0; i < e->num_vars; ++i) 
-            free(ctx->vname[i]);
+        //for(int i = 0; i < e->num_vars; ++i) 
+        //    free(ctx->vname[i]);
     }
     if (ctx->obj) delete [] ctx->obj;
     if (ctx->vtype) delete [] ctx->vtype;
