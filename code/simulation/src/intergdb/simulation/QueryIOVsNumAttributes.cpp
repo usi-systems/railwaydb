@@ -40,7 +40,7 @@ void QueryIOVsNumAttributes::process()
   exp.open();
 
   auto solvers = { SolverFactory::instance().makeSinglePartition(), 
-                     SolverFactory::instance().makePartitionPerAttribute()};
+                   SolverFactory::instance().makePartitionPerAttribute()};
   
   auto attributeCounts = {10, 20, 30, 40, 50};
 
