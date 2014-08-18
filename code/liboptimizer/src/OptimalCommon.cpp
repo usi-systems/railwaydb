@@ -147,8 +147,6 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     }
 
     cerr << e->num_vars <<  " " << j << endl;
-
->>>>>>> 9fc615141f657854cdbf078a886ea5f3146310a6
 }
 
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
