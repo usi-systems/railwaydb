@@ -1,6 +1,7 @@
 #include <intergdb/simulation/Experiments.h>
 #include <intergdb/simulation/ExperimentalData.h>
 #include <intergdb/simulation/SimulationConf.h>
+#include <intergdb/util/RunningStat.h>
 
 #include <intergdb/common/Cost.h>
 
@@ -19,13 +20,12 @@ using namespace intergdb::optimizer;
 
 void QueryIOVsNumAttributes::process() 
 {
-  cerr << "This is a sample experiment with name: " 
+  cerr << "This is an experiment with name: " 
     << this->getClassName() << endl;
   
   SimulationConf simConf;
   Cost cost;
   double storageOverheadThreshold = 0.0;
-  //cerr << workload.toString() << endl;
   
   mt19937 rgen;
   uniform_real_distribution<> udist(0, 10);
@@ -48,17 +48,21 @@ void QueryIOVsNumAttributes::process()
 
   auto attributeCounts = {10, 20, 30, 40, 50};
 
+  util::RunningStat io;
+
   for (int attributeCount : attributeCounts) {
       simConf.setAttributeCount(attributeCount);
       QueryWorkload workload = simConf.getQueryWorkload();
       for (auto solver : solvers) {
           for (int i = 0; i < numRuns; i++) {
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-              exp.addRecord();
-              exp.setFieldValue("solver", solver->getClassName());
-              exp.setFieldValue("attributes", workload.getAttributes().size());
-              exp.setFieldValue("io", cost.getIOCost(partitioning, workload));
+              io.Push(cost.getIOCost(partitioning, workload));
           }         
+          exp.addRecord();
+          exp.setFieldValue("solver", solver->getClassName());
+          exp.setFieldValue("attributes", workload.getAttributes().size());
+          exp.setFieldValue("io", io.Mean());
+          io.Clear();
       }
   }
 
