@@ -39,8 +39,9 @@ void StorageOverheadVsNumAttributes::process()
   int numRuns = 3;
 
   auto solvers = { SolverFactory::instance().makeSinglePartition(), 
-                     SolverFactory::instance().makePartitionPerAttribute()};
-
+                   SolverFactory::instance().makePartitionPerAttribute(),
+                   SolverFactory::instance().makeOptimalOverlapping(), 
+                   SolverFactory::instance().makeOptimalNonOverlapping() };
 
   auto attributeCounts = {10, 20, 30, 40, 50};
 

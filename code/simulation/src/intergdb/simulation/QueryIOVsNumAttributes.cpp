@@ -39,24 +39,29 @@ void QueryIOVsNumAttributes::process()
   exp.setKeepValues(false);
   exp.open();
 
+  int numRuns = 3;
+
   auto solvers = { SolverFactory::instance().makeSinglePartition(), 
-                   SolverFactory::instance().makePartitionPerAttribute()};
-  
+                   SolverFactory::instance().makePartitionPerAttribute(),
+                   SolverFactory::instance().makeOptimalOverlapping(), 
+                   SolverFactory::instance().makeOptimalNonOverlapping() };
+
   auto attributeCounts = {10, 20, 30, 40, 50};
 
   for (int attributeCount : attributeCounts) {
       simConf.setAttributeCount(attributeCount);
       QueryWorkload workload = simConf.getQueryWorkload();
       for (auto solver : solvers) {
-          cerr << "Running with solver: "
-               << solver->getClassName() << endl;
-          Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-          exp.addRecord();
-          exp.setFieldValue("solver", solver->getClassName());
-          exp.setFieldValue("attributes", workload.getAttributes().size());
-          exp.setFieldValue("io", cost.getIOCost(partitioning, workload));
+          for (int i = 0; i < numRuns; i++) {
+              Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
+              exp.addRecord();
+              exp.setFieldValue("solver", solver->getClassName());
+              exp.setFieldValue("attributes", workload.getAttributes().size());
+              exp.setFieldValue("io", cost.getIOCost(partitioning, workload));
+          }         
       }
   }
+
 
   exp.close();
 };

@@ -60,16 +60,15 @@ void RunningTimeVsNumAttributes::process()
       simConf.setAttributeCount(attributeCount);
       QueryWorkload workload = simConf.getQueryWorkload();
       for (auto solver : solvers) {
-          for (int i = 0; i < numRuns; i++) {
-
-              timer.start();
+          timer.start();
+          for (int i = 0; i < numRuns; i++) {                           
               solver->solve(workload, storageOverheadThreshold); 
-              timer.stop();
-              exp.addRecord();
-              exp.setFieldValue("solver", solver->getClassName());
-              exp.setFieldValue("attributes", workload.getAttributes().size());
-              exp.setFieldValue("time", timer.getRealTimeInSeconds());
           }
+          timer.stop();
+          exp.addRecord();
+          exp.setFieldValue("solver", solver->getClassName());
+          exp.setFieldValue("attributes", workload.getAttributes().size());
+          exp.setFieldValue("time", timer.getRealTimeInSeconds()/numRuns);
       }
   }
 
