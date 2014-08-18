@@ -108,7 +108,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             std::ostringstream oss;
-            oss << "x_a" << a+1 << "_p" << p+1;
+            oss << "x_a" << (a+1) << "_p" << (p+1);
              vname[j] = strdup(oss.str().c_str());
              //vname[j] = const_cast <char*>(oss.str().c_str());
             //vname[j] = strdup(“x_a” + to_string(a+1) + "_p" + to_string(p+1)).c_str());
@@ -119,7 +119,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             std::ostringstream oss;            
-            oss << "y_p" << p+1 << "_q" << q+1;
+            oss << "y_p" << (p+1) << "_q" << (q+1);
             //vname[j] = const_cast <char*>(oss.str().c_str());
             vname[j] = strdup(oss.str().c_str());
             j++;
@@ -130,7 +130,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
         for (int p = 0; p < e->P; ++p) {
             for (int q = 0; q < e->Q; ++q) {
                 std::ostringstream oss;
-                oss << "z_a" << a+1 << "_p" << p+1 << "_q" << q+1;
+                oss << "z_a" << (a+1) << "_p" << (p+1) << "_q" << (q+1);
                 //vname[j] = const_cast <char*>(oss.str().c_str());
                 vname[j] = strdup(oss.str().c_str());
                 j++;
@@ -140,12 +140,13 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
 
     for (int p = 0; p < e->P; ++p) {
         std::ostringstream oss;
-        oss << "u_p" << p+1;
+        oss << "u_p" << (p+1);
         //vname[j] = const_cast <char*>(oss.str().c_str());
         vname[j] = strdup(oss.str().c_str());
         j++;
     }
 
+    cerr << e->num_vars <<  " " << j << endl;
 }
 
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
