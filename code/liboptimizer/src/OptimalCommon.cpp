@@ -108,10 +108,8 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             std::ostringstream oss;
-            oss << "x_a" << a+1 << "_p" << p+1;
+            oss << "x_a" << (a+1) << "_p" << (p+1);
              vname[j] = strdup(oss.str().c_str());
-             //vname[j] = const_cast <char*>(oss.str().c_str());
-            //vname[j] = strdup(“x_a” + to_string(a+1) + "_p" + to_string(p+1)).c_str());
             j++;
         }
     }
@@ -119,8 +117,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             std::ostringstream oss;            
-            oss << "y_p" << p+1 << "_q" << q+1;
-            //vname[j] = const_cast <char*>(oss.str().c_str());
+            oss << "y_p" << (p+1) << "_q" << (q+1);
             vname[j] = strdup(oss.str().c_str());
             j++;
         }
@@ -130,8 +127,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
         for (int p = 0; p < e->P; ++p) {
             for (int q = 0; q < e->Q; ++q) {
                 std::ostringstream oss;
-                oss << "z_a" << a+1 << "_p" << p+1 << "_q" << q+1;
-                //vname[j] = const_cast <char*>(oss.str().c_str());
+                oss << "z_a" << (a+1) << "_p" << (p+1) << "_q" << (q+1);
                 vname[j] = strdup(oss.str().c_str());
                 j++;
             }
@@ -140,14 +136,12 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
 
     for (int p = 0; p < e->P; ++p) {
         std::ostringstream oss;
-        oss << "u_p" << p+1;
-        //vname[j] = const_cast <char*>(oss.str().c_str());
+        oss << "u_p" << (p+1);
         vname[j] = strdup(oss.str().c_str());
         j++;
     }
 
-    cerr << e->num_vars <<  " " << j << endl;
-
+    cerr << e->num_vars << " " << j << endl;
 }
 
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
@@ -268,6 +262,8 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 {
     if (ctx->vname) {
         delete [] ctx->vname;
+        for(int i = 0; i < e->num_vars; ++i) 
+            free(ctx->vname[i]);
     }
     if (ctx->obj) delete [] ctx->obj;
     if (ctx->vtype) delete [] ctx->vtype;
@@ -305,13 +301,13 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     if (error) goto QUIT;
 
     error = GRBupdatemodel(ctx.model);
-    if (error) goto QUIT;
+    if (error) goto QUIT; 
 
     error = constraints(&e, &ctx, &workload);
     if (error) goto QUIT;
 
     error = solve_model(&e, &ctx);
-    if (error) goto QUIT;
+    if (error) goto QUIT; 
 
     {
         Partitioning partitioning;
