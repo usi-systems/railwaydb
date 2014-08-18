@@ -157,9 +157,9 @@ void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload)
         + (e->P);               /* us */
     
     e->x_offset = 0;
-    e->y_offset = e->P * e->Q ;
-    e->z_offset = e->y_offset + e->A * e->Q;
-    e->u_offset = e->z_offset + e->P * e->Q * e->A;
+    e->y_offset = e->A * e->P ;
+    e->z_offset = e->y_offset + e->P * e->Q;
+    e->u_offset = e->z_offset + e->A * e->P * e->Q;
 }
 
 void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx) 
