@@ -20,7 +20,11 @@ class GRBEnvironment
 private:
     GRBEnvironment()
     {
-        GRBloadenv(&env_, NULL);
+        bool error = GRBloadenv(&env_, NULL);
+        if (error) {
+            cerr << "ERROR in GRBloadenv: " << GRBgeterrormsg(env_) << endl;
+            throw runtime_error(GRBgeterrormsg(env_)); 
+        }
     }
 public:
     ~GRBEnvironment() 
@@ -304,29 +308,30 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     error = solve_model(&e, &ctx);
     if (error) goto QUIT;
 
+    {
+        Partitioning partitioning;
+        int j;
+        for (int p = 0; p < e.P; ++p) {
+            Partition partition;
+            for (int a = 0; a < e.A; ++a) {
+                j = x(&e,a,p);
+                if (ctx.sol[j] == 1) 
+                    partition.addAttribute(&workload.getAttribute(a));
+            }
+            if (partition.numAttributes() > 0) 
+                partitioning.addPartition(partition);
+        }
+        cleanup(&e, &ctx);
+        return partitioning;
+    }
+
 QUIT:
     if (error) {
-        printf("ERROR: %s\n", GRBgeterrormsg(ctx.env));
-        exit(1);
+        cerr << "ERROR: " << GRBgeterrormsg(ctx.env) << endl;
+        cleanup(&e, &ctx);
+        throw runtime_error(GRBgeterrormsg(ctx.env)); 
     }
 
-    Partitioning partitioning;
-    int j;
-    for (int p = 0; p < e.P; ++p) {
-        Partition partition;
-        for (int a = 0; a < e.A; ++a) {
-            j = x(&e,a,p);
-            if (ctx.sol[j] == 1) {
-                partition.addAttribute(&workload.getAttribute(a));
-            }
-        }
-        if (partition.numAttributes() > 0) {
-            partitioning.addPartition(partition);
-        }
-    }
-    
-    cleanup(&e, &ctx);
-
-    return partitioning;
+    return *((Partitioning *)nullptr);
 }
 
