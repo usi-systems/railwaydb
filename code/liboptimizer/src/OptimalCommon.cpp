@@ -144,6 +144,44 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
     assert(e->num_vars == j);
 }
 
+void OptimalCommon::print_name_variables(var_env *e, char** vname)
+{
+    int j = 0;
+    cerr << "---- xs ----" << endl;
+    for (int a = 0; a < e->A; ++a) {
+        for (int p = 0; p < e->P; ++p) {
+            cerr << j << ":" << " " << x(e,a,p) << " " << vname[x(e,a,p)] << endl;            
+            j++;
+        }
+    }
+
+    cerr << "---- ys ----" << endl;
+    for (int p = 0; p < e->P; ++p) {
+        for (int q = 0; q < e->Q; ++q) {
+            cerr << j << ":" << " " << y(e,p,q) << " " << vname[ y(e,p,q) ] << endl;          
+            j++;
+        }
+    }
+
+    cerr << "---- zs ----" << endl;
+    for (int a = 0; a < e->A; ++a) {
+        for (int p = 0; p < e->P; ++p) {
+            for (int q = 0; q < e->Q; ++q) {
+                cerr << j << ":" << " " <<  z(e,a,p,q) << " " << vname[z(e,a,p,q)] << endl;          
+                j++;
+            }
+        }
+    }
+
+    cerr << "---- us ----" << endl;
+    for (int p = 0; p < e->P; ++p) {
+        cerr << j << ":" << " " << u(e,p) << " " << vname[u(e,p)] << endl;          
+        j++;
+    }
+
+    cerr << e->num_vars << " " << j << endl;
+}
+
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
 {
     e->P = workload->getAttributes().size();
@@ -158,8 +196,8 @@ void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload)
     
     e->x_offset = 0;
     e->y_offset = e->A * e->P ;
-    e->z_offset = e->y_offset + e->P * e->Q;
-    e->u_offset = e->z_offset + e->A * e->P * e->Q;
+    e->z_offset = e->y_offset + (e->P * e->Q);
+    e->u_offset = e->z_offset + (e->A * e->P * e->Q);
 }
 
 void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx) 
@@ -182,6 +220,7 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
     
     /* give variables meaningful names */    
     name_variables(e, ctx->vname);
+    print_name_variables(e, ctx->vname);
 
 }
 
