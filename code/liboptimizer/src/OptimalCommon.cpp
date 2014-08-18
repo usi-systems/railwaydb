@@ -141,7 +141,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
         j++;
     }
 
-    cerr << e->num_vars << " " << j << endl;
+    assert(e->num_vars == j);
 }
 
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
