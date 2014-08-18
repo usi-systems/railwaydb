@@ -46,7 +46,7 @@ void RunningTimeVsNumAttributes::process()
   exp.setKeepValues(false);
   exp.open();
 
-  int numRuns = 1;
+  int numRuns = 3;
   
   auto solvers = { SolverFactory::instance().makeSinglePartition(), 
                    SolverFactory::instance().makePartitionPerAttribute(),
