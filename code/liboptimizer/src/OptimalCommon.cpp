@@ -300,9 +300,9 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
 void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 {
     if (ctx->vname) {
+        for(int i = 0; i < e->num_vars; ++i) 
+            free(ctx->vname[i]);
         delete [] ctx->vname;
-        //for(int i = 0; i < e->num_vars; ++i) 
-        //    free(ctx->vname[i]);
     }
     if (ctx->obj) delete [] ctx->obj;
     if (ctx->vtype) delete [] ctx->vtype;
