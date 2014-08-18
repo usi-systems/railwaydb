@@ -49,13 +49,13 @@ void QueryIOVsNumAttributes::process()
           QueryWorkload workload = simConf.getQueryWorkload();
           for (int i = 0; i < numRuns; i++) {
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-              io.Push(cost.getIOCost(partitioning, workload));
+              io.push(cost.getIOCost(partitioning, workload));
           }         
           exp.addRecord();
           exp.setFieldValue("solver", solver->getClassName());
           exp.setFieldValue("attributes", workload.getAttributes().size());        
-          exp.setFieldValue("io", io.Mean());
-          io.Clear();
+          exp.setFieldValue("io", io.getMean());
+          io.clear();
       }
   }
   exp.close();

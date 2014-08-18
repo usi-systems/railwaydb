@@ -50,13 +50,13 @@ void StorageOverheadVsNumAttributes::process()
             QueryWorkload workload = simConf.getQueryWorkload();            
             for (int i = 0; i < numRuns; i++) {
                 Partitioning partitioning = solver->solve(workload, storageOverheadThreshold);              
-                storage.Push(cost.getStorageOverhead(partitioning, workload));
+                storage.push(cost.getStorageOverhead(partitioning, workload));
             }         
             exp.addRecord();
             exp.setFieldValue("solver", solver->getClassName());
             exp.setFieldValue("attributes", workload.getAttributes().size());
-            exp.setFieldValue("storage", storage.Mean());          
-            storage.Clear();
+            exp.setFieldValue("storage", storage.getMean());          
+            storage.clear();
         }
     }
   
