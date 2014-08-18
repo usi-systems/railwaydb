@@ -300,13 +300,13 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     if (error) goto QUIT;
 
     error = GRBupdatemodel(ctx.model);
-    if (error) goto QUIT;
+    if (error) goto QUIT; 
 
     error = constraints(&e, &ctx, &workload);
     if (error) goto QUIT;
 
     error = solve_model(&e, &ctx);
-    if (error) goto QUIT;
+    if (error) goto QUIT; 
 
     {
         Partitioning partitioning;
