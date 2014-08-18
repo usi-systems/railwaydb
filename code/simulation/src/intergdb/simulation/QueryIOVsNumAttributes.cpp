@@ -25,11 +25,8 @@ void QueryIOVsNumAttributes::process()
   
   SimulationConf simConf;
   Cost cost;
-  double storageOverheadThreshold = 0.0;
+  double storageOverheadThreshold = numeric_limits<double>::max( );
   
-  mt19937 rgen;
-  uniform_real_distribution<> udist(0, 10);
-
   ExperimentalData exp(getClassName());
   exp.setDescription("This experiment compares the query io vs. the number of attributes for each of the partitioning methods.");
 
@@ -40,32 +37,26 @@ void QueryIOVsNumAttributes::process()
   exp.open();
 
   int numRuns = 3;
-
   auto solvers = { SolverFactory::instance().makeSinglePartition(), 
                    SolverFactory::instance().makePartitionPerAttribute(),
                    SolverFactory::instance().makeOptimalOverlapping(), 
                    SolverFactory::instance().makeOptimalNonOverlapping() };
-
   auto attributeCounts = {10, 20, 30, 40, 50};
-
   util::RunningStat io;
-
-  for (int attributeCount : attributeCounts) {
-      simConf.setAttributeCount(attributeCount);
-      QueryWorkload workload = simConf.getQueryWorkload();
-      for (auto solver : solvers) {
+  for (auto solver : solvers) {
+      for (int attributeCount : attributeCounts) {
+          simConf.setAttributeCount(attributeCount);
+          QueryWorkload workload = simConf.getQueryWorkload();
           for (int i = 0; i < numRuns; i++) {
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
               io.Push(cost.getIOCost(partitioning, workload));
           }         
           exp.addRecord();
           exp.setFieldValue("solver", solver->getClassName());
-          exp.setFieldValue("attributes", workload.getAttributes().size());
+          exp.setFieldValue("attributes", workload.getAttributes().size());        
           exp.setFieldValue("io", io.Mean());
           io.Clear();
       }
   }
-
-
   exp.close();
 };
