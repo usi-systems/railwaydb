@@ -326,12 +326,9 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     }
 
 QUIT:
-    if (error) {
-        cerr << "ERROR: " << GRBgeterrormsg(ctx.env) << endl;
-        cleanup(&e, &ctx);
-        throw runtime_error(GRBgeterrormsg(ctx.env)); 
-    }
-
+    cerr << "ERROR: " << GRBgeterrormsg(ctx.env) << endl;
+    cleanup(&e, &ctx);
+    throw runtime_error(GRBgeterrormsg(ctx.env)); 
     return *((Partitioning *)nullptr);
 }
 
