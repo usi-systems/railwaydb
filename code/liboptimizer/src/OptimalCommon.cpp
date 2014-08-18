@@ -146,7 +146,9 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
         j++;
     }
 
-    cerr << e->num_vars <<  " " << j << endl;
+    cerr << e->num_vars <<  " " << j << endl;
+
+>>>>>>> 9fc615141f657854cdbf078a886ea5f3146310a6
 }
 
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
@@ -156,10 +158,10 @@ void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload)
     e->A = workload->getAttributes().size();
     
     e->num_vars 
-        = e->P * e->Q         /* xs */
-        + e->A * e->Q         /* ys */
-        + e->P * e->Q * e->A  /* us */
-        + e->A;               /* zs */
+        = (e->A * e->P)         /* xs */
+        + (e->P * e->Q)         /* ys */
+        + (e->A * e->P * e->Q)  /* zs */
+        + (e->P);               /* us */
     
     e->x_offset = 0;
     e->y_offset = e->P * e->Q ;
@@ -288,8 +290,6 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     error = GRBnewmodel(ctx.env, &ctx.model, "storage_optimizer", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) goto QUIT;
 
-
-//#define GRB_INT_PAR_OUTPUTFLAG 0
     GRBsetintparam(GRBgetenv(ctx.model), GRB_INT_PAR_OUTPUTFLAG, 0);
 
     variables(&e, &ctx);
