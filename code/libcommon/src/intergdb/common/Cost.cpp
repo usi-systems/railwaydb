@@ -7,21 +7,27 @@ using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
 
-vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partitioning, 
-  std::vector<Attribute> const & attributes, Query const & query)
+vector<Partition const *> Cost::getUsedPartitions(vector<Partition> const & partitions, 
+  std::unordered_set<Attribute const *> const & attributes, Query const & query)
 {
-  unordered_set<Attribute const *> selectedAttributes;
+  // attributes we have covered so far
+  unordered_set<Attribute const *> selectedAttributes; 
+  // attributes we have yet to cover
   unordered_set<Attribute const *> remainingAttributes; 
-  for (Attribute const & attribute : attributes)
-    remainingAttributes.insert(&attribute);
+  for (Attribute const * attribute : attributes)
+    remainingAttributes.insert(attribute);
+  // attributes that appear in queries that we have to cover
+  unordered_set<Attribute const *> effectiveAttributes; 
+  for (Attribute const * attribute : query.getAttributes())
+    if (attributes.count(attribute)>0)
+      effectiveAttributes.insert(attribute);
+
   vector<Partition const *> usedPartitions;
   unordered_set<Partition const *> unusedPartitions;
-  for (Partition const & partition: partitioning.getPartitions()) 
+  for (Partition const & partition: partitions) 
     unusedPartitions.insert(&partition);
-  unordered_set<Attribute const *> queryAttributes;
-  for (Attribute const * attribute : query.getAttributes())
-    queryAttributes.insert(attribute);
-  while (selectedAttributes.size()!=attributes.size()) {
+  
+  while (remainingAttributes.size()!=0) {
     Partition const * bestPartition = nullptr;
     double bestPartitionScore = -1.0;
     for (Partition const * partition : unusedPartitions) {
@@ -30,7 +36,7 @@ vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partition
       for (Attribute const * attribute : partition->getAttributes()) {
         if (selectedAttributes.count(attribute)>0) 
           continue;
-        if (queryAttributes.count(attribute)==0)
+        if (effectiveAttributes.count(attribute)==0)
           continue;
         partitionScore += (attribute->getSize() * 
           SystemConstants::numberOfEdgesInABlock) / partitionSize;
@@ -50,6 +56,29 @@ vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partition
   return usedPartitions;
 }
 
+double Cost::getIOCost(Partitioning const & partitioning, QueryWorkload const & workload) 
+{
+  unordered_set<Attribute const *> attributes;
+  for (Attribute const & attrb : workload.getAttributes())
+    attributes.insert(&attrb);
+  return getIOCost(partitioning.getPartitions(), workload, attributes);
+}
+
+double Cost::getIOCost(vector<Partition> const & partitions, QueryWorkload const & workload, 
+      std::unordered_set<Attribute const *> const & attributes)
+{
+  double totalIOCost = 0.0;
+  auto const & queries = workload.getQueries();
+  for (Query const & query : queries) {
+    double partitionIOCost = 0.0;
+    vector<Partition const *> usedPartitions = getUsedPartitions(partitions, attributes, query);
+    for (Partition const * partition : usedPartitions) 
+      partitionIOCost += getPartitionSize(*partition);
+    totalIOCost += query.getFrequency() * partitionIOCost;
+  }
+  return totalIOCost;
+}
+
 double Cost::getPartitionSize(Partition const & partition)
 {
   double attributesSize = 0.0;
@@ -61,21 +90,6 @@ double Cost::getPartitionSize(Partition const & partition)
      +
     SystemConstants::numberOfNeighborListsInABlock * 
       (SystemConstants::headVertexSize + SystemConstants::numEntriesSize);
-}
-
-double Cost::getIOCost(Partitioning const & partitioning, QueryWorkload const & workload) 
-{
-  double totalIOCost = 0.0;
-  auto const & queries = workload.getQueries();
-  auto const & attributes = workload.getAttributes();
-  for (Query const & query : queries) {
-    double partitionIOCost = 0.0;
-    vector<Partition const *> partitions = getUsedPartitions(partitioning, attributes, query);
-    for (Partition const * partition : partitions) 
-      partitionIOCost += getPartitionSize(*partition);
-    totalIOCost += query.getFrequency() * partitionIOCost;
-  }
-  return totalIOCost;
 }
 
 double Cost::getStorageOverhead(Partitioning const & partitioning, QueryWorkload const & workload)
