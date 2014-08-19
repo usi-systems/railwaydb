@@ -53,9 +53,9 @@ vector<Partition const *> Cost::getUsedPartitions(Partitioning const & partition
 double Cost::getPartitionSize(Partition const & partition)
 {
   double attributesSize = 0.0;
-  for (Attribute const * attribute : partition.getAttributes())
-    attributesSize += attribute->getSize();
-  return 
+  for (Attribute const * attribute : partition.getAttributes()) 
+    attributesSize += attribute->getSize();  
+  return    
     SystemConstants::numberOfEdgesInABlock * 
       ((SystemConstants::edgeIdSize + SystemConstants::timestampSize) + attributesSize)
      +
