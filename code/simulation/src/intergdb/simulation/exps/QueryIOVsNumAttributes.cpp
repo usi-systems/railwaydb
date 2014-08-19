@@ -25,7 +25,8 @@ void QueryIOVsNumAttributes::process()
   
   SimulationConf simConf;
   Cost cost;
-  double storageOverheadThreshold = numeric_limits<double>::max( );
+  //double storageOverheadThreshold = numeric_limits<double>::max( );
+  double storageOverheadThreshold = 1.5;
   
   ExperimentalData exp(getClassName());
   exp.setDescription("This experiment compares the query io vs. the number of attributes for each of the partitioning methods.");
@@ -37,7 +38,7 @@ void QueryIOVsNumAttributes::process()
   exp.open();
 
   int numRuns = 3;
-  auto solvers = { SolverFactory::instance().makeSinglePartition(), 
+  auto solvers = { SolverFactory::instance().makeSinglePartition(),
                    SolverFactory::instance().makePartitionPerAttribute(),
                    SolverFactory::instance().makeOptimalOverlapping(), 
                    SolverFactory::instance().makeOptimalNonOverlapping() };
