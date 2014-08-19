@@ -1,11 +1,11 @@
-
-#include <assert.h>
-#include <iostream>
-
 #include <HeuristicNonOverlapping.h>
 
 #include <intergdb/common/Cost.h>
 #include <intergdb/common/SystemConstants.h>
+
+#include <iostream>
+#include <unordered_map>
+#include <assert.h>
 
 using namespace std;
 using namespace intergdb::common;
@@ -64,8 +64,49 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
 
 Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions) 
 {
-  Partitioning part;
-  return part;
+  // Initialize partitions
+  vector<Partition> partitions;
+  for (int i=0; i<numPartitions; ++i)
+    partitions.emplace_back(Partition());
+
+  // Perform greedy placement
+  //  - Order attributes in decreasing order of frequency
+  vector<Attribute const *> attributes;
+  unordered_map<Attribute const *, int> attrbFreq;
+  for (Attribute const & attrb : workload.getAttributes()) {
+    attrbFreq[&attrb] = 0;
+    attributes.push_back(&attrb);
+  }
+  for (Query const & query : workload.getQueries())
+    for (Attribute const * attrb : query.getAttributes())
+      ++(attrbFreq[attrb]);
+  std::sort(begin(attributes), end(attributes), 
+    [&](Attribute const * lhs, Attribute const * rhs) 
+  {
+    return attrbFreq[lhs] > attrbFreq[rhs];
+  });
+  // - In decreasing order of attribute frequency
+  Cost costModel;
+  unordered_set<Attribute const *> usedAttributes;
+  for (Attribute const * attrb : attributes) {
+    usedAttributes.insert(attrb);
+    MinCostSolution<Partition *> minCostPart;
+    for (Partition & part : partitions) {
+      part.addAttribute(attrb);
+      double cost = costModel.getIOCost(partitions, workload, usedAttributes);
+      minCostPart.push(&part, cost);
+      part.removeAttribute(attrb);
+    }
+    Partition const * bestPart = minCostPart.getBestSolution();
+    const_cast<Partition *>(bestPart)->addAttribute(attrb);
+  } 
+
+  // Create a partitioning
+  Partitioning partitioning;
+  for (Partition const & partition : partitions)
+    if (partition.getAttributes().size()>0)
+      partitioning.addPartition(partition);
+  return partitioning;
 }
 
 
