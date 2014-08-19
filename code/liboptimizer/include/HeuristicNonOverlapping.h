@@ -14,6 +14,7 @@ public:
     ~HeuristicNonOverlapping() { }
     std::string getClassName() { return "HeuristicNonOverlapping"; }
     intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold, int numPartitions);
 };
 
 } }
