@@ -31,9 +31,9 @@ public:
   {
     return minCost_;
   }
-  Solution const & getBestSolution() const
+  SolutionT const & getBestSolution() const
   {
-    return bestSolution;
+    return bestSolution_;
   }
   bool isInited() const 
   {
@@ -48,20 +48,25 @@ private:
 
 Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold) 
 {
+  Cost costModel;
   MinCostSolution<Partitioning> minCostPart;
-  for (int numPartitions=1; j<workload.getAttributes().size(); ++numPartitions) {
+  for (int numPartitions=1; numPartitions<=workload.getAttributes().size(); ++numPartitions) {
     Partitioning partitioning = solve(workload, storageThreshold, numPartitions);
-    double overhead = Cost::getStorageOverhead(partitioning, workload);
+    double overhead = costModel.getStorageOverhead(partitioning, workload);
     if (overhead > storageThreshold)
       continue;
-    double cost = Cost::getIOCost(partitioning);
-    minCostPart.push(parting, cost);
+    double cost = costModel.getIOCost(partitioning, workload);
+    minCostPart.push(partitioning, cost);
   }
   assert(minCostPart.isInited());
   return minCostPart.getBestSolution();
 }
 
-
+Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions) 
+{
+  Partitioning part;
+  return part;
+}
 
 
 
