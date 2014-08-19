@@ -26,7 +26,8 @@ void StorageOverheadVsNumAttributes::process()
     
     SimulationConf simConf;
     Cost cost;
-    double storageOverheadThreshold = numeric_limits<double>::max( );
+    //double storageOverheadThreshold = numeric_limits<double>::max( );
+    double storageOverheadThreshold = 1.5;
     ExperimentalData exp(getClassName());
     exp.setDescription("StorageOverhead Vs. NumAttributes");
     exp.addField("solver");
