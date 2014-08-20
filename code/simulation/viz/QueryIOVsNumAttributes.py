@@ -29,7 +29,7 @@ def main(dirn, fname):
   fmts = CommonConf.getLineFormats()
   fig = pp.figure()
   ax = fig.add_subplot(111)
-  #ax.set_xscale("log", basex=2)
+  ax.set_xscale("log", basex=2)
     
   index = 0
   for solver, ios in ioPerSolver.iteritems():
@@ -38,7 +38,7 @@ def main(dirn, fname):
     index = index + 1
 
   ax.set_xlabel('Number of Attributes');
-  ax.set_ylabel('I/O Cost');
+  ax.set_ylabel('I/O Cost (bytes)');
   # ax.set_xlim(0, 2100)
   ax.legend(loc='best', fancybox=True)
 

@@ -83,9 +83,9 @@ double OptimalCommon::alpha()
     return storageThreshold_;
 }
 
-int OptimalCommon::s(std::vector<Attribute> const & attributes)
+double OptimalCommon::s(std::vector<Attribute> const & attributes)
 {
-    int sum = 0;
+    double sum = 0;
     for (auto & attribute : attributes) {
         sum += attribute.getSize();
     }
@@ -220,13 +220,15 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
     
     /* give variables meaningful names */    
     name_variables(e, ctx->vname);
-//    print_name_variables(e, ctx->vname);
-
 }
 
 /* objective coefficients for each of the variables */
 void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload) 
 {
+
+    std::vector<Query> queries = workload->getQueries();
+
+
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             ctx->obj[x(e,a,p)] = 0;
@@ -235,19 +237,19 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
     
     double val = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
         + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
-    for (int p = 0; p < e->P; ++p) {
-        for (int q = 0; q < e->Q; ++q) {
-            ctx->obj[y(e,p,q)] 
-                = val;
-        }
-    }
-    
-    for (int a = 0; a < e->A; ++a) {
+
+    for (int q = 0; q < e->Q; ++q) {
+
         for (int p = 0; p < e->P; ++p) {
-            for (int q = 0; q < e->Q; ++q) {
-                ctx->obj[z(e,a,p,q)] = workload->getAttribute(a).getSize() * c_e() ;
+            ctx->obj[y(e,p,q)] = val * queries[q].getFrequency();
+        }
+    
+        for (int a = 0; a < e->A; ++a) {
+            for (int p = 0; p < e->P; ++p) {
+                ctx->obj[z(e,a,p,q)] = workload->getAttribute(a).getSize() * c_e() * queries[q].getFrequency();;
             }
         }
+
     }
 
     for (int p = 0; p < e->P; ++p) {
@@ -264,7 +266,7 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
     error = GRBoptimize(ctx->model);
     if (error) return error;
 
-    /* Write model to 'temp.lp' */
+    /* Write model to '<classname>.lp' */
     std::string lpFileName = this->getClassName() + ".lp";
 
     error = GRBwrite(ctx->model, lpFileName.c_str());

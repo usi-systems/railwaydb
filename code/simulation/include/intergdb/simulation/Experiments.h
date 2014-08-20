@@ -4,29 +4,31 @@
 
 namespace intergdb { namespace simulation
 {
+
+  class ExperimentalData;
+
   class SampleExperiment : public ExperimentalRun 
   {
     void process() override;
   };
 
- class RunningTimeVsNumAttributes : public ExperimentalRun 
+  class VsNumAttributes : public ExperimentalRun 
   {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
 
- class RunningTimeVsNumQueryKinds : public ExperimentalRun 
-  {
-    void process() override;
-  };
 
- class QueryIOVsNumAttributes : public ExperimentalRun 
+ class VsNumQueryKinds : public ExperimentalRun 
   {
-    void process() override;
-  };
-
- class StorageOverheadVsNumAttributes : public ExperimentalRun 
-  {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
 
 } } /* namespace */
