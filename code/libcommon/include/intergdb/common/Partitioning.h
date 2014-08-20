@@ -16,6 +16,7 @@ public:
   }
   int numPartitions() { return partitions_.size(); }
   std::vector<Partition> const & getPartitions() const { return partitions_; }
+  void mergePartitions(int i, int j);
   std::string toString() const;
 private:
   std::vector<Partition> partitions_;

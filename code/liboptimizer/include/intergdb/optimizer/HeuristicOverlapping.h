@@ -3,16 +3,17 @@
 #include <intergdb/common/QueryWorkload.h>
 #include <intergdb/common/Partitioning.h>
 
-#include <Solver.h>
+#include <intergdb/optimizer/Solver.h>
 
 namespace intergdb { namespace optimizer {
 
-class SinglePartition : public Solver
+
+class HeuristicOverlapping : public Solver
 {
 public:
-    SinglePartition() { }
-    ~SinglePartition() { } 
-    std::string getClassName() { return "SinglePartition"; }
+    HeuristicOverlapping() { }
+    ~HeuristicOverlapping() { }
+    std::string getClassName() { return "HeuristicOverlapping"; }
     intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
 };
 

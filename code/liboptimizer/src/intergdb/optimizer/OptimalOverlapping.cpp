@@ -1,12 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-
-#include <OptimalOverlapping.h>
-#include <iostream>
+#include <intergdb/optimizer/OptimalOverlapping.h>
 
 #include <intergdb/common/SystemConstants.h>
 #include <intergdb/common/Cost.h>
+
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {

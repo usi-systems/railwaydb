@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Solver.h>
+#include <intergdb/optimizer/Solver.h>
 
 #include <memory>
 

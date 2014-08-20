@@ -1,11 +1,11 @@
 
-#include <SolverFactory.h>
-#include <OptimalOverlapping.h>
-#include <OptimalNonOverlapping.h>
-#include <SinglePartition.h>
-#include <PartitionPerAttribute.h>
-#include <HeuristicOverlapping.h>
-#include <HeuristicNonOverlapping.h>
+#include <intergdb/optimizer/SolverFactory.h>
+#include <intergdb/optimizer/OptimalOverlapping.h>
+#include <intergdb/optimizer/OptimalNonOverlapping.h>
+#include <intergdb/optimizer/SinglePartition.h>
+#include <intergdb/optimizer/PartitionPerAttribute.h>
+#include <intergdb/optimizer/HeuristicOverlapping.h>
+#include <intergdb/optimizer/HeuristicNonOverlapping.h>
 
 using namespace std;
 using namespace intergdb::optimizer;
