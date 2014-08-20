@@ -29,7 +29,7 @@ def main(dirn, fname):
   fmts = CommonConf.getLineFormats()
   fig = pp.figure()
   ax = fig.add_subplot(111)
-  #ax.set_xscale("log", basex=2)
+  ax.set_xscale("log", basex=2)
     
   index = 0
   for solver, storages in storagePerSolver.iteritems():

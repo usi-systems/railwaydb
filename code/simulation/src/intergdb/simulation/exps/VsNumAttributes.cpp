@@ -47,22 +47,22 @@ void VsNumAttributes::process()
   
   SimulationConf simConf;
   Cost cost;
-  util::AutoTimer timer;
-
-  //double storageOverheadThreshold = numeric_limits<double>::max( );
+  util::AutoTimer timer;  
   double storageOverheadThreshold = 1.5;
   
-  ExperimentalData queryIOExp(getClassName());
-  ExperimentalData runningTimeExp(getClassName());
-  ExperimentalData storageExp(getClassName());
+  ExperimentalData queryIOExp("QueryIOVsNumAttributes");
+  ExperimentalData runningTimeExp("RunningTimeVsNumAttributes");
+  ExperimentalData storageExp("StorageOverheadVsNumAttributes");
+
+  auto expData = { &queryIOExp, &runningTimeExp, &storageExp };
 
   makeQueryIOExp(&queryIOExp);
   makeRunningTimeExp(&runningTimeExp);
   makeStorageExp(&storageExp);
 
-  queryIOExp.open();
-  storageExp.open();
-  runningTimeExp.open();
+  for (auto exp : expData) {
+      exp->open();
+  }
 
   int numRuns = 3;
   auto solvers = { SolverFactory::instance().makeSinglePartition(), 
@@ -70,10 +70,13 @@ void VsNumAttributes::process()
                    SolverFactory::instance().makeOptimalOverlapping(), 
                    SolverFactory::instance().makeOptimalNonOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
-  auto attributeCounts = {10, 20, 30, 40, 50};
+  auto attributeCounts = {2, 4, 8, 16, 32, 64 }; 
   
   util::RunningStat io;
   util::RunningStat storage;
+
+  double total = solvers.size() * attributeCounts.size()  * numRuns;
+  double completed = 0;
 
   for (auto solver : solvers) {
       for (int attributeCount : attributeCounts) {
@@ -83,8 +86,10 @@ void VsNumAttributes::process()
           for (int i = 0; i < numRuns; i++) {
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
               io.push(cost.getIOCost(partitioning, workload));
+              cerr << ".";
           }         
           timer.stop();
+          completed += numRuns;
 
           runningTimeExp.addRecord();
           runningTimeExp.setFieldValue("solver", solver->getClassName());
@@ -104,9 +109,11 @@ void VsNumAttributes::process()
           storage.clear();
 
       }
+      cerr << " (" << (completed / total) * 100 << "%)" << endl;
   }
 
-  queryIOExp.close();
-  storageExp.close();
-  runningTimeExp.close();
+  for (auto exp : expData) {
+      exp->close();
+  }
+
 };
