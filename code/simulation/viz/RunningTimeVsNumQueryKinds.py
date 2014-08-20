@@ -22,14 +22,14 @@ def main(dirn, fname):
         timePerSolver[solver].append(time)
       else:
         timePerSolver[solver] = [time]
-      if len(attributeSizes) == 0 or queryTypeCount > attributeSizes[-1]:
+      if len(queryTypeCounts) == 0 or queryTypeCount > queryTypeCounts[-1]:
         queryTypeCounts.append(queryTypeCount)
 
   CommonConf.setupMPPDefaults()
   fmts = CommonConf.getLineFormats()
   fig = pp.figure()
   ax = fig.add_subplot(111)
-  #ax.set_xscale("log", basex=2)
+  ax.set_xscale("log", basex=2)
     
   index = 0
   for solver, times in timePerSolver.iteritems():
@@ -38,7 +38,7 @@ def main(dirn, fname):
     index = index + 1
 
   ax.set_xlabel('Number of Query Kinds');
-  ax.set_ylabel('Time');
+  ax.set_ylabel('Time (sec.)');
   # ax.set_xlim(0, 2100)
   ax.legend(loc='best', fancybox=True)
 
