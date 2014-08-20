@@ -1,10 +1,11 @@
 
+#include <intergdb/optimizer/PartitionPerAttribute.h>
+
+#include <intergdb/common/SystemConstants.h>
+
 #include <assert.h>
 #include <iostream>
 
-#include <PartitionPerAttribute.h>
-
-#include <intergdb/common/SystemConstants.h>
 
 using namespace std;
 using namespace intergdb::common;

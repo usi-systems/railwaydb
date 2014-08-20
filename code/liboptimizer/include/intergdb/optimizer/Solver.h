@@ -3,7 +3,6 @@
 #include <intergdb/common/QueryWorkload.h>
 #include <intergdb/common/Partitioning.h>
 
-
 namespace intergdb { namespace optimizer {
 
 class Solver

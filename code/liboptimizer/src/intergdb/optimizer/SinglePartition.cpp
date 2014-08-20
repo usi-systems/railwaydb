@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <iostream>
 
-#include <SinglePartition.h>
+#include <intergdb/optimizer/SinglePartition.h>
 
 #include <intergdb/common/SystemConstants.h>
 
