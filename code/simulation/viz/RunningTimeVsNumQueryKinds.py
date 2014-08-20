@@ -22,7 +22,7 @@ def main(dirn, fname):
         timePerSolver[solver].append(time)
       else:
         timePerSolver[solver] = [time]
-      if len(attributeSizes) == 0 or queryTypeCount > attributeSizes[-1]:
+      if len(queryTypeCounts) == 0 or queryTypeCount > queryTypeCounts[-1]:
         queryTypeCounts.append(queryTypeCount)
 
   CommonConf.setupMPPDefaults()
@@ -38,7 +38,7 @@ def main(dirn, fname):
     index = index + 1
 
   ax.set_xlabel('Number of Query Kinds');
-  ax.set_ylabel('Time (s)');
+  ax.set_ylabel('Time (sec.)');
   # ax.set_xlim(0, 2100)
   ax.legend(loc='best', fancybox=True)
 
