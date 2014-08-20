@@ -54,7 +54,7 @@ protected:
     int u(var_env *e, int p);
     int c_e();
     int c_n();
-    int s(std::vector<intergdb::common::Attribute> const & attributes);
+    double s(std::vector<intergdb::common::Attribute> const & attributes);
     double K();
     double alpha();
     int accesses(std::vector<intergdb::common::Query> const & queries, int q, int a);   
