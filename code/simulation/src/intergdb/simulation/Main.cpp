@@ -9,6 +9,7 @@ using namespace intergdb::simulation;
 int main()
 {
     (VsNumAttributes()).run();
+    //(VsNumQueryKinds()).run();
     return EXIT_SUCCESS;
 }
 
