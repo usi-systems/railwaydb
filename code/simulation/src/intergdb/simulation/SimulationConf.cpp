@@ -9,26 +9,22 @@ using namespace intergdb::common;
 using namespace intergdb::simulation;
 using namespace intergdb::util;
 
+constexpr double const SimulationConf::attributeSizes_[numAttributeSizes_];
+
 QueryWorkload SimulationConf::getQueryWorkload()
 {
   unsigned seed = time(NULL);
   QueryWorkload workload;
-  ZipfRand attributeSizeGen(getAttributeSizeZipfParam(), getAttributeCount());
+  ZipfRand attributeSizeGen(getAttributeSizeZipfParam(), numAttributeSizes_);
   attributeSizeGen.setSeed(seed);
   NormalRand queryLengthGen(getQueryLengthMean(), getQueryLengthStdDev(), 1.0, getAttributeCount());
   queryLengthGen.setSeed(seed);
   ZipfRand queryTypeFrequencyGen(getQueryTypeFrequencyZipfParam(), getQueryTypeCount());
   queryTypeFrequencyGen.setSeed(seed);
-
-  double totalSize = 0.0;
   for (size_t i=0, iu=getAttributeCount(); i<iu; ++i)  { 
-    double attributeSize = attributeSizeGen.getItemFrequency(
-      attributeSizeGen.getRandomValue());
+    double attributeSize = attributeSizes_[attributeSizeGen.getRandomValue()];
     workload.addAttribute(Attribute(i, attributeSize));
-    totalSize += attributeSize;
   }
-  for (Attribute & attribute : workload.getAttributes()) 
-    attribute.setSize(attribute.getSize()/totalSize);
   mt19937 rndGen(seed);
   auto const & attributes = workload.getAttributes();
   vector<size_t> attributeIndices(attributes.size());
