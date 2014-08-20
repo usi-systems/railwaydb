@@ -7,8 +7,8 @@
 #include <iostream>
 #include <random>
 #include <vector>
-#include <Solver.h>
-#include <SolverFactory.h>
+#include <intergdb/optimizer/Solver.h>
+#include <intergdb/optimizer/SolverFactory.h>
 
 using namespace std;
 using namespace intergdb;
