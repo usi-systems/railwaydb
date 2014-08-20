@@ -83,9 +83,9 @@ double OptimalCommon::alpha()
     return storageThreshold_;
 }
 
-int OptimalCommon::s(std::vector<Attribute> const & attributes)
+double OptimalCommon::s(std::vector<Attribute> const & attributes)
 {
-    int sum = 0;
+    double sum = 0;
     for (auto & attribute : attributes) {
         sum += attribute.getSize();
     }
@@ -234,7 +234,6 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
             ctx->obj[x(e,a,p)] = 0;
         }
     }
-
     
     double val = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
         + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
