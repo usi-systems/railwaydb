@@ -72,6 +72,7 @@ void VsNumQueryKinds::process()
                    SolverFactory::instance().makePartitionPerAttribute(),
                    SolverFactory::instance().makeOptimalOverlapping(), 
                    SolverFactory::instance().makeOptimalNonOverlapping(),
+                   SolverFactory::instance().makeHeuristicOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
   auto attributeCounts = { 8 }; 
   auto queryTypeCounts = {2, 4 }; 
