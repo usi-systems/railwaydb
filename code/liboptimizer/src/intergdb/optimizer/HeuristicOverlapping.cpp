@@ -1,4 +1,3 @@
-
 #include <intergdb/optimizer/HeuristicOverlapping.h>
 
 #include <intergdb/common/Cost.h>
@@ -24,14 +23,21 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
   }
   Cost costModel;
   while (costModel.getStorageOverhead(partitioning, workload) > storageThreshold) {
+    double oldCost = costModel.getIOCost(partitioning, workload);
     auto const & partitions = partitioning.getPartitions();
     MinCostSolution<pair<int, int>> minCostSolution;
     for (int i=0, iu=partitions.size(); i<iu-1; ++i) {
       for (int j=i+1; j<iu; ++j) {
-        Partition const * lhs = & partitions[i];
-        Partition const * rhs = & partitions[j];
-        double cost = 0.0; // TODO 
+        Partition lhsP = partitions[i]; // copy
+        Partition rhsP = partitions[j]; // copy
+        double oldSize = costModel.getPartitionSize(lhsP) + costModel.getPartitionSize(rhsP);
+        int newPIndex = partitioning.mergePartitions(i, j);
+        double newCost = costModel.getIOCost(partitioning, workload);
+        Partition const & newP = partitions[newPIndex];
+        double newSize = costModel.getPartitionSize(newP);
+        double cost = (newCost-oldCost) / (oldSize-newSize); 
         minCostSolution.push(make_pair(i, j), cost);
+        partitioning.splitPartition(newPIndex, lhsP, rhsP);
       }
     }
     pair<int, int> partitionIndices = minCostSolution.getBestSolution();
