@@ -65,12 +65,14 @@ void VsNumAttributes::process()
   }
 
   int numRuns = 3;
-  auto solvers = { SolverFactory::instance().makeSinglePartition(), 
-                   SolverFactory::instance().makePartitionPerAttribute(),
-                   SolverFactory::instance().makeOptimalOverlapping(), 
-                   SolverFactory::instance().makeOptimalNonOverlapping(),
-                   SolverFactory::instance().makeHeuristicOverlapping(),
-                   SolverFactory::instance().makeHeuristicNonOverlapping() };
+  auto solvers = { 
+      SolverFactory::instance().makeHeuristicOverlapping(),  
+      SolverFactory::instance().makeSinglePartition(), 
+      SolverFactory::instance().makePartitionPerAttribute(),
+      SolverFactory::instance().makeOptimalOverlapping(), 
+      SolverFactory::instance().makeOptimalNonOverlapping(), 
+      SolverFactory::instance().makeHeuristicNonOverlapping() 
+  };
   auto attributeCounts = {2, 4, 8, 16, 32, 64 }; 
   
   util::RunningStat io;
