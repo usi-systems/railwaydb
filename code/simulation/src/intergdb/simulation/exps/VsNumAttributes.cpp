@@ -69,6 +69,7 @@ void VsNumAttributes::process()
                    SolverFactory::instance().makePartitionPerAttribute(),
                    SolverFactory::instance().makeOptimalOverlapping(), 
                    SolverFactory::instance().makeOptimalNonOverlapping(),
+                   SolverFactory::instance().makeHeuristicOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
   auto attributeCounts = {2, 4, 8, 16, 32, 64 }; 
   
