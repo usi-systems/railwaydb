@@ -10,12 +10,17 @@ using namespace intergdb::common;
 vector<Partition const *> Cost::getUsedPartitions(vector<Partition> const & partitions, 
   std::unordered_set<Attribute const *> const & attributes, Query const & query)
 {
+  // attributes present in the query
+  unordered_set<Attribute const *> queryAttributes; 
+  for (Attribute const * attribute : query.getAttributes())
+    queryAttributes.insert(attribute);
   // attributes we have covered so far
   unordered_set<Attribute const *> selectedAttributes; 
   // attributes we have yet to cover
   unordered_set<Attribute const *> remainingAttributes; 
   for (Attribute const * attribute : attributes)
-    remainingAttributes.insert(attribute);
+    if (queryAttributes.count(attribute))
+      remainingAttributes.insert(attribute);
   // attributes that appear in queries that we have to cover
   unordered_set<Attribute const *> effectiveAttributes; 
   for (Attribute const * attribute : query.getAttributes())
