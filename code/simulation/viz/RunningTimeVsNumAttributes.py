@@ -15,13 +15,16 @@ def main(dirn, fname):
     for line in lines:
       if line.startswith("#"):
         continue
-      (solver, attributes, time, nline) = re.split("[\t]", line)
+      (solver, attributes, time, variance, nline) = re.split("[\t]", line)
+
       attributes = int(attributes)
       time = float(time)
+      variance = float(variance)
+
       if solver in timePerSolver:
-        timePerSolver[solver].append(time)
+        timePerSolver[solver].append((time, variance))
       else:
-        timePerSolver[solver] = [time]
+        timePerSolver[solver] = [(time, variance)]
       if len(attributeSizes) == 0 or attributes > attributeSizes[-1]:
         attributeSizes.append(attributes)
 
@@ -32,9 +35,11 @@ def main(dirn, fname):
   ax.set_xscale("log", basex=2)
     
   index = 0
-  for solver, times in timePerSolver.iteritems():
-    ax.plot(attributeSizes, times, label=solver, 
-            marker=fmts[index][0], linestyle=fmts[index][1])
+  for solver, timesAndVariance in timePerSolver.iteritems():
+    timesAndVarianceLists = map(list, zip(*timesAndVariance))
+    ax.errorbar(attributeSizes, timesAndVarianceLists[0],
+                yerr=timesAndVarianceLists[1], label=solver,
+                marker=fmts[index][0], linestyle=fmts[index][1])
     index = index + 1
 
   ax.set_xlabel('Number of Attributes');
