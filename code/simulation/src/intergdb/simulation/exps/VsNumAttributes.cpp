@@ -81,12 +81,12 @@ void VsNumAttributes::process()
   double total = solvers.size() * attributeCounts.size()  * numRuns;
   double completed = 0;
 
-  for (auto solver : solvers) {
-      for (int attributeCount : attributeCounts) {
+  for (int attributeCount : attributeCounts) {
+      for (int i = 0; i < numRuns; i++) {
           simConf.setAttributeCount(attributeCount);
           QueryWorkload workload = simConf.getQueryWorkload();
-          timer.start();
-          for (int i = 0; i < numRuns; i++) {
+          for (auto solver : solvers) {
+              timer.start();
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
               io.push(cost.getIOCost(partitioning, workload));
               cerr << ".";
