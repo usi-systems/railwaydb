@@ -15,13 +15,14 @@ def main(dirn, fname):
     for line in lines:
       if line.startswith("#"):
         continue
-      (solver, attributes, io, nline) = re.split("[\t]", line)
+      (solver, attributes, io, variance, nline) = re.split("[\t]", line)
       attributes = int(attributes)
+      variance = int(variance)
       io = float(io)
       if solver in ioPerSolver:
-        ioPerSolver[solver].append(io)
+        ioPerSolver[solver].append((io,variance))
       else:
-        ioPerSolver[solver] = [io]
+        ioPerSolver[solver] = [(io,variance)]
       if len(attributeSizes) == 0 or attributes > attributeSizes[-1]:
         attributeSizes.append(attributes)
 
@@ -32,10 +33,13 @@ def main(dirn, fname):
   ax.set_xscale("log", basex=2)
     
   index = 0
-  for solver, ios in ioPerSolver.iteritems():
-    ax.plot(attributeSizes, ios, label=solver, 
-            marker=fmts[index][0], linestyle=fmts[index][1])
-    index = index + 1
+
+  for solver, ioAndVariance in ioPerSolver.iteritems():
+    ioAndVarianceLists = map(list, zip(*ioAndVariance))
+    ax.errorbar(attributeSizes, ioAndVarianceLists[0],
+                yerr=ioAndVarianceLists[1], label=solver,
+                marker=fmts[index][0], linestyle=fmts[index][1])
+    index = index + 1  
 
   ax.set_xlabel('Number of Attributes');
   ax.set_ylabel('I/O Cost (bytes)');

@@ -74,7 +74,6 @@ void VsNumQueryKinds::process()
                    SolverFactory::instance().makeOptimalNonOverlapping(),
                    SolverFactory::instance().makeHeuristicOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
-  auto attributeCounts = { 8 }; 
   auto queryTypeCounts = {2, 4 }; 
 
   util::RunningStat io;
@@ -82,50 +81,46 @@ void VsNumQueryKinds::process()
 
   double total = solvers.size()  
       * queryTypeCounts.size() 
-      * attributeCounts.size() 
       * numRuns;
   double completed = 0;
 
-  for (auto solver : solvers) {
-      for (int attributeCount : attributeCounts) {
-          for (int queryTypeCount : queryTypeCounts) {
-              simConf.setQueryTypeCount(queryTypeCount);
+  for (int queryTypeCount : queryTypeCounts) {
+      for (auto solver : solvers) {
+          simConf.setQueryTypeCount(queryTypeCount);              
+          QueryWorkload workload = simConf.getQueryWorkload();
+          timer.start();
+          for (int i = 0; i < numRuns; i++) {
+              Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
+              io.push(cost.getIOCost(partitioning, workload));
+              cerr << ".";
+          }         
+          timer.stop();
+          completed += numRuns;
               
-              simConf.setAttributeCount(attributeCount);
-              QueryWorkload workload = simConf.getQueryWorkload();
-              timer.start();
-              for (int i = 0; i < numRuns; i++) {
-                  Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-                  io.push(cost.getIOCost(partitioning, workload));
-                  cerr << ".";
-              }         
-              timer.stop();
-              completed += numRuns;
+          runningTimeExp.addRecord();
+          runningTimeExp.setFieldValue("solver", solver->getClassName());
+          runningTimeExp.setFieldValue("attributes", workload.getAttributes().size());
+          runningTimeExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
+          runningTimeExp.setFieldValue("time", timer.getRealTimeInSeconds()/numRuns);
+              
+          queryIOExp.addRecord();
+          queryIOExp.setFieldValue("solver", solver->getClassName());
+          queryIOExp.setFieldValue("attributes", workload.getAttributes().size());        
+          queryIOExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
+          queryIOExp.setFieldValue("io", io.getMean());
+          io.clear();
+              
+          storageExp.addRecord();
+          storageExp.setFieldValue("solver", solver->getClassName());
+          storageExp.setFieldValue("attributes", workload.getAttributes().size());
+          storageExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
+          storageExp.setFieldValue("storage", storage.getMean());          
+          storage.clear();
 
-              runningTimeExp.addRecord();
-              runningTimeExp.setFieldValue("solver", solver->getClassName());
-              runningTimeExp.setFieldValue("attributes", workload.getAttributes().size());
-              runningTimeExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
-              runningTimeExp.setFieldValue("time", timer.getRealTimeInSeconds()/numRuns);
-              
-              queryIOExp.addRecord();
-              queryIOExp.setFieldValue("solver", solver->getClassName());
-              queryIOExp.setFieldValue("attributes", workload.getAttributes().size());        
-              queryIOExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
-              queryIOExp.setFieldValue("io", io.getMean());
-              io.clear();
-              
-              storageExp.addRecord();
-              storageExp.setFieldValue("solver", solver->getClassName());
-              storageExp.setFieldValue("attributes", workload.getAttributes().size());
-              storageExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
-              storageExp.setFieldValue("storage", storage.getMean());          
-              storage.clear();
-
-          }
-          cerr << " (" << (completed / total) * 100 << "%)" << endl;
       }
+      cerr << " (" << (completed / total) * 100 << "%)" << endl;
   }
+  
 
   for (auto exp : expData) {
       exp->close();

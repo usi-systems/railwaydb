@@ -21,6 +21,7 @@ void VsNumAttributes::makeQueryIOExp(ExperimentalData * exp) {
   exp->addField("solver");
   exp->addField("attributes");
   exp->addField("io");
+  exp->addField("variance");
   exp->setKeepValues(false);
 }
 
@@ -29,6 +30,7 @@ void VsNumAttributes::makeStorageExp(ExperimentalData * exp) {
   exp->addField("solver");
   exp->addField("attributes");
   exp->addField("storage");
+  exp->addField("variance");
   exp->setKeepValues(false);
 }
 
@@ -37,6 +39,7 @@ void VsNumAttributes::makeRunningTimeExp(ExperimentalData * exp) {
     exp->addField("solver");
     exp->addField("attributes");
     exp->addField("time");
+    exp->addField("variance");
     exp->setKeepValues(false);
 }
 
@@ -73,47 +76,74 @@ void VsNumAttributes::process()
       SolverFactory::instance().makeOptimalNonOverlapping(), 
       SolverFactory::instance().makeHeuristicNonOverlapping() 
   };
-  auto attributeCounts = {2, 4, 8, 16, 32, 64 }; 
+  auto attributeCounts = {2, 4, 8, 16 }; //, 32, 64 }; 
   
-  util::RunningStat io;
-  util::RunningStat storage;
 
   double total = solvers.size() * attributeCounts.size()  * numRuns;
   double completed = 0;
 
-  for (int attributeCount : attributeCounts) {
+  vector<util::RunningStat> io;
+  vector<util::RunningStat> storage;
+  vector<util::RunningStat> times;
+  vector<std::string> names;
+
+
+  for (auto solver : solvers) {
+      io.push_back(util::RunningStat());
+      storage.push_back(util::RunningStat());
+      times.push_back(util::RunningStat());
+      names.push_back(solver->getClassName());
+      vector<std::string> names;  
+  }
+
+  int j;
+  for (double attributeCount : attributeCounts) {
       for (int i = 0; i < numRuns; i++) {
           simConf.setAttributeCount(attributeCount);
           QueryWorkload workload = simConf.getQueryWorkload();
-          for (auto solver : solvers) {
+          j = 0;
+          for (auto solver : solvers) {              
               timer.start();
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-              io.push(cost.getIOCost(partitioning, workload));
+              timer.stop();                            
+              io.at(j).push(cost.getIOCost(partitioning, workload));
+              storage.at(j).push(cost.getStorageOverhead(partitioning, workload));   
+              times.at(j).push(timer.getRealTimeInSeconds());                    
+              j++;
               cerr << ".";
-          }         
-          timer.stop();
-          completed += numRuns;
+              completed++;
+          }
+      }
 
+      int j = 0;
+      for (auto solver : solvers) {  
+   
           runningTimeExp.addRecord();
           runningTimeExp.setFieldValue("solver", solver->getClassName());
-          runningTimeExp.setFieldValue("attributes", workload.getAttributes().size());
-          runningTimeExp.setFieldValue("time", timer.getRealTimeInSeconds()/numRuns);
-
+          runningTimeExp.setFieldValue("attributes", attributeCount);
+          runningTimeExp.setFieldValue("time", times.at(j).getMean());
+          runningTimeExp.setFieldValue("variance", times.at(j).getVariance());
+          times.at(j).clear();
+          
           queryIOExp.addRecord();
           queryIOExp.setFieldValue("solver", solver->getClassName());
-          queryIOExp.setFieldValue("attributes", workload.getAttributes().size());        
-          queryIOExp.setFieldValue("io", io.getMean());
-          io.clear();
-
+          queryIOExp.setFieldValue("attributes", attributeCount);        
+          queryIOExp.setFieldValue("io", io.at(j).getMean());
+          queryIOExp.setFieldValue("variance", times.at(j).getVariance());
+          io.at(j).clear();
+          
           storageExp.addRecord();
           storageExp.setFieldValue("solver", solver->getClassName());
-          storageExp.setFieldValue("attributes", workload.getAttributes().size());
-          storageExp.setFieldValue("storage", storage.getMean());          
-          storage.clear();
+          storageExp.setFieldValue("attributes",attributeCount);
+          storageExp.setFieldValue("storage", storage.at(j).getMean());    
+          storageExp.setFieldValue("variance", storage.at(j).getVariance());               
+          storage.at(j).clear();
 
+          j++;
       }
-      cerr << " (" << (completed / total) * 100 << "%)" << endl;
+      cerr << " (" << (completed / total) * 100 << "%)" << endl;           
   }
+
 
   for (auto exp : expData) {
       exp->close();
