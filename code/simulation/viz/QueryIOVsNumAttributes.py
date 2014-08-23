@@ -15,14 +15,14 @@ def main(dirn, fname):
     for line in lines:
       if line.startswith("#"):
         continue
-      (solver, attributes, io, variance, nline) = re.split("[\t]", line)
+      (solver, attributes, io, deviation, nline) = re.split("[\t]", line)
       attributes = int(attributes)
-      variance = int(variance)
+      deviation = int(deviation)
       io = float(io)
       if solver in ioPerSolver:
-        ioPerSolver[solver].append((io,variance))
+        ioPerSolver[solver].append((io,deviation))
       else:
-        ioPerSolver[solver] = [(io,variance)]
+        ioPerSolver[solver] = [(io,deviation)]
       if len(attributeSizes) == 0 or attributes > attributeSizes[-1]:
         attributeSizes.append(attributes)
 
@@ -34,10 +34,10 @@ def main(dirn, fname):
     
   index = 0
 
-  for solver, ioAndVariance in ioPerSolver.iteritems():
-    ioAndVarianceLists = map(list, zip(*ioAndVariance))
-    ax.errorbar(attributeSizes, ioAndVarianceLists[0],
-                yerr=ioAndVarianceLists[1], label=solver,
+  for solver, ioAndDeviation in ioPerSolver.iteritems():
+    ioAndDeviationLists = map(list, zip(*ioAndDeviation))
+    ax.errorbar(attributeSizes, ioAndDeviationLists[0],
+                yerr=ioAndDeviationLists[1], label=solver,
                 marker=fmts[index][0], linestyle=fmts[index][1])
     index = index + 1  
 

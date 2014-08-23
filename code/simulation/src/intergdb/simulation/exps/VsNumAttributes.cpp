@@ -21,7 +21,7 @@ void VsNumAttributes::makeQueryIOExp(ExperimentalData * exp) {
   exp->addField("solver");
   exp->addField("attributes");
   exp->addField("io");
-  exp->addField("variance");
+  exp->addField("deviation");
   exp->setKeepValues(false);
 }
 
@@ -30,7 +30,7 @@ void VsNumAttributes::makeStorageExp(ExperimentalData * exp) {
   exp->addField("solver");
   exp->addField("attributes");
   exp->addField("storage");
-  exp->addField("variance");
+  exp->addField("deviation");
   exp->setKeepValues(false);
 }
 
@@ -39,7 +39,7 @@ void VsNumAttributes::makeRunningTimeExp(ExperimentalData * exp) {
     exp->addField("solver");
     exp->addField("attributes");
     exp->addField("time");
-    exp->addField("variance");
+    exp->addField("deviation");
     exp->setKeepValues(false);
 }
 
@@ -122,21 +122,21 @@ void VsNumAttributes::process()
           runningTimeExp.setFieldValue("solver", solver->getClassName());
           runningTimeExp.setFieldValue("attributes", attributeCount);
           runningTimeExp.setFieldValue("time", times.at(j).getMean());
-          runningTimeExp.setFieldValue("variance", times.at(j).getVariance());
+          runningTimeExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
           times.at(j).clear();
           
           queryIOExp.addRecord();
           queryIOExp.setFieldValue("solver", solver->getClassName());
           queryIOExp.setFieldValue("attributes", attributeCount);        
           queryIOExp.setFieldValue("io", io.at(j).getMean());
-          queryIOExp.setFieldValue("variance", times.at(j).getVariance());
+          queryIOExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
           io.at(j).clear();
           
           storageExp.addRecord();
           storageExp.setFieldValue("solver", solver->getClassName());
           storageExp.setFieldValue("attributes",attributeCount);
           storageExp.setFieldValue("storage", storage.at(j).getMean());    
-          storageExp.setFieldValue("variance", storage.at(j).getVariance());               
+          storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());               
           storage.at(j).clear();
 
           j++;

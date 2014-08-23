@@ -15,14 +15,14 @@ def main(dirn, fname):
     for line in lines:
       if line.startswith("#"):
         continue
-      (solver, attributes, storage, variance, nline) = re.split("[\t]", line)
+      (solver, attributes, storage, deviation, nline) = re.split("[\t]", line)
       attributes = int(attributes)
       storage = float(storage)
-      variance = float(variance)
+      deviation = float(deviation)
       if solver in storagePerSolver:
-        storagePerSolver[solver].append((storage,variance))
+        storagePerSolver[solver].append((storage,deviation))
       else:
-        storagePerSolver[solver] = [(storage,variance)]
+        storagePerSolver[solver] = [(storage,deviation)]
       if len(attributeSizes) == 0 or attributes > attributeSizes[-1]:
         attributeSizes.append(attributes)
 
@@ -33,10 +33,10 @@ def main(dirn, fname):
   ax.set_xscale("log", basex=2)
     
   index = 0
-  for solver, storageAndVariance in storagePerSolver.iteritems():
-    storageAndVarianceLists = map(list, zip(*storageAndVariance))
-    ax.errorbar(attributeSizes, storageAndVarianceLists[0],
-                yerr=storageAndVarianceLists[1], label=solver,
+  for solver, storageAndDeviation in storagePerSolver.iteritems():
+    storageAndDeviationLists = map(list, zip(*storageAndDeviation))
+    ax.errorbar(attributeSizes, storageAndDeviationLists[0],
+                yerr=storageAndDeviationLists[1], label=solver,
                 marker=fmts[index][0], linestyle=fmts[index][1])
     index = index + 1
 
