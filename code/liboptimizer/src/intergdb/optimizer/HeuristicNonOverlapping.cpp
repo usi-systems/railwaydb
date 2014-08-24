@@ -20,7 +20,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
     Partitioning partitioning = solve(workload, storageThreshold, numPartitions);
     double overhead = costModel.getStorageOverhead(partitioning, workload);
     if (overhead > storageThreshold)
-      continue;
+      break;
     double cost = costModel.getIOCost(partitioning, workload);
     minCostPart.push(partitioning, cost);
   }
