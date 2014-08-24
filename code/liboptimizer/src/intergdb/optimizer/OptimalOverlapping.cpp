@@ -49,7 +49,7 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
                 ctx->val[j] = 1.0;
                 j++;
             }
-           error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val, 
+            error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val, 
                                  GRB_GREATER_EQUAL, accesses(queries,q,a), NULL);
             if (error) return error;
 
@@ -186,7 +186,7 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
         }
     }
 
-    error = GRBaddconstr(ctx->model, e->P + e->A, ctx->ind, ctx->val, 
+    error = GRBaddconstr(ctx->model, e->P + e->P*e->A, ctx->ind, ctx->val, 
                          GRB_LESS_EQUAL, limit, NULL);
     if (error) return error;
 
