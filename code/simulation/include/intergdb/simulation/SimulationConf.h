@@ -1,12 +1,15 @@
 #pragma once
 
 #include <intergdb/common/QueryWorkload.h>
+#include <intergdb/util/ZipfRand.h>
+#include <intergdb/util/NormalRand.h>
 
 namespace intergdb { namespace simulation
 {
   class SimulationConf
   {
   public:
+    SimulationConf();
     void setAttributeCount(size_t attributeCount) 
       { attributeCount_ = attributeCount; }
     size_t getAttributeCount() const
@@ -42,6 +45,9 @@ namespace intergdb { namespace simulation
     static const int numAttributeSizes_ = 7;
     static constexpr double const attributeSizes_[numAttributeSizes_] = 
       {4.0, 1.0, 8.0, 2.0, 16.0, 32.0, 64.0}; 
+    util::ZipfRand attributeSizeGen_; 
+    util::NormalRand queryLengthGen_;
+    util::ZipfRand queryTypeFrequencyGen_;
   };
 
 } } /* namespace */

@@ -67,7 +67,7 @@ void VsNumAttributes::process()
       exp->open();
   }
 
-  int numRuns = 3;
+  int numRuns = 10;
   auto solvers = {       
       SolverFactory::instance().makeSinglePartition(), 
       SolverFactory::instance().makePartitionPerAttribute(),
