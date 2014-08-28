@@ -8,7 +8,8 @@ using namespace intergdb::simulation;
 
 int main()
 {
-    (VsNumAttributes()).run();
+    (VsStorageOverheadThreshold()).run();
+    //(VsNumAttributes()).run();
     //(VsNumQueryKinds()).run();
     return EXIT_SUCCESS;
 }
