@@ -160,7 +160,7 @@ TODO
 \begin{algorithm}[ht]
 \scriptsize
 \caption{Algorithm for partitioning blocks into sub-blocks with non-overlapping attributes.}
-\label{alg:overlappingP}
+\label{alg:non-overlappingP}
 \KwData{$B$: block, $Q$: set of queries}
 $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
 \For(\tcp*[f]{For each possible \# of partitions}){$k=1$ to $|A|$}{
@@ -178,11 +178,11 @@ $c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
       }
       $R[j]\leftarrow R[j] \cup \{a\}$\tcp*{Assign to best partition}
    }
-   \tcp{If solution is feasable and has lower cost}
-   \If{$H(R, B, Q)\geq\alpha \wedge L(R, B, Q)<c^*$}{
-      $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
-      $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
-   }
+   \lIf(\tcp*[f]{If solution infeasible}){$H(R, B, Q)>\alpha$}{\textbf{break}}
+   \If(\tcp*[f]{If solution has lower cost}){$L(R, B, Q)<c^*$}{
+     $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
+     $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
+   } 
 }
 \Return $\mathcal{P}(B)$ \tcp*{Final set of sub-blocks}
 \end{algorithm} 
@@ -295,83 +295,34 @@ Figure~\ref{fig:ov-ilp}.
 
 \subsubsection{Heuristic Solution}
 
-\paragraph*{Approach.$\,$} We start the algorithm with a 
- partitioning based on what queries we have seen.
-Every query gets its own sub-block. This is the``ideal'' partitioning,
-because the I/O cost would be minimized for every query that we would
-have seen. As input to the algorithm, we provide a function $\dist$, which
-is used to compute the distance between two blocks.
-
-$$
-\dist: block \rightarrow block \rightarrow int
-$$
-
-Note that the $\dist$ function can be chosen arbitrarily.  Examples of useful
-$\dist$ functions are the frequencies with which the queries are accessed, or the Jaccard index, which measures the set-similarity of
-the attributes.
-
-Using this function, the algorithm iteratively combines the two partitions that
-are closest together. Algorithm~\ref{alg:closestBF} shows the pseudocode for a brute-force approach
-  to finding the closest paris that runs in $O(n^2)$ time. However, there is
-  also a divide-and-conquer algorithm~\cite{cormen01} for solving closest pair
-  of points problem in $O(n \log n)$.
-After each combination of partitions, the algorithm calculate the storage cost
-for the partitioning. The algorithm stops when the  storage cost is below some
-specified threshold.  The result is the block partitioning.
-
-
+\paragraph*{Approach.$\,$} We start the algorithm with a   partitioning based
+on what queries we have seen. Every query gets its own sub-block. This is the
+``ideal'' partitioning, because the I/O cost would be minimized for every
+query that we would have seen. The algorithm iteratively combines the two
+partitions that are closest together.  After each combination of partitions,
+the algorithm calculate the storage overhead for the partitioning. The
+algorithm stops when the  storage cost is below some specified threshold.  The
+result is the block partitioning.
 
 \begin{algorithm}[ht]
-\SetKwFunction{closestPair}{closestPair}
 \scriptsize
 \caption{Algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
-\label{alg:closestPair}
+\label{alg:overlappingP}
 \KwData{$B$: block, $Q$: set of queries}
-$\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
-
-\For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
- $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
-}
-
-\While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
-  \text{max}$}{
-$\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
- $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - \{x, y\}$ \;
-  $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  \cup \{ x \cup y \}$ \;
+$\mathcal{P}(B) \leftarrow \{q.A: q\in Q\}$ \tcp*{Each query gets its own sub-block}
+\While(\tcp*[f]{Until storage overhead is below $\alpha$}){$H(\mathcal{P},B) > \alpha$}{
+  $c^{*}\gets \infty $ \tcp*{Lowest cost over all sub-block pairs}
+  $(b_x,b_y)\gets (\emptyset,\emptyset)$ \tcp*{Sub-block pair with the lowest cost}
+  \For(\tcp*[f]{For each pair of blocks}){$\{b_i,b_j\}\in\mathcal{P}(B)$}{
+    $\mathcal{P'}(B) \leftarrow \mathcal{P}(B) \setminus \{b_i, b_j\} \cup \{b_i \cup b_j\}$\\
+    $c\gets \frac{L(\mathcal{P}',B,Q)-L(\mathcal{P},B,Q)}{H(\mathcal{P},B)-H(\mathcal{P}',B)}$\tcp*{Cost of merge}
+    \If(\tcp*[f]{Cost is lower}){$c<c^{*}$}{
+        $c^{*}\gets c$\tcp*{Update the lowest cost}
+        $(b_x,b_y)\gets (b_i,b_j)$\tcp*{Update the best pair}
+    }
+  }
+  $\mathcal{P}(B) \leftarrow \mathcal{P}(B) \setminus \{b_x, b_y\} \cup \{b_x \cup b_y\}$ \\
 }
 \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
 \end{algorithm} 
 
-
-
- \begin{algorithm}[ht]
-\SetKwFunction{length}{length}
-\SetKwFunction{dist}{dist}
- \scriptsize
- \caption{Brute-force algorithm for closest points in $O(n^2)$.}
- \label{alg:closestBF}
-$minDist  \gets \infty $ \;
-\For{$i \gets 1$ \textbf{to} $\length(P)-1$} {
-\For{$j \gets i+ 1$ \textbf{to} $\length(P)$} {
-
-  $p \gets P[i]$ \;
-  $q \gets P[j]$ \;
-  \If{$\dist(p,q) < minDist$} {
-    $minDist \gets \dist(p,q)$\;
-    $closestPair \gets (p,q)$\;
-  }
-}
-}
-\Return $closestPair$
-% \KwData{$B$: block, $Q$: set of queries}
-% $\mathcal{P}(B) \leftarrow \emptyset;$  \tcp*{Sub-blocks;}
-% \For(\tcp*[f]{Every query gets its own sub-block}){$q \in Q$}{ 
-%  $\mathcal{P}(B) = \mathcal{P}(B) \cup q.A$ 
-% }
-% \While(\tcp*[f]{While storage exceeds threshold}){$H(\mathcal{P}, B) \geq
-%   \text{max}$}{
-% $\text{x}, \text{y}  \leftarrow  \closestPair{}  $\;
-%  $ \mathcal{P}(B)  \leftarrow \mathcal{P}(B) - x - y$ \;
-%   $\mathcal{P}(B)  \leftarrow \mathcal{P}(B)  + x \cup y$ \;
-% \Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
- \end{algorithm} 
