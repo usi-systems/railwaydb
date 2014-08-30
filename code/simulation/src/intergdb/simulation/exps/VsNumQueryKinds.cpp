@@ -9,7 +9,9 @@
 #include <vector>
 #include <intergdb/optimizer/Solver.h>
 #include <intergdb/optimizer/SolverFactory.h>
+#include <boost/lexical_cast.hpp>
 
+using namespace boost;
 using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
@@ -17,29 +19,29 @@ using namespace intergdb::simulation;
 using namespace intergdb::optimizer;
 
 void VsNumQueryKinds::makeQueryIOExp(ExperimentalData * exp) {
-  exp->setDescription("Query IO Vs. NumAttributes");
+  exp->setDescription("Query IO Vs. NumQueryKinds");
   exp->addField("solver");
-  exp->addField("attributes");
   exp->addField("queryTypeCount");
   exp->addField("io");
+  exp->addField("deviation");
   exp->setKeepValues(false);
 }
 
 void VsNumQueryKinds::makeStorageExp(ExperimentalData * exp) {
-  exp->setDescription("Storage Overhead Vs. NumAttributes");
+  exp->setDescription("Storage Overhead Vs. NumQueryKinds");
   exp->addField("solver");
-  exp->addField("attributes");
   exp->addField("queryTypeCount");
   exp->addField("storage");
+  exp->addField("deviation");
   exp->setKeepValues(false);
 }
 
 void VsNumQueryKinds::makeRunningTimeExp(ExperimentalData * exp) {
-    exp->setDescription("Running Time Vs. NumAttributes");
+    exp->setDescription("Running Time Vs. NumQueryKinds");
     exp->addField("solver");
-    exp->addField("attributes");
     exp->addField("queryTypeCount");
     exp->addField("time");
+    exp->addField("deviation");
     exp->setKeepValues(false);
 }
 
@@ -74,53 +76,74 @@ void VsNumQueryKinds::process()
                    SolverFactory::instance().makeOptimalNonOverlapping(),
                    SolverFactory::instance().makeHeuristicOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
-  auto queryTypeCounts = {2, 4 }; 
-
-  util::RunningStat io;
-  util::RunningStat storage;
+  auto queryTypeCounts = {2, 4, 8, 16, 32 }; 
 
   double total = solvers.size()  
       * queryTypeCounts.size() 
       * numRuns;
   double completed = 0;
 
-  for (int queryTypeCount : queryTypeCounts) {
-      for (auto solver : solvers) {
+  vector<util::RunningStat> io;
+  vector<util::RunningStat> storage;
+  vector<util::RunningStat> times;
+  vector<std::string> names;
+
+  for (auto solver : solvers) {
+      io.push_back(util::RunningStat());
+      storage.push_back(util::RunningStat());
+      times.push_back(util::RunningStat());
+      names.push_back(solver->getClassName());
+      vector<std::string> names;  
+  }
+
+  int j;
+  for (int queryTypeCount : queryTypeCounts) {      
+      for (int i = 0; i < numRuns; i++) {
           simConf.setQueryTypeCount(queryTypeCount);              
           QueryWorkload workload = simConf.getQueryWorkload();
-          timer.start();
-          for (int i = 0; i < numRuns; i++) {
+          j = 0;
+          for (auto solver : solvers) {              
+              timer.start();
               Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
-              io.push(cost.getIOCost(partitioning, workload));
+              timer.stop();                            
+              io.at(j).push(cost.getIOCost(partitioning, workload));
+              storage.at(j).push(cost.getStorageOverhead(partitioning, workload));   
+              times.at(j).push(timer.getRealTimeInSeconds());                    
+              j++;
               cerr << ".";
-          }         
-          timer.stop();
-          completed += numRuns;
-              
+              completed++;
+          }
+      }
+
+      int j = 0;
+      for (auto solver : solvers) {  
+   
           runningTimeExp.addRecord();
           runningTimeExp.setFieldValue("solver", solver->getClassName());
-          runningTimeExp.setFieldValue("attributes", workload.getAttributes().size());
-          runningTimeExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
-          runningTimeExp.setFieldValue("time", timer.getRealTimeInSeconds()/numRuns);
-              
+          runningTimeExp.setFieldValue("queryTypeCount", lexical_cast<std::string>(queryTypeCount));
+          runningTimeExp.setFieldValue("time", times.at(j).getMean());
+          runningTimeExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
+          times.at(j).clear();
+          
           queryIOExp.addRecord();
           queryIOExp.setFieldValue("solver", solver->getClassName());
-          queryIOExp.setFieldValue("attributes", workload.getAttributes().size());        
-          queryIOExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
-          queryIOExp.setFieldValue("io", io.getMean());
-          io.clear();
-              
+          queryIOExp.setFieldValue("queryTypeCount", lexical_cast<std::string>(queryTypeCount));
+          queryIOExp.setFieldValue("io", io.at(j).getMean());
+          queryIOExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
+          io.at(j).clear();
+          
           storageExp.addRecord();
           storageExp.setFieldValue("solver", solver->getClassName());
-          storageExp.setFieldValue("attributes", workload.getAttributes().size());
-          storageExp.setFieldValue("queryTypeCount", simConf.getQueryTypeCount());
-          storageExp.setFieldValue("storage", storage.getMean());          
-          storage.clear();
+          storageExp.setFieldValue("queryTypeCount", lexical_cast<std::string>(queryTypeCount));
+          storageExp.setFieldValue("storage", storage.at(j).getMean());    
+          storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());               
+          storage.at(j).clear();
 
+          j++;
       }
-      cerr << " (" << (completed / total) * 100 << "%)" << endl;
+      cerr << " (" << (completed / total) * 100 << "%)" << endl;           
   }
-  
+
 
   for (auto exp : expData) {
       exp->close();

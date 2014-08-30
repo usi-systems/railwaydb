@@ -277,23 +277,21 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
     error = GRBgetintattr(ctx->model, GRB_INT_ATTR_STATUS, &ctx->optimstatus);
     if (error) return error;
 
+    if (ctx->optimstatus == GRB_OPTIMAL) {
+        error = 0;
+    } else if (ctx->optimstatus == GRB_INF_OR_UNBD) {
+        cerr << "Model is infeasible or unbounded" << endl;
+        error = 1;
+    } else {
+        cerr << "Optimization was stopped early" << endl;
+        error = 1;
+    }
+
     error = GRBgetdblattr(ctx->model, GRB_DBL_ATTR_OBJVAL, &ctx->objval);
     if (error) return error;
 
     error = GRBgetdblattrarray(ctx->model, GRB_DBL_ATTR_X, 0, e->num_vars, ctx->sol);
     if (error) return error;
-
-    // printf("\nOptimization complete\n");
-
-    if (ctx->optimstatus == GRB_OPTIMAL) {
-        error = 0;
-    } else if (ctx->optimstatus == GRB_INF_OR_UNBD) {
-        cout << "Model is infeasible or unbounded" << endl;
-        error = 1;
-    } else {
-        cout << "Optimization was stopped early" << endl;
-        error = 1;
-    }
 
     return error;
 }
