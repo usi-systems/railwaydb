@@ -16,6 +16,7 @@ def main(dirn, fname):
       if line.startswith("#"):
         continue
       (solver, attributes, storage, deviation, nline) = re.split("[\t]", line)
+       
       attributes = int(attributes)
       storage = float(storage)
       deviation = float(deviation)
