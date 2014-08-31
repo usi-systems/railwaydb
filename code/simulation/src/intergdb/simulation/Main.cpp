@@ -12,6 +12,8 @@ int main()
     //(VsNumAttributes()).run();
     //(VsNumQueryKinds()).run();
     (VsQueryLength()).run();
+    //(VsAttributeSizeSkew()).run();
+    //(VsQueryFreqSkew()).run();
     return EXIT_SUCCESS;
 }
 
