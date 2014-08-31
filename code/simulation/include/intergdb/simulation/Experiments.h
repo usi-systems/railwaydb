@@ -40,5 +40,15 @@ namespace intergdb { namespace simulation
       void makeRunningTimeExp(ExperimentalData * exp);
   };
 
+ class VsQueryLength : public ExperimentalRun 
+  {
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
+  };
+
+
 } } /* namespace */
 
