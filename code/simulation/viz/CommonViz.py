@@ -12,9 +12,13 @@ def parseData(dirn, fname):
       if line.startswith("#"):
         continue
       (solver, x, y, ydev, nline) = re.split("[\t]", line)
-      x = int(x)
-      y = float(y)
-      ydev = float(ydev)  
+      x = float(x)
+      try:
+        y = float(y)
+        ydev = float(ydev)  
+      except ValueError:
+        y = 0.0
+        ydev = 0.0  
       if solver in ysPerSolver:
         ysPerSolver[solver].append(y)
         ydevsPerSolver[solver].append(ydev)
