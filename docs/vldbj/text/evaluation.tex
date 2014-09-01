@@ -1,30 +1,109 @@
 \section{Evaluation}
 
-\subsection{LP Solver scalability}
-\begin{alltt}\scriptsize
-# of attrbutes vs solving time:
-\end{alltt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{figure}[t]
-\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsNumAttributes.pdf}}
-\caption{The running time for different solvers as the number of attributes increases.}
+\subsection{Query I/O}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/QueryIOVsAttributeSizeSkew.pdf}}
+\caption{QueryIOVsAttributeSizeSkew}
 \end{figure}
 
-
-
-\subsection{I/O comparison}
-
-\begin{figure}[t]
+\begin{figure}[ht]
 \centerline{\includegraphics[width=0.9\columnwidth]{figures/QueryIOVsNumAttributes.pdf}}
-\caption{The query I/O cost for different solvers as the number of attributes increases.}
+ \caption{QueryIOVsNumAttributes}
+ \end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/QueryIOVsNumQueryKinds.pdf}}
+\caption{QueryIOVsNumQueryKinds}
 \end{figure}
 
+\begin{figure}[ht]
+ \centerline{\includegraphics[width=0.9\columnwidth]{figures/QueryIOVsQueryFreqSkew.pdf}}
+ \caption{QueryIOVsQueryFreqSkew}
+ \end{figure}
 
-\begin{figure}[t]
+ \begin{figure}[ht]
+ \centerline{\includegraphics[width=0.9\columnwidth]{figures/QueryIOVsQueryLength.pdf}}
+ \caption{QueryIOVsQueryLength}
+ \end{figure}
+
+ \begin{figure}[ht]
+ \centerline{\includegraphics[width=0.9\columnwidth]{figures/QueryIOVsStorageOverheadThreshold.pdf}}
+ \caption{QueryIOVsStorageOverheadThreshold}
+ \end{figure}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Running Time}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsAttributeSizeSkew.pdf}}
+\caption{RunningTimeVsAttributeSizeSkew}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsNumAttributes.pdf}}
+\caption{RunningTimeVsNumAttributes}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsNumQueryKinds.pdf}}
+\caption{RunningTimeVsNumQueryKinds}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsQueryFreqSkew.pdf}}
+\caption{RunningTimeVsQueryFreqSkew}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsQueryLength.pdf}}
+\caption{RunningTimeVsQueryLength}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/RunningTimeVsStorageOverheadThreshold.pdf}}
+\caption{RunningTimeVsStorageOverheadThreshold}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Storage Overhead}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/StorageOverheadVsAttributeSizeSkew.pdf}}
+\caption{StorageOverheadVsAttributeSizeSkew}
+\end{figure}
+
+\begin{figure}[ht]
 \centerline{\includegraphics[width=0.9\columnwidth]{figures/StorageOverheadVsNumAttributes.pdf}}
-\caption{The storage overhead for different solvers as the number of attributes increases.}
+\caption{StorageOverheadVsNumAttributes}
 \end{figure}
 
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/StorageOverheadVsNumQueryKinds.pdf}}
+\caption{StorageOverheadVsNumQueryKinds}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/StorageOverheadVsQueryFreqSkew.pdf}}
+\caption{StorageOverheadVsQueryFreqSkew}
+\end{figure}
+
+\begin{figure}[ht]
+\centerline{\includegraphics[width=0.9\columnwidth]{figures/StorageOverheadVsQueryLength.pdf}}
+\caption{StorageOverheadVsQueryLength}
+\end{figure}
+
+% \begin{figure}[ht]
+% \centerline{\includegraphics[width=0.9\columnwidth]{figures/StorageOverheadVsStorageOverheadThreshold.pdf}}
+% \caption{StorageOverheadVsStorageOverheadThreshold}
+% \end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \begin{verbatim}
