@@ -42,7 +42,7 @@ def main(dirn, fname):
     index = index + 1
 
   ax.set_xlabel('Number of Attributes');
-  ax.set_ylabel(r'Storage Overhead ($\alpha$)');
+  ax.set_ylabel('Storage Overhead ($\alpha$)');
   # ax.set_xlim(0, 2100)
   ax.legend(loc='best', fancybox=True)
 
