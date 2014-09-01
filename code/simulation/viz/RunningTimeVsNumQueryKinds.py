@@ -1,55 +1,37 @@
 import CommonConf
+import CommonViz
 
 import re
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as pp
 
-def main(dirn, fname):
-  queryKindSizes = []
-  timePerSolver = OrderedDict()
+EXPERIMENT_NAME = "RunningTimeVsNumQueryKinds"
+X_LABEL         = "Num Query Kinds"
+Y_LABEL         = "Time (sec.)"
 
-  with open(dirn+"/"+fname+".dat") as fin:
-    lines = fin.readlines()
-
-    for line in lines:
-      if line.startswith("#"):
-        continue
-      (solver, queryKinds, time, deviation, nline) = re.split("[\t]", line)
-
-      queryKinds = int(queryKinds)
-      time = float(time)
-      deviation = float(deviation)
-
-      if solver in timePerSolver:
-        timePerSolver[solver].append((time, deviation))
-      else:
-        timePerSolver[solver] = [(time, deviation)]
-      if len(queryKindSizes) == 0 or queryKinds > queryKindSizes[-1]:
-        queryKindSizes.append(queryKinds)
-
+            
+def main(dirn, fname): 
+  (xs, ysPerSolver, ydevsPerSolver) = CommonViz.parseData(dirn, fname)
+     
   CommonConf.setupMPPDefaults()
   fmts = CommonConf.getLineFormats()
   fig = pp.figure()
   ax = fig.add_subplot(111)
   ax.set_xscale("log", basex=2)
-    
+
   index = 0
-  for solver, timesAndDeviation in timePerSolver.iteritems():
-    timesAndDeviationLists = map(list, zip(*timesAndDeviation))
-    ax.errorbar(queryKindSizes, timesAndDeviationLists[0],
-                yerr=timesAndDeviationLists[1], label=solver,
-                marker=fmts[index][0], linestyle=fmts[index][1])
+  for (solver, ys), (solver, ydevs) in zip(ysPerSolver.iteritems(),ydevsPerSolver.iteritems()) : 
+    ax.errorbar(xs, ys, yerr=ydevs, label=solver, marker=fmts[index][0], linestyle=fmts[index][1])
     index = index + 1
 
-  ax.set_xlabel('Number of QueryKinds');
-  ax.set_ylabel('Time (sec.)');
-  # ax.set_xlim(0, 2100)
+  ax.set_xlabel(X_LABEL);
+  ax.set_ylabel(Y_LABEL);
   ax.legend(loc='best', fancybox=True)
 
   pp.savefig(dirn+"/"+fname+".pdf")
   pp.show()
 
 if __name__ == "__main__":
-  main("expData", "RunningTimeVsNumQueryKinds")
+  main("expData", EXPERIMENT_NAME)
 
