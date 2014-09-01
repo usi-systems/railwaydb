@@ -1,54 +1,36 @@
 import CommonConf
+import CommonViz
 
 import re
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as pp
 
-def main(dirn, fname):
-  attributeSizes = []
-  ioPerSolver = OrderedDict()
-
-  with open(dirn+"/"+fname+".dat") as fin:
-    lines = fin.readlines()
-
-    for line in lines:
-      if line.startswith("#"):
-        continue
-      (solver, attributes, io, deviation, nline) = re.split("[\t]", line)
-      attributes = int(attributes)
-      deviation = int(deviation)
-      io = float(io)
-      if solver in ioPerSolver:
-        ioPerSolver[solver].append((io,deviation))
-      else:
-        ioPerSolver[solver] = [(io,deviation)]
-      if len(attributeSizes) == 0 or attributes > attributeSizes[-1]:
-        attributeSizes.append(attributes)
-
+EXPERIMENT_NAME = "QueryIOVsNumAttributes"
+X_LABEL         = "Num Attributes"
+Y_LABEL         = "I/O Cost (bytes)"
+            
+def main(dirn, fname): 
+  (xs, ysPerSolver, ydevsPerSolver) = CommonViz.parseData(dirn, fname)
+     
   CommonConf.setupMPPDefaults()
   fmts = CommonConf.getLineFormats()
   fig = pp.figure()
   ax = fig.add_subplot(111)
   ax.set_xscale("log", basex=2)
-    
+
   index = 0
+  for (solver, ys), (solver, ydevs) in zip(ysPerSolver.iteritems(),ydevsPerSolver.iteritems()) : 
+    ax.errorbar(xs, ys, yerr=ydevs, label=solver, marker=fmts[index][0], linestyle=fmts[index][1])
+    index = index + 1
 
-  for solver, ioAndDeviation in ioPerSolver.iteritems():
-    ioAndDeviationLists = map(list, zip(*ioAndDeviation))
-    ax.errorbar(attributeSizes, ioAndDeviationLists[0],
-                yerr=ioAndDeviationLists[1], label=solver,
-                marker=fmts[index][0], linestyle=fmts[index][1])
-    index = index + 1  
-
-  ax.set_xlabel('Number of Attributes');
-  ax.set_ylabel('I/O Cost (bytes)');
-  # ax.set_xlim(0, 2100)
+  ax.set_xlabel(X_LABEL);
+  ax.set_ylabel(Y_LABEL);
   ax.legend(loc='best', fancybox=True)
 
   pp.savefig(dirn+"/"+fname+".pdf")
   pp.show()
 
 if __name__ == "__main__":
-  main("expData", "QueryIOVsNumAttributes")
+  main("expData", EXPERIMENT_NAME)
 
