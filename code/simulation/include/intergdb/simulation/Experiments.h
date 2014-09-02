@@ -7,11 +7,6 @@ namespace intergdb { namespace simulation
 
   class ExperimentalData;
 
-  class SampleExperiment : public ExperimentalRun 
-  {
-    void process() override;
-  };
-
   class VsNumAttributes : public ExperimentalRun 
   {
       void process() override;
