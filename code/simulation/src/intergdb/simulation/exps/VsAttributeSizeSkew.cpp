@@ -129,7 +129,7 @@ void VsAttributeSizeSkew::process()
           queryIOExp.setFieldValue("solver", solver->getClassName());
           queryIOExp.setFieldValue("attributeSizeSkew", attributeSizeSkew);        
           queryIOExp.setFieldValue("io", io.at(j).getMean());
-          queryIOExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
+          queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
           io.at(j).clear();
           
           storageExp.addRecord();
