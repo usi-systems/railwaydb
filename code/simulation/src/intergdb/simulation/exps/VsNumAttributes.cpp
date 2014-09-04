@@ -129,7 +129,7 @@ void VsNumAttributes::process()
           queryIOExp.setFieldValue("solver", solver->getClassName());
           queryIOExp.setFieldValue("attributes", attributeCount);        
           queryIOExp.setFieldValue("io", io.at(j).getMean());
-          queryIOExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
+          queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
           io.at(j).clear();
           
           storageExp.addRecord();

@@ -145,7 +145,7 @@ void VsStorageOverheadThreshold::process()
               queryIOExp.setFieldValue("solver", solver->getClassName());
               queryIOExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
               queryIOExp.setFieldValue("io", io.at(j).getMean());
-              queryIOExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
+              queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
               io.at(j).clear();
               
               storageExp.addRecord();

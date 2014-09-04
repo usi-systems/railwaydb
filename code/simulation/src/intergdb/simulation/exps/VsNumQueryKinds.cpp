@@ -129,7 +129,7 @@ void VsNumQueryKinds::process()
           queryIOExp.setFieldValue("solver", solver->getClassName());
           queryIOExp.setFieldValue("queryTypeCount", lexical_cast<std::string>(queryTypeCount));
           queryIOExp.setFieldValue("io", io.at(j).getMean());
-          queryIOExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
+          queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
           io.at(j).clear();
           
           storageExp.addRecord();
