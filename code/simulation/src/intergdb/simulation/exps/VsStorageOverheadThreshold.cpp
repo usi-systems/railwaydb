@@ -72,17 +72,20 @@ void VsStorageOverheadThreshold::process()
       exp->open();
   }
 
-  int numRuns = 10;
+  int numRuns = 1;
   auto solvers = {       
-      SolverFactory::instance().makeSinglePartition(), 
+      SolverFactory::instance().makeOptimalOverlapping(),
+/*      SolverFactory::instance().makeSinglePartition(), 
       SolverFactory::instance().makePartitionPerAttribute(),
       SolverFactory::instance().makeOptimalOverlapping(),
       SolverFactory::instance().makeOptimalNonOverlapping(), 
       SolverFactory::instance().makeHeuristicOverlapping(),  
       SolverFactory::instance().makeHeuristicNonOverlapping()
+*/
   };
   
-  vector<double> storageOverheadThresholds = { 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0 }; 
+  //vector<double> storageOverheadThresholds = { 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0 }; 
+  vector<double> storageOverheadThresholds = { 0.0 };
 
   double total = solvers.size()  
       * storageOverheadThresholds.size() 
@@ -109,6 +112,7 @@ void VsStorageOverheadThreshold::process()
   for (double storageOverheadThreshold : storageOverheadThresholds) {
       for (int i = 0; i < numRuns; i++) {
           QueryWorkload workload = simConf.getQueryWorkload();
+          cerr << workload.toString() << endl;
           j = 0;
           for (auto solver : solvers) {              
               timer.start();
