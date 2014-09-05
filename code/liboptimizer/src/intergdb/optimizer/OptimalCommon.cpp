@@ -283,7 +283,7 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
         cerr << "Model is infeasible or unbounded" << endl;
         error = 1;
     } else {
-        cerr << "Optimization was stopped early" << endl;
+        cerr << "Optimization was stopped early. Status is " << ctx->optimstatus << endl;
         error = 1;
     }
 
