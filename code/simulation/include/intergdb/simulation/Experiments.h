@@ -4,30 +4,64 @@
 
 namespace intergdb { namespace simulation
 {
-  class SampleExperiment : public ExperimentalRun 
+
+  class ExperimentalData;
+
+  class VsNumAttributes : public ExperimentalRun 
   {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
 
- class RunningTimeVsNumAttributes : public ExperimentalRun 
+
+ class VsNumQueryKinds : public ExperimentalRun 
   {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
 
- class RunningTimeVsNumQueryKinds : public ExperimentalRun 
+ class VsStorageOverheadThreshold : public ExperimentalRun 
   {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
 
- class QueryIOVsNumAttributes : public ExperimentalRun 
+ class VsQueryLength : public ExperimentalRun 
   {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
 
- class StorageOverheadVsNumAttributes : public ExperimentalRun 
+ class VsAttributeSizeSkew : public ExperimentalRun 
   {
-    void process() override;
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
   };
+
+ class VsQueryFreqSkew : public ExperimentalRun 
+  {
+      void process() override;
+  private:     
+      void makeQueryIOExp(ExperimentalData * exp);      
+      void makeStorageExp(ExperimentalData * exp);
+      void makeRunningTimeExp(ExperimentalData * exp);
+  };
+
 
 } } /* namespace */
 

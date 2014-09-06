@@ -1,9 +1,14 @@
+.PHONY: test 
+
 all:
 	make -C libcommon
 	make -C liboptimizer
 	make -C simulation
 	make -C libintergdb
 	make -C test
+
+test:
+	make -C test $@
 
 clean:
 	make -C libcommon clean

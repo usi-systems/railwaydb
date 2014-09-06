@@ -4,6 +4,7 @@
 *.log
 *.swp
 *.lp
+*.pyc
 code/libcommon/bin/
 code/libintergdb/bin/
 code/liboptimizer/bin/
@@ -13,5 +14,6 @@ code/test/OptimizerTest/bin/
 code/test/ClusteringCoefficientTest/bin/
 code/test/SimpleTest/bin/
 code/test/SpanningTreeTest/bin/
-docs/paper/output/
+docs/vldbj/output/
+docs/edbt2015/output/
 docs/workshop/output/
