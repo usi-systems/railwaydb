@@ -267,10 +267,9 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
     if (error) return error;
 
     /* Write model to '<classname>.lp' */
-    std::string lpFileName = this->getClassName() + ".lp";
-
-    error = GRBwrite(ctx->model, lpFileName.c_str());
-    if (error) return error;
+    //std::string lpFileName = this->getClassName() + ".lp";
+    //error = GRBwrite(ctx->model, lpFileName.c_str());
+    //if (error) return error;
 
     /* Capture solution information */
 
