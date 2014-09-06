@@ -3,8 +3,8 @@
 
 #ifdef __MACH__
 #include <machine/endian.h>
-elif defined __linux__
-#include <mendian.h>
+#elif defined __linux__
+#include <endian.h>
 #endif
 #include <inttypes.h>
 #include <netinet/in.h>
