@@ -109,7 +109,6 @@ void VsStorageOverheadThreshold::process()
   for (double storageOverheadThreshold : storageOverheadThresholds) {
       for (int i = 0; i < numRuns; i++) {
           QueryWorkload workload = simConf.getQueryWorkload();
-          cerr << workload.toString() << endl;
           j = 0;
           for (auto solver : solvers) {              
               timer.start();
