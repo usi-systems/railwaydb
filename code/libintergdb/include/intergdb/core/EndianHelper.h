@@ -1,7 +1,11 @@
 #ifndef INTERGDB_ENDIANHELPER_H
 #define INTERGDB_ENDIANHELPER_H
 
+#ifdef __MACH__
 #include <machine/endian.h>
+elif defined __linux__
+#include <mendian.h>
+#endif
 #include <inttypes.h>
 #include <netinet/in.h>
 
