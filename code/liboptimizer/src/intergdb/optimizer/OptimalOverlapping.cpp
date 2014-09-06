@@ -181,7 +181,7 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
     for (int p = 0; p < e->P; ++p) {   
         for (int a = 0; a < e->A; ++a) {
             ctx->ind[j] = x(e,a,p);
-            ctx->val[j] = workload->getAttribute(a).getSize() * c_n();
+            ctx->val[j] = workload->getAttribute(a).getSize() * c_e();
             j++;
         }
     }

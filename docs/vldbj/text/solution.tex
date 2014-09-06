@@ -256,7 +256,7 @@ multiple times from different partitions. As a result, we express the overhead
 using base variables as in the objective function. Formally:
 \begin{eqnarray}
 \sum_{p=1}^{k} \Big((16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
-+ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p} \Big) \leq s(B)\cdot (1+\alpha)
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_e(B)\cdot x_{a,p} \Big) \leq s(B)\cdot (1+\alpha)
 \end{eqnarray}
 
 \begin{figure}[!t]
@@ -283,7 +283,7 @@ using base variables as in the objective function. Formally:
 \forall_{p\in[1..k]},
     && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
 \sum_{p=1}^{k} \Big((16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
-+ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_n(B)\cdot x_{a,p}  \Big)\leq s(B)\cdot (1+\alpha)\nonumber
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_e(B)\cdot x_{a,p}  \Big)\leq s(B)\cdot (1+\alpha)\nonumber
 \end{eqnarray}
 \end{mdframed}
 \caption{ILP formulation for the overlapping partitioning}

@@ -9,8 +9,8 @@ namespace intergdb { namespace common
       static const int timestampSize = 8;      
       static const int headVertexSize = 8;    
       static const int numEntriesSize = 4;
-      static const int numberOfEdgesInABlock = 6; 
-      static const int numberOfNeighborListsInABlock = 8;       
+      static const int numberOfEdgesInABlock = 48;  // TODO: correct 
+      static const int numberOfNeighborListsInABlock = 8; // TODO: correct
       SystemConstants() = delete;
   };
 } }
