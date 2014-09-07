@@ -76,7 +76,7 @@ void VsNumQueryKinds::process()
                    SolverFactory::instance().makeOptimalNonOverlapping(),
                    SolverFactory::instance().makeHeuristicOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
-  auto queryTypeCounts = {2, 4, 8, 16, 32 }; 
+  auto queryTypeCounts = {2, 4, 8, 16 }; 
 
   double total = solvers.size()  
       * queryTypeCounts.size() 
