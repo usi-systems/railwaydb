@@ -27,6 +27,7 @@ def main(dirn, fname):
 
   CommonConf.setupMPPDefaults()
   fmts = CommonConf.getLineFormats()
+  mrkrs = CommonConf.getLineMarkers()
   fig = pp.figure()
   ax = fig.add_subplot(111)
   #ax.set_xscale("log", basex=2)
@@ -34,7 +35,7 @@ def main(dirn, fname):
   index = 0
   for approach, localities in localitiesPerApproach.iteritems():
     ax.plot(blockSizes, localities, label=approach, 
-            marker=fmts[index][0], linestyle=fmts[index][1])
+            marker=mrkrs[index], linestyle=fmts[index])
     index = index + 1
 
   ax.set_xlabel('block size (bytes)');

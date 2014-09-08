@@ -9,7 +9,14 @@ def setupMPPDefaults():
     pp.rcParams['axes.titlesize'] = 18
     pp.rcParams['axes.labelsize'] = 15
 
+def getLineMarkers():
+  #return ['+-', '*-', 'x-', '<-', '>-', 'o-', 's-', 'd-', '^-', 'v-']
+  return [ r'$\lambda$',
+           r'$\bowtie$',
+           r'$\circlearrowleft$',
+           r'$\clubsuit$',
+           r'$\checkmark$',
+            '<', '>']
+
 def getLineFormats():
-  return ['+-', '*-', 'x-', '<-', '>-', 'o-', 's-', 'd-', '^-', 'v-']
-
-
+    return ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
