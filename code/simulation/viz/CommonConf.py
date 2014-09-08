@@ -11,12 +11,13 @@ def setupMPPDefaults():
 
 def getLineMarkers():
   #return ['+-', '*-', 'x-', '<-', '>-', 'o-', 's-', 'd-', '^-', 'v-']
-  return [ r'$\lambda$',
-           r'$\bowtie$',
-           r'$\circlearrowleft$',
-           r'$\clubsuit$',
-           r'$\checkmark$',
-            '<', '>']
+    # return [ r'$\lambda$',
+    #          r'$\bowtie$',
+    #          r'$\circlearrowleft$',
+    #          r'$\clubsuit$',
+    #          r'$\checkmark$',
+    #           '<', '>']
+    return ['s', 'o', '<', '>', '^', 'v', 'd', '^', 'v']
 
 def getLineFormats():
-    return ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+    return [':',':','-', '-', '--', '--', '-', '-', '-', '-']
