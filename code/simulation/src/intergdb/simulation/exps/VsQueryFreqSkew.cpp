@@ -77,8 +77,7 @@ void VsQueryFreqSkew::process()
       SolverFactory::instance().makeHeuristicNonOverlapping() 
   };
 
-  auto queryFreqSkews = {0.1, 0.25, 0.50, 0.75 }; 
-
+  auto queryFreqSkews = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 }; 
 
   double total = solvers.size() * queryFreqSkews.size()  * numRuns;
   double completed = 0;
