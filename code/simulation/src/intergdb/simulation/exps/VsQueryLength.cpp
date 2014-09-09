@@ -76,7 +76,8 @@ void VsQueryLength::process()
                    SolverFactory::instance().makeOptimalNonOverlapping(),
                    SolverFactory::instance().makeHeuristicOverlapping(),
                    SolverFactory::instance().makeHeuristicNonOverlapping() };
-  auto queryLengths = {1, 2, 4, 8, 16 }; 
+
+  auto queryLengths = {2, 4, 6, 8, 10, 12, 14, 16 }; 
 
   double total = solvers.size()  
       * queryLengths.size() 

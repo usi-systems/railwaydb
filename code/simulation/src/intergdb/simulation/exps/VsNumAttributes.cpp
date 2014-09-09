@@ -76,9 +76,8 @@ void VsNumAttributes::process()
       SolverFactory::instance().makeHeuristicOverlapping(),  
       SolverFactory::instance().makeHeuristicNonOverlapping() 
   };
-  auto attributeCounts = {2, 4, 8, 16 }; //, 32, 64 }; 
+  auto attributeCounts = {2, 4, 6, 8, 10, 12, 14, 16 }; 
   
-
   double total = solvers.size() * attributeCounts.size()  * numRuns;
   double completed = 0;
 
