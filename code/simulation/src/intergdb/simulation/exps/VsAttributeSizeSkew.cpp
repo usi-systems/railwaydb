@@ -1,6 +1,7 @@
 #include <intergdb/simulation/Experiments.h>
 #include <intergdb/simulation/ExperimentalData.h>
 #include <intergdb/simulation/SimulationConf.h>
+#include <intergdb/simulation/Constants.h>
 #include <intergdb/util/RunningStat.h>
 #include <intergdb/util/AutoTimer.h>
 #include <intergdb/common/Cost.h>
@@ -67,7 +68,6 @@ void VsAttributeSizeSkew::process()
       exp->open();
   }
 
-  int numRuns = 10;
   auto solvers = {       
       SolverFactory::instance().makeSinglePartition(), 
       SolverFactory::instance().makePartitionPerAttribute(),
