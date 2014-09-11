@@ -25,46 +25,47 @@ Examples of interactions graphs include CDR graphs capturing calls between
 telco customers or mention graphs capturing interactions between users of a
 micro-blogging service. The append-only nature of the interaction graphs make
 storing them on disk a necessity. Furthermore, the analysis of this historical
-interaction data form an important aspect of the analytical landscape.
+interaction data form an important part of the analytical landscape.
 
 The ability to efficiently support historical analysis over interaction graphs
 require effective solutions for the problem of \emph{data layout} on disk.
 Most graph algorithms are characterized by locality of
-access~\cite{localityLayout}, which has been taken advantage of co-locating
-edges in close proximity within the same disk blocks~\cite{gstoreThesis}. This
-ensures that once a disk block is loaded from disk into the main memory
-buffers, several edges can be used. The locality of reference is a result of
-the traversal-based nature of most of the graph algorithms. 
+access~\cite{localityLayout}, which is a direct result of the traversal-based
+nature of most of the graph algorithms. This is often taken advantage of by
+co-locating edges in close proximity within the same disk
+blocks~\cite{gstoreThesis}. This way, once a disk block is loaded into main
+memory buffers, several edges from it can be used for processing, reducing the
+disk I/O. 
 
 In interaction graphs, the locality of access is even more pronounced. First, 
 the analysis to be performed on the interactions can be restricted to a
 temporal view of the graph, such as finding the influential users over a given
 week of interactions. This means that edges that are temporally close are to
-be accessed together. Second, traversals are again key to many algorithms,
-such as connected components, clustering coefficient, PageRank, etc. This
-means that edges that are close by in terms of the path between their incident
-vertices as well as their timestamps are to be located together with the same
-blocks. 
-
-In our earlier work~\cite{gedik14}, we introduced an interaction graph database
-that works on this principle of access locality. It proposed a disk
-organization that consists of as set of blocks, each containing a list of
-\emph{temporal neighbor lists}. A temporal neighborlist contains a head vertex
-and a set of incident edges within a given time range. The layout optimizer
-aims at bringing together temporal neighborlists that are (i) close in terms
-of their temporal ranges, (ii) have many edges between them, and (iii) have
-few edges going into temporal neighborlists outside the block.
+be accessed together. Second, traversals are again key to many graph
+algorithms, such as connected components, clustering coefficient, PageRank,
+etc. This means that edges that are close by in terms of the path between
+their incident vertices as well as their timestamps should be located together
+with the same blocks.  In our earlier work~\cite{gedik14}, we introduced an
+interaction graph database that works on this principle of access locality. It
+uses a disk organization that consists of as set of blocks, each containing a
+list of \emph{temporal neighbor lists}. A temporal neighbor list contains a
+head vertex and a set of incident edges within a time range. The layout
+optimizer aims at bringing together, into the same disk block, temporal
+neighbor lists that are ($i$) close in terms of their temporal ranges, ($ii$)
+have many edges between them, and ($iii$) have few edges going into temporal
+neighbor lists outside the block.
 
 Many real world graph databases contain attributes. In the case of interaction
 graphs, the attributes can be considered as properties associated with the
-edges. Attributes can be stored in two ways, either separately (e.g., in a
-relational table), or locally with the temporal neighbor lists.  If they are
-stored separately, then the graph database cannot take advantage of locality
-optimizations performed for block organization. The database must go back and
-forth between the disk blocks to access the edge attributes.  On the other
-hand, if attributes are stored locally in the disk blocks containing the graph
-structure, then there can be significant overhead due to disk I/O if only a
-few attributes are needed to answer a query. 
+edges representing the interactions. Attributes can be stored in two ways,
+either separately (e.g., in a relational table), or locally with the temporal
+neighbor lists.  If they are stored separately, then the graph database cannot
+take full advantage of locality optimizations performed for block
+organization. The database must go back and forth between the disk blocks to
+access the edge attributes.  On the other hand, if attributes are stored
+locally in the disk blocks containing the graph structure, then there can be
+significant overhead due to disk I/O if only a few attributes are needed to
+answer a query. 
 
 To query an interaction graph, most algorithms traverse the graph structure to
 access the relevant attributes.  Frequently, there are correlations among the
@@ -77,7 +78,7 @@ insertion time, but be discovered later, when the workload is known.
 
 It is widely recognized that query workload and disk layout have a significant
 impact on database performance~\cite{alagiannis14,grund10,stonebraker05}.  For
-table-based, relational databases, this fact has led database designers to
+table-based relational databases, this fact has led database designers to
 develop alternative approaches for storage layout: row-oriented
 storage~\cite{rowOrg} is more efficient when queries access many attributes
 from a small number of records, and column-oriented storage~\cite{colOrg} is
@@ -96,22 +97,22 @@ a query can be answered completely by only reading the sub-blocks that contain
 the attributes of interest, reducing the overall I/O. 
 
 There a number of challenges in achieving an effective adaptive layout. First,
-we need to find the partitioning of attributes that optimizes the query I/O.
+we need to find the partitioning of attributes that minimized the query I/O.
 To address this, we model the problems of overlapping and non-overlapping
 attribute partitioning as mixed-integer linear programs (ILPs), and provide
-optimal solutions that minimize the I/O cost. Second, the query workload, and
-thus the attribute access pattern can change over time. For this purpose, our
-railway layout supports customization of the attribute partitioning of
-sub-blocks on a per-block basis. Third, such flexibility necessitates online
-configuration of attribute partitioning as the query workload evolves, which
-in turn requires fast algorithms for performing the attribute partitioning.
-For this purpose, we develop greedy heuristic algorithms for both overlapping
-and non-overlapping partitioning scenarios. These algorithms can scale to
-larger number of attributes, yet provide close to optimal query I/O
-performance. Finally, the railroad layout tradeoffs storage space to gain
-improved query I/O performance. The storage overhead is more pronounced for
-the case of overlapping partitioning. To address this, we limit the amount of
-storage  overhead that can be tolerated with an upper limit, and integrate
+optimal solutions that minimize the query I/O cost. Second, the query
+workload, and thus the attribute access pattern can change over time. For this
+purpose, our railway layout supports customization of the attribute
+partitioning of sub-blocks on a per-block basis. Third, such flexibility
+necessitates online configuration of attribute partitioning as the query
+workload evolves, which in turn requires fast algorithms for performing the
+attribute partitioning. For this purpose, we develop greedy heuristic
+algorithms for both overlapping and non-overlapping partitioning scenarios.
+These algorithms can scale to larger number of attributes, yet provide close
+to optimal query I/O performance. Finally, the railroad layout trades off
+storage space to gain improved query I/O performance. The storage overhead is
+more pronounced for the case of overlapping partitioning. To address this, we
+limit the amount of storage  overhead that can be tolerated, and integrate
 this limit to both our ILP formulations, as well as our greedy heuristics.
 
 In summary, this paper makes the following contributions:
