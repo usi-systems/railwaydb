@@ -28,14 +28,47 @@ storing them on disk a necessity. Furthermore, the analysis of this historical
 interaction data form an important aspect of the analytical landscape.
 
 The ability to efficiently support historical analysis over interaction graphs
-require effective solutions for the problem of \emph{data layout} on the disk.
+require effective solutions for the problem of \emph{data layout} on disk.
+Most graph algorithms are characterized by locality of
+access~\cite{localityLayout}, which has been taken advantage of co-locating
+edges in close proximity within the same disk blocks~\cite{gstoreThesis}. This
+ensures that once a disk block is loaded from disk into the main memory
+buffers, several edges can be used. The locality of reference is a result of
+the traversal-based nature of most of the graph algorithms. 
 
-% Importance of the data layout on disk and locality 
-% Earlier work on blocks formed of temporal neighborlists  
+In interaction graphs, the locality of access is even more pronounced. First, 
+the analysis to be performed on the interactions can be restricted to a
+temporal view of the graph, such as finding the influential users over a given
+week of interactions. This means that edges that are temporally close are to
+be accessed together. Second, traversals are again key to many algorithms,
+such as connected components, clustering coefficient, PageRank, etc. This
+means that edges that are close by in terms of the path between their incident
+vertices as well as their timestamps are to be located together with the same
+blocks. 
+
+In our earlier work, we introduced an interaction graph database~\cite{gedik14}
+that works on this principle of access locality. It proposed a disk
+organization that consists of as set of blocks, each containing a list of
+\emph{temporal neighbor lists}. A temporal neighborlist contains a head vertex
+and a set of incident edges within a given time range. The layout optimizer
+aims at bringing together temporal neighborlists that are (i) close in terms
+of their temporal ranges, (ii) have many edges between them, and (iii) have
+few edges going into temporal neighborlists outside the block.
 
 % Attributes associated with interactions
 % I/O inefficiency due to attributes that are not accessed
 % Similar to the problem of row vs column stores
+
+Attributes can be stored in two ways, either separately
+(e.g., in a relational table), or locally with the temporal neighbor lists. 
+If they are stored separately, then the graph database cannot take advantage
+of locality optimizations performed for block organization.  As discussed in
+Gedik et al.~\cite{gedik14}, the database must go back and forth between the
+disk blocks to access the edge attributes.  On the other hand, if attributes
+are stored locally in the disk blocks containing the graph structure, then
+there can be significant overhead due to disk I/O if only a few attributes are
+needed to answer a query.
+
 
 % Challenges: finding the right partitioning
 % what if the access pattern changes over time
@@ -76,16 +109,6 @@ Unfortunately, although interaction graph databases, like relational
 databases, are the target of diverse query workloads, there is no clear
 correspondence to a row-oriented or column-oriented storage layout.
 
-Typically, an interaction graph database is organized as blocks of temporal
-neighbor lists.  Attributes can be stored in two ways, either separately
-(e.g., in a relational table), or locally with the temporal neighbor lists. 
-If they are stored separately, then the graph database cannot take advantage
-of locality optimizations performed for block organization.  As discussed in
-Gedik et al.~\cite{gedik14}, the database must go back and forth between the
-disk blocks to access the edge attributes.  On the other hand, if attributes
-are stored locally in the disk blocks containing the graph structure, then
-there can be significant overhead due to disk I/O if only a few attributes are
-needed to answer a query.
 
 This paper presents an algorithm for adaptively optimizing disk block storage
 for interaction graphs. The key idea behind the approach is a novel storage
