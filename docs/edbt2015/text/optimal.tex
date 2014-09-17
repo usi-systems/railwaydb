@@ -1,32 +1,29 @@
 \section{Optimal Railway Design}\label{sec:optimal}  
 The optimal railway design concerns the partitioning of the disk blocks into
 sub-blocks such that the query I/O is minimized, while the storage overhead
-induced is kept below a specified threshold. This optimization is guided by
-the query workload, as observed by a particular disk block at hand.
+induced is kept below a desired threshold. This optimization is guided by the
+query workload, as observed by a disk block within a particular time range.
 
-The partitioning of disk blocks into sub-blocks can be performed in two ways:
-\emph{non-overlapping} and \emph{overlapping}. In the non-overlapping case,
-each sub-block contains a non-overlapping subset of the edge attributes. In
-contrast, in the overlapping case, the attributes contained within sub-blocks
-can overlap. In both cases, the complete graph structure for the block is
-replicated in the sub-blocks, which is the main cause of increase in the query
-I/O. 
+The partitioning of disk blocks into sub-blocks can be \emph{non-overlapping}
+or \emph{overlapping}. In the non-overlapping case, each sub-block contains a
+non-overlapping subset of the edge attributes. In the overlapping case, the
+subset of attributes contained within sub-blocks can overlap. In both cases,
+the complete graph structure for the block is replicated in the sub-blocks,
+which is the main cause of the increased storage overhead.
 
 In both overlapping and non-overlapping partitioning, we trade increased
-storage  overhead for reduced space. In the overlapping case, the increase in
-the storage overhead is higher, as the space used for some of the attributes
-are replicated  as well, in addition to the graph structure. On the other
-hand, enabling overlapping attributes is expected to improve the query I/O.
-While the non-overlapping partitioning scenario is a special case of the more
-general case of overlapping partitioning, more specialized algorithms can be
-used to solve the non-overlapping partitioning problem.
+storage overhead for reduced query I/O cost. In the overlapping case, the
+increase in the storage overhead is higher, as some of the attributes are
+replicated, in addition to the graph structure. On the other hand, enabling
+overlapping attributes is expected to reduce the query I/O (in the extreme
+case, there could be one sub-block per query). While the non-overlapping
+partitioning scenario is a special case of the  overlapping one, specialized
+algorithms can be used to solve the former problem.
 
-In the rest of this section, we first introduce some basic notation, and then
-formulate the overall optimization problem. The formulation of the query I/O
-cost and  storage overhead are presented next to complete the definition of
-the optimal railway design problem.
-
-HERE
+In the rest of this section, we first introduce basic notation and then
+formulate the overall optimization problem. The modeling of the query I/O and
+storage overhead are presented next, which complete the formalization of the
+optimal railway design problem.
 
 \subsection{Basic Notation}
 Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
