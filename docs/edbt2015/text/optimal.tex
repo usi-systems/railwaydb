@@ -1,6 +1,109 @@
-\section{Optimal Railway Design}\label{sec:optimal}
+\section{Optimal Railway Design}\label{sec:optimal}  
+The optimal railway design concerns the partitioning of the disk blocks into
+sub-blocks such that the query I/O is minimized, while the storage overhead
+induced is kept below a specified threshold. This optimization is guided by
+the query workload, as observed by a particular disk block at hand.
 
-\begin{alltt}\scriptsize
-- Layout or partitioning problem
-    - Cost model
-\end{alltt}
+The partitioning of disk blocks into sub-blocks can be performed in two ways:
+\emph{non-overlapping} and \emph{overlapping}. In the non-overlapping case,
+each sub-block contains a non-overlapping subset of the edge attributes. In
+contrast, in the overlapping case, the attributes contained within sub-blocks
+can overlap. In both cases, the complete graph structure for the block is
+replicated in the sub-blocks, which is the main cause of increase in the query
+I/O. 
+
+In both overlapping and non-overlapping partitioning, we trade increased
+storage  overhead for reduced space. In the overlapping case, the increase in
+the storage overhead is higher, as the space used for some of the attributes
+are replicated  as well, in addition to the graph structure. On the other
+hand, enabling overlapping attributes is expected to improve the query I/O.
+While the non-overlapping partitioning scenario is a special case of the more
+general case of overlapping partitioning, more specialized algorithms can be
+used to solve the non-overlapping partitioning problem.
+
+In the rest of this section, we first introduce some basic notation, and then
+formulate the overall optimization problem. The formulation of the query I/O
+cost and  storage overhead are presented next to complete the definition of
+the optimal railway design problem.
+
+HERE
+
+\subsection{Basic Notation}
+Let $Q$ be the query workload, where each query $q\in Q$ accesses a set of
+attributes $q.A$ and traverses parts of the graph for the time range
+$q.T=[q.t_s,q.t_e]$. We denote the set of all attributes as $A$. Given a block
+$B$, we denote its time range as $B.T$, which is the union of the time ranges
+of its temporal neighborlists. Let $s(a)$ denote the size of an attribute $a$.
+We use $c_n(B)$ to denote the number of temporal neighborlists within block
+$B$ and $c_e(B)$ to denote the total number of edges in the temporal
+neighborlists within the block. We overload the notation for block size and
+use $s(B)$ to denote the size of a block $B$. We have: 
+\begin{equation}
+s(B) = c_e(B) \cdot \Big(16 + \sum_{a\in B.A} s(a)\Big) + c_n(B) \cdot 12  
+\end{equation}
+Here, $16$ corresponds to the cost of storing the edge id and the timestamp,
+and $12$ corresponds to the cost of storing the head vertex ($8$ bytes) plus
+the number of entries ($4$ bytes) for a temporal neighborlist. 
+
+\subsection{Optimization Problem}
+Our goal is to create a potentially overlapping partitioning of a block,
+denoted by $\mathcal{P}(B)$. We call the partitions \emph{sub-blocks}. We have
+$\bigcup_{B'\in \mathcal{P}(B)} B'.A = A$. We aim to find the function
+$\mathcal{P}$ that minimizes the query I/O over $B$, while keeping the
+relative storage overhead beyond a limit, say $1+\alpha$ times the original.
+If we represent the query I/O as $L(\mathcal{P}, B)$ and the relative storage
+overhead as $H(\mathcal{P}, B)$, our goal is to find:
+\begin{equation}
+\mathcal{P} \leftarrow \mbox{argmin}_{\{\mathcal{P}: H(\mathcal{P}(B)) < \alpha\}} L(\mathcal{P},B)
+\end{equation}
+
+\subsection{Storage Overhead Formulation}
+The storage overhead can be formalized as follows for the non-overlapping case:
+\begin{equation}
+H(\mathcal{P}, B) = (|\mathcal{P}(B)|-1)\cdot\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big) 
+\end{equation}
+
+For the general case (including overlapping), we can formulate the storage
+overhead as follows:
+\begin{equation}
+H(\mathcal{P}, B) = \frac{\sum_{B'\in \mathcal{P}(B)} s(B')}{s(B)} - 1 
+\end{equation}
+
+\subsection{Query I/O Formulation}
+Let $m$ be a function that maps a query $q$ to the set of sub-blocks that are
+accessed to satisfy it for a relevant block $B$ under a given partitioning
+$\mathcal{P}$. For the case of non-overlapping attributes, we have:
+\begin{equation}
+m(\mathcal{P}, B, q) = \{B': B'\in \mathcal{P}(B) \wedge q.A \cap B'.A \ne \emptyset\}  
+\end{equation}
+
+For the case of overlapping attributes, we use a simple heuristic to define the
+set of sub-blocks to be used for answering the query.
+Algorithm~\ref{alg:greedyM} captures it. The idea is to select sub-blocks that
+bring the highest relative marginal gain, which is defined as the size of
+attribute data that contributes to the query result, relative to the sub-block
+size. While computing the marginal gain, attributes that are covered by
+sub-blocks that are already selected are not considered.
+%
+\begin{algorithm}[ht]
+\scriptsize
+\caption{m-overlapping($\mathcal{P}, B, q$)}
+\label{alg:greedyM}
+\KwData{$\mathcal{P}$: partitioning function, $B$: block, $q$: query}
+$S\leftarrow \emptyset; R\leftarrow \emptyset$ \tcp*{Selected attributes; Resulting sub-blocks}
+\While(\tcp*[f]{While unselected attributes remain}){$S \subset q.A$}{
+  $B' \leftarrow \mbox{argmax}_{B'\in\mathcal{P}(B)\setminus R} \sum_{a\in B'.A \cap q.A \setminus S} \frac{c_e(B') \cdot s(a)}{s(B')}$
+  $S \leftarrow S \cup B'.A$\tcp*{Extend the selected attributes}
+  $R\leftarrow R \cup B'$\tcp*{Extend the selected sub-blocks}
+}
+\Return R \tcp*{Final set of sub-blocks covering the query attributes}
+\end{algorithm} 
+%
+The query I/O cost for a block is then given by:
+\begin{equation}
+L(\mathcal{P}, B) = \sum_{q\in Q} w(q)\cdot\mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} \!\!s(B')
+\end{equation}
+
+Here, $w(q)$ represents the query weight.
+
+
