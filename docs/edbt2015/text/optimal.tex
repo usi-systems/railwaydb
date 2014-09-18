@@ -129,12 +129,18 @@ $S\leftarrow \emptyset; R\leftarrow \emptyset$ \tcp*{Selected attributes; Result
 \Return R \tcp*{Final set of sub-blocks covering the query attributes}
 \end{algorithm} 
 
-HERE
-The query I/O cost for a block is then given by:
+Given that we have defined the function $m$ that maps a query to the set of 
+sub-blocks used to answer it, we can now formalize the total query I/O cost
+for a block under a given workload:
 \begin{equation}
 L(\mathcal{P}, B) = \sum_{q\in Q} w(q)\cdot\mathbf{1}(q.T \cap B.T \neq \emptyset) \cdot \sum_{B'\in m(\mathcal{P}, B, q)} \!\!s(B')
 \end{equation}
 
-Here, $w(q)$ represents the query weight.
+We simply sum the I/O cost contributions of the queries to compute the total
+I/O cost. A query contributes to the total I/O cost if and only if its time
+range intersects with that of the block ($\mathbf{1}(q.T \cap B.T \neq
+\emptyset)$). If it does, then we add the sizes of all the sub-blocks used to
+answer the query to the total I/O cost. Furthermore, we multiply the I/O cost
+contribution of a query with its frequency, denoted by $w(q)$ in the formula.
 
 
