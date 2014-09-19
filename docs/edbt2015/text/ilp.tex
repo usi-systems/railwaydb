@@ -1,1 +1,268 @@
 \section{ILP Solution}\label{sec:ilp}
+\noindent
+In this section, we formulate the optimal railway design problem as a mixed
+Integer Linear Program (ILP). The main challenge is to represent the objective
+function and the constraint as a linear combination of potentially integer
+variables. We separate the cases of non-overlapping and overlapping
+partitioning, as the former case can be formulated using smaller number of 
+constraints.
+
+For the ILP formulation, we define a number of binary ($0$ or $1$) variables: 
+\begin{itemize}
+\item $x_{a,p}$: $1$ if attribute $a$ is in partition $p$, $0$ otherwise.
+\item $y_{p,q}$: $1$ if partition $p$ is used by query $q$, $0$ otherwise.
+\item $z_{a,p,q}$: $1$ if partition $p$ is used by query $q$ and attribute $a$
+is in partition $p$, $0$ otherwise.
+\item $u_{p}$: $1$ if partition $p$ is assigned at least $1$ attribute, $0$ otherwise.
+\end{itemize}
+
+Each of these variables serve a purpose:
+\begin{itemize}
+\item $x$s define the attribute-to-partition assignments.
+\item $y$s help formulate the query I/O contribution of each partition due to
+the graph structure they contain (excluding their assigned attributes).
+\item $z$s help formulate the query I/O contribution of each partition, only
+considering the attributes they are assigned.
+\item $u$s help formulate the storage overhead requirement.
+\end{itemize}
+
+Here, we assume that the maximum number of partitions is fixed. In fact, we
+cannot have more partitions than attributes, so the number of partitions is
+upper bounded by $|A|$, and thus $0\leq p<|A|$. However, some of these
+partitions can be empty in the optimal solution, which means that the number
+of partitions found by the ILP solution is typically lower than the maximum
+possible. A simple post-processing step removes empty partitions and creates
+the final partitioning to be used.
+
+We also define a helper notation for representing whether a variable is
+accessed by a query or not: $q(a)\equiv \mathbf{1}(a \in q.A)$, where
+$\mathbf{1}$ is the indicator function. We assume that there are a maximum of
+$k$ partitions. $k$ can be taken as $|A|$, as there cannot be more partitions
+than there are attributes.
+
+
+\subsection{Non-Overlapping Attributes}\label{subsubsec:nov-ilp}
+
+
+
+We are now ready to state the ILP formulation. We start with the objective
+function, that is the total query I/O:
+\begin{eqnarray}
+\sum_{q\in Q} w(q) \cdot \Big(\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot
+y_{p,q}\nonumber\\ 
+&+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q}\Big)\label{eq:no-obj}
+\end{eqnarray}
+
+In Eq.~\ref{eq:no-obj}, we simply sum for each query and each partition, and
+add the I/O cost of reading in the structural information found in a
+sub-block, if the partition is used by the query. We then sum over each
+attribute as well, and add the I/O cost of reading in the attributes. Note
+that $z_{a,p,q}$ could have been  replaced with $x_{a,p}\cdot y_{p,q}$, but
+that would make the objective function non-linear. 
+
+We are now ready to state our constraints. Our first constraint is that, each
+attribute must be assigned to a single partition. Formally:
+\begin{eqnarray}
+\forall_{a\in A}, \sum_{p=1}^{k} x_{a,p} = 1
+\end{eqnarray}
+
+Our second constraint is that, if a query $q$ contains an attribute $a$
+assigned to a partition $p$, then partition $p$ is used by the query, i.e.,
+$y_{p,q}=1$. In essence, we want to state: $\forall_{\{p,q\}\in [1..k]\times
+Q}, y_{p,q} = \mathbf{1}(\sum_{a\in A} q(a)\cdot x_{a,p}>0)$. 
+
+In order to formulate this constraint, we use the following ILP  construction:
+Assume we have two variables, $\beta_1$ and $\beta_2$, where $\beta_2\in[0,1]$
+and $\beta_1\geq 0$. We want to implement the following constraint: $\beta_2 =
+\mathbf{1}(\beta_1 > 0)$. This could be expressed as a linear constraint as
+follows, where $K$ is a large constant guaranteed to be larger than $\beta_1$
+for practical purposes:
+\begin{eqnarray}
+&& \beta_1 - \beta_2 \geq 0\nonumber\\
+&& K\cdot\beta_2 - \beta_1 \geq 0\label{eq:beta-ilp}
+\end{eqnarray}
+
+We now apply this construction to our second constraint, where
+$\beta_1=\sum_{a\in A} q(a)\cdot x_{a,p}$ and $\beta_2=y_{p,q}$. This results
+in the following linear constraints:
+\begin{eqnarray}
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} q(a)\cdot x_{a,p}  \geq 0 
+\end{eqnarray}
+
+Our third constraint is that, if an attribute $a$ is assigned to a partition
+$p$, and partition $p$ is used by a query $q$, then the corresponding $z$
+variable must be set to $1$. That is, we want: $\forall_{\{a,p,q\}\in A\times
+[1..k]\times Q}, z_{a,p,q}=\mathbf{1}(x_{a,p} = y_{p,q} = 1)$. We express this
+as a linear  constraint, as follows:
+\begin{eqnarray}
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q},
+    && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\label{eq:no-z}
+\end{eqnarray}
+
+In Eq.~\ref{eq:no-z}, when the $x$ and $y$ variables are both $1$, the  $z$
+variable is simply forced to be $1$. Otherwise, the $z$ variable can be either
+$0$ or $1$, but since the $z$ variables appear in the objective fucntion as
+positive terms, the solver will set them to $0$, which is what we want. 
+
+Our fourth constraint is that, if a partition is non-empty, then its
+corresponding $u$ variable must be set to $0$. In other words,  we want
+$\forall_{p\in[1..k]}, u_p = \mathbf{1}(\sum_{a\in A} x_{a,p}>0)$. This is
+expressed as linear constraints, as follows:
+\begin{eqnarray}
+\forall_{p\in[1..k]},
+    && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
+\forall_{p\in[1..k]},
+    && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \label{eq:no-u}
+\end{eqnarray}
+
+Eq.~\ref{eq:no-u} uses the same construction as the second constraint, where
+$\beta_1=\sum_{a\in A} x_{a,p}$ and $\beta_2=u_p$.
+
+Our fifth, and the last, constraint deals with the storage overhead. We want to
+ make sure that the storage overhead does not go over $\alpha$. The storage
+overhead depends on the number of partitions used. That means that the only 
+ILP variables it depends on is the $u$s. In particular, the number of
+partitions used is given by $\sum_{p=1}^{k} u_p$. This results in the
+following linear constraint:
+\begin{equation}
+\sum_{p=1}^{k} u_p \leq 1 + \frac{\alpha}
+  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}}
+\end{equation}
+
+\begin{figure}[!t]
+%\begin{mdframed}
+\begin{eqnarray}
+\text{minimize}  
+    \sum_{q\in Q} w(q)\cdot \Big(\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \Big) \nonumber\\
+\text{subject to}&&\nonumber\\
+\forall_{a\in A}, 
+    && \sum_{p=1}^{k} x_{a,p} = 1\nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} q(a)\cdot x_{a,p} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} q(a)\cdot x_{a,p}  \geq 0 \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q},
+    && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1\nonumber\\
+\forall_{p\in[1..k]},
+    && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
+\forall_{p\in[1..k]},
+    && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
+&& \sum_{p=1}^{k} u_p \leq 1 + \frac{\alpha}
+  {1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}} \nonumber
+\end{eqnarray}
+%\end{mdframed}
+\caption{ILP formulation for the non-overlapping partitioning}
+\label{fig:nov-ilp}
+\end{figure}
+
+The final ILP formulation for the non-overlapping partitioning is given in
+Figure~\ref{fig:nov-ilp}.
+
+
+\subsection{Overlapping Attributes}\label{subsubsec:ov-ilp}
+
+\paragraph*{Problem.$\,$} \emph{Find an overlapping partitioning of attributes
+that minimizes the query I/O and bounds the storage cost by some upper
+limit.}
+
+We present an ILP formuation of the problem, as we did for the case of
+non-overlapping partitions in Section~\ref{subsubsec:nov-ilp}. We use the same
+set of variables and the same objective function. However, the formulation of
+the constraints differ. 
+
+Our first constraint is that, each attribute must be assigned to at leat one
+partition. Formally:
+\begin{eqnarray}
+\forall_{a\in A}, \sum_{p=1}^{k} x_{a,p} \geq 1
+\end{eqnarray}
+
+As our second constraint, we require that for each attribute used by a query,
+there needs to be a partition that is used by that query and that contains the
+attribute in question. Formally:
+\begin{eqnarray}
+\forall_{\{a,q\}\in A\times Q}, \sum_{p=1}^{k} z_{a,p,q} \geq q(a) 
+\end{eqnarray}
+
+\begin{sloppypar}
+As our third constraint, we require that if a query is using an attribute from
+a partition, then that partition must contain the attribute. I.e., we need
+to link the $z$ variables with the $x$ variables as
+$\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, (z_{a,p,q} = 1) \implies 
+(x_{a,p} = 1)$. This can be state as linear constraints:
+\begin{eqnarray}
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, x_{a,p} - z_{a,p,q} \geq 0 
+\end{eqnarray}
+\end{sloppypar}
+
+As our fourth constraint, we require that if a query is using at least one
+attribute from a partition, then that partition must be used by the query.
+I.e., we need to link the $z$ variables with the $y$ variables as
+$\forall_{\{p,q\}\in [1..k]\times Q}, y_{p,q} = \mathbf{1}(\sum_{a\in A}
+z_{a,p,q}>0)$. As before, we use the ILP construction from
+Eq.~\ref{eq:beta-ilp} for this, where $\beta_2=y_{p,q}$ and $\beta_1 =
+\sum_{a\in A} z_{a,p,q}$. We get:
+\begin{eqnarray}
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} z_{a,p,q} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} z_{a,p,q} \geq 0 
+\end{eqnarray}
+
+Our fifth constraint is that, if an attribute $a$ is assigned to a partition
+$p$, and partition $p$ is used by a query $q$, then the corresponding $z$
+variable must be set to $1$. This is same as the formulation for the
+non-overlapping case from Eq.~\ref{eq:no-z}.
+
+Our sixth constraint is that, if a partition is non-empty, then its
+corresponding $u$ variable must be set to $0$. Again, this is same as the
+formulation for the non-overlapping case from Eq.~\ref{eq:no-u}.
+
+Our seventh, and the last, constraint deals with the storage overhead. However,
+the storage overhead formulation for the overlapping case is different from 
+the one for the non-overlapping. This is because the overhead does not merely
+depend on the number of partitions, as attributes might have to be loaded
+multiple times from different partitions. As a result, we express the overhead
+using base variables as in the objective function. Formally:
+\begin{eqnarray}
+\sum_{p=1}^{k} \Big((16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_e(B)\cdot x_{a,p} \Big) \leq s(B)\cdot (1+\alpha)
+\end{eqnarray}
+
+\begin{figure}[!t]
+%\begin{mdframed}
+\begin{eqnarray}
+\text{minimize}  
+    \sum_{q\in Q} w(q)\cdot \Big(\sum_{p=1}^{k} \!\!&&\!\! (16\cdot c_e(B) + 12\cdot c_n(B))\cdot y_{p,q}\nonumber\\
+    &+& \sum_{a\in A} s(a)\cdot c_e(B)\cdot z_{a,p,q} \Big) \nonumber\\
+\text{subject to}&&\nonumber\\
+\forall_{a\in A}, 
+    && \sum_{p=1}^{k} x_{a,p} \geq 1\nonumber\\
+\forall_{\{a,q\}\in A\times Q},
+    &&  \sum_{p=1}^{k} z_{a,p,q} \geq q(a) \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, 
+    && x_{a,p} - z_{a,p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  \sum_{a\in A} z_{a,p,q} - y_{p,q} \geq 0 \nonumber\\
+\forall_{\{p,q\}\in [1..k]\times Q}, 
+    &&  K\cdot y_{p,q} - \sum_{a\in A} z_{a,p,q}  \geq 0 \nonumber\\
+\forall_{\{a,p,q\}\in A\times [1..k]\times Q}, 
+    && z_{a,p,q} - (x_{a,p} + y_{p,q}) \geq -1 \nonumber\\
+\forall_{p\in[1..k]},
+    && \sum_{a\in A} x_{a,p} - u_p \geq 0 \nonumber\\
+\forall_{p\in[1..k]},
+    && K\cdot u_p - \sum_{a\in A} x_{a,p} \geq 0 \nonumber\\    
+\sum_{p=1}^{k} \Big((16\cdot c_e(B) &+& 12 \cdot c_n(B)) \cdot u_p  \nonumber \\ 
++ \sum_{a\in A} s(a) \!\!&\cdot&\!\! c_e(B)\cdot x_{a,p}  \Big)\leq s(B)\cdot (1+\alpha)\nonumber
+\end{eqnarray}
+%\end{mdframed}
+\caption{ILP formulation for the overlapping partitioning}
+\label{fig:ov-ilp}
+\end{figure}
+
+The final ILP formulation for the overlapping partitioning is given in
+Figure~\ref{fig:ov-ilp}.
+
