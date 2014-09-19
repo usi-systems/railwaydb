@@ -69,7 +69,7 @@ block (no partitioning). The storage overhead can be formalized as follows,
 for the non-overlapping case:
 \begin{equation}
 H(\mathcal{P}, B) = (|\mathcal{P}(B)|-1)\cdot\Big(1-\frac{c_e(B)\cdot \sum_{a\in A} s(a)}{s(B)}\Big)
-\label{eq:nov}
+\label{eq:nov-ohead}
 \end{equation}
 
 Basically, for the non-overlapping case, there is no overhead due to the
@@ -77,7 +77,7 @@ attributes, as they are not repeated. However, there is overhead for the block
 structure that is repeated for each sub-block. There are $|\mathcal{P}(B)|-1$
 such extra sub-blocks, and for each, the contribution to the overhead due to
 storing the graph structure is given by $s(B)-c_e(B)\cdot \sum_{a\in A} s(a)$.
-Equation~\ref{eq:nov} has one nice feature, that is, it does not depend on the
+Eq.~\ref{eq:nov-ohead} has one nice feature, that is, it does not depend on the
 details of the attribute partitioning, other than the number of partitions. We
 make use of this feature, later for the ILP formulation of the problem.
 
