@@ -1,1 +1,81 @@
 \section{Heuristic Solution}\label{sec:heuristic}
+
+
+\begin{alltt}
+- Talk about the scalability of the optimal solution
+- Do we have a running time?
+- Introduce a heuristic approximation approach
+\end{alltt}
+
+\subsection{Non-Overlapping Partitions}\label{subsec:nov-heuristic}
+\noindent
+
+
+\paragraph*{Approach$\,$}
+TODO
+
+\begin{algorithm}[ht]
+\scriptsize
+\caption{Algorithm for partitioning blocks into sub-blocks with non-overlapping attributes.}
+\label{alg:non-overlappingP}
+\KwData{$B$: block, $Q$: set of queries}
+$c^*\leftarrow \infty$ \tcp*{Lowest cost over all \# of partitions}
+\For(\tcp*[f]{For each possible \# of partitions}){$k=1$ to $|A|$}{
+   $R[i]\leftarrow \emptyset, \forall i\in [1..k]$ \tcp*{Initialize partitions}
+   \For(\tcp*[f]{For each attribute}){$a \in A$\textnormal{, in decr.\/ order of }$f(a)$}{
+      $c\leftarrow \infty$ \tcp*{Lowest cost over all assignments}  
+      $j\leftarrow -1$ \tcp*{Best partition assignment}
+      \For(\tcp*[f]{For each partition assignment}){$i\in [1..k]$} {
+         $R[i]\leftarrow R[i] \cup \{a\}$\tcp*{Assign attribute}
+         \If(\tcp*[f]{If query cost is lower}){$L(R, B, Q)<c$}{
+            $c\leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
+            $j\leftarrow i$\tcp*{Update the best partition}
+         }
+         $R[i]\leftarrow R[i] \setminus \{a\}$\tcp*{Un-assign attribute}
+      }
+      $R[j]\leftarrow R[j] \cup \{a\}$\tcp*{Assign to best partition}
+   }
+   \lIf(\tcp*[f]{If solution infeasible}){$H(R, B, Q)>\alpha$}{\textbf{break}}
+   \If(\tcp*[f]{If solution has lower cost}){$L(R, B, Q)<c^*$}{
+     $c^* \leftarrow L(R, B, Q)$\tcp*{Update the lowest cost}
+     $\mathcal{P}(B)\leftarrow R$\tcp*{Update the best partitioning}
+   } 
+}
+\Return $\mathcal{P}(B)$ \tcp*{Final set of sub-blocks}
+\end{algorithm} 
+
+
+\subsection{Overlapping Partitions}\label{subsec:ov-heuristic}
+\noindent
+
+
+\paragraph*{Approach$\,$} We start the algorithm with a   partitioning based
+on what queries we have seen. Every query gets its own sub-block. This is the
+``ideal'' partitioning, because the I/O cost would be minimized for every
+query that we would have seen. The algorithm iteratively combines the two
+partitions that are closest together.  After each combination of partitions,
+the algorithm calculate the storage overhead for the partitioning. The
+algorithm stops when the  storage cost is below some specified threshold.  The
+result is the block partitioning.
+
+\begin{algorithm}[ht]
+\scriptsize
+\caption{Algorithm for partitioning blocks into sub-blocks with overlapping attributes.}
+\label{alg:overlappingP}
+\KwData{$B$: block, $Q$: set of queries}
+$\mathcal{P}(B) \leftarrow \{q.A: q\in Q\}$ \tcp*{Each query gets its own sub-block}
+\While(\tcp*[f]{Until storage overhead is below $\alpha$}){$H(\mathcal{P},B) > \alpha$}{
+  $c^{*}\gets \infty $ \tcp*{Lowest cost over all sub-block pairs}
+  $(b_x,b_y)\gets (\emptyset,\emptyset)$ \tcp*{Sub-block pair with the lowest cost}
+  \For(\tcp*[f]{For each pair of blocks}){$\{b_i,b_j\}\in\mathcal{P}(B)$}{
+    $\mathcal{P'}(B) \leftarrow \mathcal{P}(B) \setminus \{b_i, b_j\} \cup \{b_i \cup b_j\}$\\
+    $c\gets \frac{L(\mathcal{P}',B,Q)-L(\mathcal{P},B,Q)}{H(\mathcal{P},B)-H(\mathcal{P}',B)}$\tcp*{Cost of merge}
+    \If(\tcp*[f]{Cost is lower}){$c<c^{*}$}{
+        $c^{*}\gets c$\tcp*{Update the lowest cost}
+        $(b_x,b_y)\gets (b_i,b_j)$\tcp*{Update the best pair}
+    }
+  }
+  $\mathcal{P}(B) \leftarrow \mathcal{P}(B) \setminus \{b_x, b_y\} \cup \{b_x \cup b_y\}$ \\
+}
+\Return $ \mathcal{P}(B)$  \tcp*{Final set of sub-blocks}
+\end{algorithm} 
