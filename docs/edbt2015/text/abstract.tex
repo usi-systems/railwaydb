@@ -1,1 +1,20 @@
-TODO
+We are living in an ever more connected world, where data recording the
+interactions between people, software systems, and the physical world is
+becoming increasingly prevalent. This data often takes the form of a temporally
+evolving graph, where entities are the vertices and the interactions between
+them are the edges. We call such graphs interaction graphs. Various application
+domains, including telecommunciations and social media, depend on analytics
+performed on interaction graphs. The ability to efficiently support historical
+analysis over interaction graphs require effective solutions for the problem of
+data layout on disk. 
+
+This paper presents an adaptive disk layout called the railway layout for
+optimizing disk block storage for interaction graphs. The key idea is to divide
+blocks into one or more sub-blocks, where each sub- block contains a subset of
+the attributes, but the entire graph structure is replicated within each
+sub-block.  We introduce optimal ILP formulations for partitioning disk blocks
+into sub-blocks with overlapping and non-overlapping attributes. Additionally,
+wepresent greedy heuristic approaches that can scale better compared to the ILP
+alternatives, yet achieve close to optimal query I/O. To demonstrate the
+benefits of the railway layout, ee provide an extensive experimental study
+comparing our approach to a few baseline alternatives.
