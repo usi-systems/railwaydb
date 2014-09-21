@@ -1,9 +1,23 @@
 \section{Related Work}\label{sec:related}
 
-\begin{alltt}\scriptsize
-Gedik et al.~\cite{gedik14}
-H2O \cite{alagiannis14}
-HYRISE~\cite{grund10}
-Bornea et al.~\cite{bornea13}
-\end{alltt}
+The railway layout and algorithms build on our prior work~\cite{gedik14}, which
+organized the disk layout for an interaction graph databases to improve access
+locality. The railway layout extends the previous design, by enabling the system
+to adapt the layout for changing workloads.
+
+Our adaptation scheme is similar to work on adaptive layouts for relational
+database. The $H_2O$~\cite{alagiannis14} system can adapt its data layout into
+three types, row-major, column-major, or groups of columns, depending on the
+workload. HYRISE~\cite{grund10} provides a similar adaptive layout scheme for an
+in-memory relational database. Both systems use heuristic, iterative solutions
+to determine partitioning. The railway layout scheme differs, in that it
+targets interaction graphs, and we present optimal solutions, in addition to 
+heuristic solutions.
+
+ \begin{alltt}\scriptsize
+% Gedik et al.~\cite{gedik14}
+% H2O \cite{alagiannis14}
+% HYRISE~\cite{grund10}
+ Bornea et al.~\cite{bornea13}
+ \end{alltt}
 
