@@ -15,9 +15,22 @@ using namespace intergdb::optimizer;
 Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double storageThreshold) 
 {
   Partitioning partitioning;
+  auto const & allAttributes = workload.getAttributes();
+  unordered_set<Attribute const *> missingAttributes;
+  for (auto const & attrb : allAttributes)
+    missingAttributes.insert(&attrb);
   for (Query const & query : workload.getQueries()) {
     Partition partition;
-    for (Attribute const * attrb : query.getAttributes()) 
+    for (Attribute const * attrb : query.getAttributes()) {
+      partition.addAttribute(attrb);
+      if (missingAttributes.count(attrb)>0)
+        missingAttributes.erase(attrb);
+    }
+    partitioning.addPartition(partition);
+  }
+  if (missingAttributes.size()>0) {
+    Partition partition;
+    for (Attribute const * attrb : missingAttributes) 
       partition.addAttribute(attrb);
     partitioning.addPartition(partition);
   }
@@ -35,7 +48,7 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
         partitioning.mergePartitions(i, j);
         double newCost = costModel.getIOCost(partitioning, workload);
         Partition const & newP = partitions[i];
-        double newSize = costModel.getPartitionSize(newP);
+        double newSize = costModel.getPartitionSize(newP);      
         double cost = (newCost-oldCost) / (oldSize-newSize); 
         minCostSolution.push(make_pair(i, j), cost);
         partitioning.splitPartition(i, j, lhsP, rhsP);
@@ -45,5 +58,6 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
     pair<int, int> partitionIndices = minCostSolution.getBestSolution();
     partitioning.mergePartitions(partitionIndices.first, partitionIndices.second);
   }
+
   return partitioning;
 }
