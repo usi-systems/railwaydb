@@ -75,7 +75,8 @@ void VsNumQueryKinds::process()
                    SolverFactory::instance().makeOptimalOverlapping(), 
                    SolverFactory::instance().makeOptimalNonOverlapping(),
                    SolverFactory::instance().makeHeuristicOverlapping(),
-                   SolverFactory::instance().makeHeuristicNonOverlapping() };
+                   SolverFactory::instance().makeHeuristicNonOverlapping() 
+                 };
 
   auto queryTypeCounts = {2, 4, 6, 8, 10, 12, 14, 16 }; 
 
@@ -125,14 +126,14 @@ void VsNumQueryKinds::process()
           runningTimeExp.setFieldValue("time", times.at(j).getMean());
           runningTimeExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
           times.at(j).clear();
-          
+
           queryIOExp.addRecord();
           queryIOExp.setFieldValue("solver", solver->getClassName());
           queryIOExp.setFieldValue("queryTypeCount", lexical_cast<std::string>(queryTypeCount));
           queryIOExp.setFieldValue("io", io.at(j).getMean());
           queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
           io.at(j).clear();
-          
+
           storageExp.addRecord();
           storageExp.setFieldValue("solver", solver->getClassName());
           storageExp.setFieldValue("queryTypeCount", lexical_cast<std::string>(queryTypeCount));
