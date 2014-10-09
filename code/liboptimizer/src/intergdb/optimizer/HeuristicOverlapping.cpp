@@ -26,18 +26,20 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
     double oldCost = costModel.getIOCost(partitioning, workload);
     auto const & partitions = partitioning.getPartitions();
     MinCostSolution<pair<int, int>> minCostSolution;
+    //Partitioning partitioningClone = partitioning;
     for (int i=0, iu=partitions.size(); i<iu-1; ++i) {
       for (int j=i+1; j<iu; ++j) {
         Partition lhsP = partitions[i]; // copy
         Partition rhsP = partitions[j]; // copy
         double oldSize = costModel.getPartitionSize(lhsP) + costModel.getPartitionSize(rhsP);
-        int newPIndex = partitioning.mergePartitions(i, j);
+        partitioning.mergePartitions(i, j);
         double newCost = costModel.getIOCost(partitioning, workload);
-        Partition const & newP = partitions[newPIndex];
+        Partition const & newP = partitions[i];
         double newSize = costModel.getPartitionSize(newP);
         double cost = (newCost-oldCost) / (oldSize-newSize); 
         minCostSolution.push(make_pair(i, j), cost);
-        partitioning.splitPartition(newPIndex, lhsP, rhsP);
+        partitioning.splitPartition(i, j, lhsP, rhsP);
+        // assert(partitioning==partitioningClone);
       }
     }
     pair<int, int> partitionIndices = minCostSolution.getBestSolution();
