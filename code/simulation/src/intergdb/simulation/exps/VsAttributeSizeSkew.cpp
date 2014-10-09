@@ -52,7 +52,6 @@ void VsAttributeSizeSkew::process()
   SimulationConf simConf;
   Cost cost;
   util::AutoTimer timer;  
-  double storageOverheadThreshold = 0.5;
   
   ExperimentalData queryIOExp("QueryIOVsAttributeSizeSkew");
   ExperimentalData runningTimeExp("RunningTimeVsAttributeSizeSkew");
