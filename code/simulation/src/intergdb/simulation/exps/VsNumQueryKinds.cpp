@@ -140,7 +140,7 @@ void VsNumQueryKinds::process()
           storageExp.setFieldValue("storage", storage.at(j).getMean());    
           storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());               
           storage.at(j).clear();
-
+          
           j++;
       }
       cerr << " (" << (completed / total) * 100 << "%)" << endl;           
