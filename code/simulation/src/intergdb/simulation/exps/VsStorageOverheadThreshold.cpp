@@ -106,7 +106,7 @@ void VsStorageOverheadThreshold::process()
   }
 
   int j;
-  for (double storageOverheadThreshold : storageOverheadThresholds) {
+  for (double sot : storageOverheadThresholds) {
       for (int i = 0; i < numRuns; i++) {
           QueryWorkload workload = simConf.getQueryWorkload();
           j = 0;
@@ -114,7 +114,7 @@ void VsStorageOverheadThreshold::process()
               timer.start();
               Partitioning partitioning;
               try {
-                  partitioning = solver->solve(workload, storageOverheadThreshold); 
+                  partitioning = solver->solve(workload, sot); 
               } catch (const runtime_error& error) {
                   cerr << "Unable to find a solution" << endl;
                   errorFlags.at(j) = true;
@@ -136,42 +136,42 @@ void VsStorageOverheadThreshold::process()
           if (!errorFlags.at(j)) {
               runningTimeExp.addRecord();
               runningTimeExp.setFieldValue("solver", solver->getClassName());
-              runningTimeExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
+              runningTimeExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % sot));
               runningTimeExp.setFieldValue("time", times.at(j).getMean());
               runningTimeExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
               times.at(j).clear();
           
               queryIOExp.addRecord();
               queryIOExp.setFieldValue("solver", solver->getClassName());
-              queryIOExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
+              queryIOExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % sot));
               queryIOExp.setFieldValue("io", io.at(j).getMean());
               queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
               io.at(j).clear();
               
               storageExp.addRecord();
               storageExp.setFieldValue("solver", solver->getClassName());
-              storageExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
+              storageExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % sot));
               storageExp.setFieldValue("storage", storage.at(j).getMean());    
               storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());               
               storage.at(j).clear();
           } else {
               runningTimeExp.addRecord();
               runningTimeExp.setFieldValue("solver", solver->getClassName());
-              runningTimeExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
+              runningTimeExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % sot));
               runningTimeExp.setFieldValue("time", "n/a");
               runningTimeExp.setFieldValue("deviation", "n/a");
               times.at(j).clear();
           
               queryIOExp.addRecord();
               queryIOExp.setFieldValue("solver", solver->getClassName());
-              queryIOExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
+              queryIOExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % sot));
               queryIOExp.setFieldValue("io", "n/a");
               queryIOExp.setFieldValue("deviation", "n/a");
               io.at(j).clear();
               
               storageExp.addRecord();
               storageExp.setFieldValue("solver", solver->getClassName());
-              storageExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % storageOverheadThreshold));
+              storageExp.setFieldValue("storageOverheadThreshold", boost::str(boost::format("%.2f") % sot));
               storageExp.setFieldValue("storage", "n/a");    
               storageExp.setFieldValue("deviation", "n/a");               
               storage.at(j).clear();

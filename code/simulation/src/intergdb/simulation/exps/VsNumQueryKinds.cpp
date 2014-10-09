@@ -54,7 +54,6 @@ void VsNumQueryKinds::process()
   SimulationConf simConf;
   Cost cost;
   util::AutoTimer timer;  
-  double storageOverheadThreshold = 0.5;
   
   ExperimentalData queryIOExp("QueryIOVsNumQueryKinds");
   ExperimentalData runningTimeExp("RunningTimeVsNumQueryKinds");
