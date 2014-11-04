@@ -63,11 +63,11 @@ int main()
         graph.createVertex(3, "v3");
         graph.createVertex(4, "v4");
         Timestamp ts = 1.0;
-        graph.addEdge(1, 3, "e1-3", ts++);
-        graph.addEdge(1, 4, "e1-4", ts++);
-        graph.addEdge(2, 3, "e2-3", ts++);
-        graph.addEdge(2, 4, "e2-4", ts++);
-        graph.addEdge(3, 4, "e3-4", ts++);
+        graph.addEdge(1, 3, ts++, "e1-3");
+        graph.addEdge(1, 4, ts++, "e1-4");
+        graph.addEdge(2, 3, ts++, "e2-3");
+        graph.addEdge(2, 4, ts++, "e2-4");
+        graph.addEdge(3, 4, ts++, "e3-4");
         graph.flush();
     }
 

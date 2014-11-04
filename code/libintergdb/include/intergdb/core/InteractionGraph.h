@@ -50,8 +50,9 @@ namespace intergdb { namespace core
         void createVertex(VertexId id, VertexData const & data);
         std::shared_ptr<VertexData> getVertexData(VertexId id);
         // The same vertex cannot be involved in more than one edge with the same timestamp
-        void addEdge(VertexId v, VertexId u, EdgeData const & data,
-                     Timestamp time=Helper::getCurrentTimestamp());
+        void addEdge(VertexId v, VertexId u, 
+                     Timestamp time /*=Helper::getCurrentTimestamp() */,
+                     EdgeData const & data);
 
         void flush();
         VertexIterator processIntervalQuery(Timestamp start, Timestamp end);
@@ -94,8 +95,9 @@ namespace intergdb { namespace core
 
     template<class VertexData, class EdgeData>
     void InteractionGraph<VertexData,EdgeData>::
-        addEdge(VertexId v, VertexId u, EdgeData const & data,
-                Timestamp time/*=Helper::getCurrentTimestamp()*/)
+        addEdge(VertexId v, VertexId u, 
+                Timestamp time,/*=Helper::getCurrentTimestamp()*/
+                EdgeData const & data)
     {
         assert(v!=u);
         getVertexData(v);

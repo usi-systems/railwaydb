@@ -27,18 +27,18 @@ void createGraph(Graph &graph)
     graph.createVertex(6, "v6");
     graph.createVertex(7, "v7");
     Timestamp ts = 1.0;
-    graph.addEdge(3, 5, "1", ts); 
-    graph.addEdge(0, 2, "2", ts);
-    graph.addEdge(0, 7, "3", ts);
-    graph.addEdge(0, 1, "4", ts);
-    graph.addEdge(3, 4, "5", ts);
-    graph.addEdge(5, 4, "6", ts); 
-    graph.addEdge(0, 6, "7", ts);
-    graph.addEdge(7, 1, "8", ts);
-    graph.addEdge(7, 6, "9", ts);
-    graph.addEdge(7, 4, "10", ts);
-    graph.addEdge(6, 4, "11", ts);
-    graph.addEdge(0, 5, "12", ts);
+    graph.addEdge(3, 5, ts, "1"); 
+    graph.addEdge(0, 2, ts, "2");
+    graph.addEdge(0, 7, ts, "3");
+    graph.addEdge(0, 1, ts, "4");
+    graph.addEdge(3, 4, ts, "5");
+    graph.addEdge(5, 4, ts, "6"); 
+    graph.addEdge(0, 6, ts, "7");
+    graph.addEdge(7, 1, ts, "8");
+    graph.addEdge(7, 6, ts, "9");
+    graph.addEdge(7, 4, ts, "10");
+    graph.addEdge(6, 4, ts, "11");
+    graph.addEdge(0, 5, ts, "12");
     graph.flush();     
 }
 
