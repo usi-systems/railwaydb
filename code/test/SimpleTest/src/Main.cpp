@@ -22,7 +22,7 @@ int main()
         graph.createVertex(2, "v2");
         graph.createVertex(4, "v4");
         Timestamp ts = 7.0;
-        graph.addEdge(2, 4, "e2-4", ts);
+        graph.addEdge(2, 4, ts, "e2-4");
         graph.flush();
     }
 

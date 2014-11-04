@@ -36,8 +36,8 @@ namespace intergdb { namespace core
       : vfifo_(conf.windowSize()), expm_(conf, hisg) {}
 
     template<class EdgeData>
-    void InMemoryGraph<EdgeData>::addEdge(VertexId v, VertexId u,
-                                          Timestamp ts, EdgeData const & data)
+    void InMemoryGraph<EdgeData>::addEdge(VertexId v, VertexId u, Timestamp ts,
+                                          EdgeData const & data)
     {
         typedef typename NeighborList<EdgeData>::Edge NLEdge;
         std::shared_ptr<EdgeData> sdata(new EdgeData(data));
