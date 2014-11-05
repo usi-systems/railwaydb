@@ -47,6 +47,14 @@ namespace intergdb { namespace core
             return boost::make_iterator_range(zip_begin, zip_end);
         }
     };
+
+    std::ostream& operator<<( std::ostream &os, const EdgeData& data)
+    {
+        
+        os << data.toString();
+        return os;
+    }
+
 } } /* namespace */
 
 #endif /* INTERGDB_EDGE_H */
