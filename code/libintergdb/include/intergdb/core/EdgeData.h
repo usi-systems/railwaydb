@@ -3,9 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <iostream> 
+#include <sstream>     
 #include "boost/variant.hpp"
 #include <boost/iterator/zip_iterator.hpp>
 #include <boost/range.hpp>
+
 
 namespace intergdb { namespace core
 {
@@ -18,7 +21,13 @@ namespace intergdb { namespace core
         EdgeData() { }
         EdgeData(vType value) { fields_.push_back(value); }
         void addAttribute(vType value) { fields_.push_back(value); }
-        std::string toString() const { return "EdgeData"; }
+        std::string toString() const { 
+            std::stringstream ss;
+            for (auto a : fields_) {
+                ss << a;
+            }
+            return ss.str(); 
+        }
         bool operator=(const EdgeData* rhs) {             
             if (fields_.size() != rhs->fields_.size()) return false;
 /*
