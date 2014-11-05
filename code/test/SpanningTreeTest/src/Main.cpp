@@ -1,4 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -12,7 +13,7 @@ using namespace std;
 using namespace intergdb::core;
 using boost::lexical_cast;
 
-typedef InteractionGraph<std::string,std::string> Graph;
+typedef InteractionGraph<std::string> Graph;
 
 #define MAX_WT std::numeric_limits<double>::max()
 
@@ -27,18 +28,18 @@ void createGraph(Graph &graph)
     graph.createVertex(6, "v6");
     graph.createVertex(7, "v7");
     Timestamp ts = 1.0;
-    graph.addEdge(3, 5, ts, "1"); 
-    graph.addEdge(0, 2, ts, "2");
-    graph.addEdge(0, 7, ts, "3");
-    graph.addEdge(0, 1, ts, "4");
-    graph.addEdge(3, 4, ts, "5");
-    graph.addEdge(5, 4, ts, "6"); 
-    graph.addEdge(0, 6, ts, "7");
-    graph.addEdge(7, 1, ts, "8");
-    graph.addEdge(7, 6, ts, "9");
-    graph.addEdge(7, 4, ts, "10");
-    graph.addEdge(6, 4, ts, "11");
-    graph.addEdge(0, 5, ts, "12");
+    graph.addEdge(3, 5, ts, EdgeData("1")); 
+    graph.addEdge(0, 2, ts, EdgeData("2"));
+    graph.addEdge(0, 7, ts, EdgeData("3"));
+    graph.addEdge(0, 1, ts, EdgeData("4"));
+    graph.addEdge(3, 4, ts, EdgeData("5"));
+    graph.addEdge(5, 4, ts, EdgeData("6")); 
+    graph.addEdge(0, 6, ts, EdgeData("7"));
+    graph.addEdge(7, 1, ts, EdgeData("8"));
+    graph.addEdge(7, 6, ts, EdgeData("9"));
+    graph.addEdge(7, 4, ts, EdgeData("10"));
+    graph.addEdge(6, 4, ts, EdgeData("11"));
+    graph.addEdge(0, 5, ts, EdgeData("12"));
     graph.flush();     
 }
 

@@ -8,19 +8,19 @@
 #include <intergdb/core/RTreeIntervalIndex.h>
 #include <intergdb/core/Types.h>
 #include <intergdb/core/NetworkByteBuffer.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <memory>
 
 namespace intergdb { namespace core
 {
-    template <class EdgeData>
     class IntervalQueryIndex
     {
     public:
         class Iterator
         {
         public:
-            Iterator(RTreeIntervalIndex & iidx, BlockManager<EdgeData> * bman,
+            Iterator(RTreeIntervalIndex & iidx, BlockManager * bman,
                     Timestamp start, Timestamp end);
             bool isValid();
             void next();
@@ -38,23 +38,22 @@ namespace intergdb { namespace core
             Timestamp currentEnd_;
             VertexId currentVertex_;
             BlockId currentBlock_;
-            BlockManager<EdgeData> * bman_;
+            BlockManager * bman_;
             std::auto_ptr<RTreeIntervalIndex::Iterator> iidxIter_;
         };
     public:
-        IntervalQueryIndex(Conf const & conf, BlockManager<EdgeData> * bman);
-        void indexBlock(Block<EdgeData> const & block);
+        IntervalQueryIndex(Conf const & conf, BlockManager * bman);
+        void indexBlock(Block const & block);
         std::shared_ptr<Iterator> query(Timestamp start, Timestamp end);
         void queryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
     private:
-        BlockManager<EdgeData> * bman_;
+        BlockManager * bman_;
         RTreeIntervalIndex iidx_;
     };
 
     #define INTERVAL_QUERY_INDEX_NAME "iq_index"
 
-    template<class EdgeData>
-    IntervalQueryIndex<EdgeData>::IntervalQueryIndex(Conf const & conf, BlockManager<EdgeData> * bman)
+    IntervalQueryIndex::IntervalQueryIndex(Conf const & conf, BlockManager * bman)
         : bman_(bman)
     {
         iidx_.openOrCreate(conf.getStorageDir()+"/"+INTERVAL_QUERY_INDEX_NAME);
@@ -62,31 +61,27 @@ namespace intergdb { namespace core
 
     #undef INTERVAL_QUERY_INDEX_NAME
 
-    template<class EdgeData>
-    IntervalQueryIndex<EdgeData>::Iterator::Iterator(RTreeIntervalIndex & iidx,
-            BlockManager<EdgeData> * bman, Timestamp start, Timestamp end)
+    IntervalQueryIndex::Iterator::Iterator(RTreeIntervalIndex & iidx,
+            BlockManager * bman, Timestamp start, Timestamp end)
         : start_(start), end_(end), bman_(bman)
     {
         iidxIter_.reset(iidx.getNewIterator(start, end));
         findNext();
     }
 
-    template<class EdgeData>
-    bool IntervalQueryIndex<EdgeData>::IntervalQueryIndex::Iterator::isValid()
+    bool IntervalQueryIndex::IntervalQueryIndex::Iterator::isValid()
     {
         return iidxIter_->isValid();
     }
 
-    template<class EdgeData>
-    void IntervalQueryIndex<EdgeData>::IntervalQueryIndex::Iterator::next()
+    void IntervalQueryIndex::IntervalQueryIndex::Iterator::next()
     {
         assert(isValid());
         iidxIter_->moveToNext();
         findNext();
     }
 
-    template<class EdgeData>
-    void IntervalQueryIndex<EdgeData>::IntervalQueryIndex::Iterator::findNext()
+    void IntervalQueryIndex::IntervalQueryIndex::Iterator::findNext()
     {
         while (isValid()) {
             readCurrents();
@@ -96,7 +91,7 @@ namespace intergdb { namespace core
             }
             // we have to read the block if the range is within the neighbor list
             if (start_>currentStart_ && end_<=currentEnd_) {
-                Block<EdgeData> const & block = bman_->getBlock(currentBlock_);
+                Block const & block = bman_->getBlock(currentBlock_);
                 assert(block.getNeighborLists().count(currentVertex_)>0);
                 auto const & nlist = block.getNeighborLists().find(currentVertex_)->second;
                 if (!nlist.hasEdgesInRange(start_, end_))
@@ -106,8 +101,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template<class EdgeData>
-    void IntervalQueryIndex<EdgeData>::IntervalQueryIndex::Iterator::readCurrents()
+    void IntervalQueryIndex::IntervalQueryIndex::Iterator::readCurrents()
     {
         assert(iidxIter_->isValid());
         currentEnd_ = iidxIter_->getData().getIntervalEnd();
@@ -116,21 +110,18 @@ namespace intergdb { namespace core
         currentBlock_ = iidxIter_->getData().getBlockId();
     }
 
-    template<class EdgeData>
-    std::shared_ptr<typename IntervalQueryIndex<EdgeData>::Iterator> IntervalQueryIndex<EdgeData>::
+    std::shared_ptr<typename IntervalQueryIndex::Iterator> IntervalQueryIndex::
         query(Timestamp start, Timestamp end)
     {
         return std::shared_ptr<IntervalQueryIndex::Iterator>(new Iterator(iidx_, bman_, start, end));
     }
 
-    template<class EdgeData>
-    void IntervalQueryIndex<EdgeData>::queryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
+    void IntervalQueryIndex::queryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
     {
         iidx_.queryBatch(start, end, results);
     }
 
-    template <class EdgeData>
-    void IntervalQueryIndex<EdgeData>::indexBlock(Block<EdgeData> const & block)
+    void IntervalQueryIndex::indexBlock(Block const & block)
     {
         auto const & nlists = block.getNeighborLists();
         for (auto it=nlists.begin(); it!=nlists.end(); ++it) {

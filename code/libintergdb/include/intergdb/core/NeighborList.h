@@ -1,6 +1,8 @@
 #ifndef INTERGDB_NEIGHBORLIST_H
 #define INTERGDB_NEIGHBORLIST_H
 
+#include <intergdb/core/EdgeData.h>
+
 #include <memory>
 #include <deque>
 #include <unordered_map>
@@ -8,8 +10,6 @@
 
 namespace intergdb { namespace core
 {
-
-    template <class EdgeData>
     class NeighborList
     {
     public:
@@ -45,8 +45,7 @@ namespace intergdb { namespace core
         std::deque<Edge> edges_;
     };
 
-    template <class EdgeData>
-    bool NeighborList<EdgeData>::getEdgeData(VertexId to, Timestamp tm,
+    bool NeighborList::getEdgeData(VertexId to, Timestamp tm,
             std::shared_ptr<EdgeData> & sdata)
     {
         bool found = false;
@@ -63,8 +62,7 @@ namespace intergdb { namespace core
         return found;
     }
 
-    template <class EdgeData>
-    bool NeighborList<EdgeData>::hasEdgesInRange(Timestamp start, Timestamp end) const
+    bool NeighborList::hasEdgesInRange(Timestamp start, Timestamp end) const
     {
         Edge startEdge(0, start, std::shared_ptr<EdgeData>());
         auto it = std::lower_bound(edges_.begin(), edges_.end(), startEdge);

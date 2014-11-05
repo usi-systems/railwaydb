@@ -2,6 +2,7 @@
 #define INTERGDB_CANDIDATE_H
 
 #include <intergdb/core/PriorityQueue.h>
+
 #include <unordered_map>
 #include <memory>
 
@@ -37,8 +38,8 @@ namespace std {
 
 namespace intergdb { namespace core
 {
-    template <class> class ExpirationMap;
-    template <class> class NeighborList;
+    //class ExpirationMap;
+    class NeighborList;
 
     class Candidate
     {
@@ -55,14 +56,10 @@ namespace intergdb { namespace core
         size_t getSerializedSize() const  { return size_; }
         size_t getNumEdges() const { return edgeCount_; }
         size_t getNumDanglingEdges() const { return outEdgeCount_; }
-
-        template <class EdgeData>
-        void setEdgeCount(ExpirationMap<EdgeData> const & map, VertexId headVertex, size_t n);
-        template <class EdgeData>
-        bool hasReverseEdge(ExpirationMap<EdgeData> const & map, VertexId headVertex,
-                            typename NeighborList<EdgeData>::Edge const & edge);
-        template <class EdgeData>
-        std::ostream & print(std::ostream & out, ExpirationMap<EdgeData> const & map);
+        void setEdgeCount(ExpirationMap const & map, VertexId headVertex, size_t n);
+        bool hasReverseEdge(ExpirationMap const & map, VertexId headVertex,
+                            NeighborList::Edge const & edge);
+        std::ostream & print(std::ostream & out, ExpirationMap const & map);
     private:
         size_t size_;
         size_t edgeCount_; // total edge count
@@ -73,8 +70,7 @@ namespace intergdb { namespace core
         std::unordered_map<SUEdge, size_t> internalEdges_; // neiglist to neiglist edges
     };
 
-    template <class EdgeData>
-    void Candidate::setEdgeCount(ExpirationMap<EdgeData> const & map, VertexId headVertex, size_t n)
+    void Candidate::setEdgeCount(ExpirationMap const & map, VertexId headVertex, size_t n)
     {
         size_t const cn = (numEdges_.count(headVertex)==0) ? 0 : numEdges_[headVertex];
         if (cn==n)
@@ -142,9 +138,8 @@ namespace intergdb { namespace core
         }
     }
 
-    template <class EdgeData>
-    bool Candidate::hasReverseEdge(ExpirationMap<EdgeData> const & map, VertexId headVertex,
-                                   typename NeighborList<EdgeData>::Edge const & edge)
+    bool Candidate::hasReverseEdge(ExpirationMap const & map, VertexId headVertex,
+                                   NeighborList::Edge const & edge)
     {
         bool found = false;
         VertexId toVertex = edge.getToVertex();
@@ -152,7 +147,7 @@ namespace intergdb { namespace core
             auto const & nlist = map.getNeighborLists().find(toVertex)->second;
             size_t i = numEdges_[toVertex]-1;
             Timestamp startTime = nlist.getOldestEdge().getTime();
-            typename NeighborList<EdgeData>::Edge const * oedge = & nlist.getNthOldestEdge(i);
+            NeighborList::Edge const * oedge = & nlist.getNthOldestEdge(i);
             if (edge.getTime() >= startTime) {
                 if (edge.getTime() < oedge->getTime()) {
                     found = true;
@@ -167,14 +162,13 @@ namespace intergdb { namespace core
                     }
                 }
             }
-            //std::shared_ptr<EdgeData> dummy;
-            //assert (!found || const_cast<NeighborList<EdgeData> &>(nlist).getEdgeData(headVertex, edge.getTime(), dummy));
+            //std::shared_ptr dummy;
+            //assert (!found || const_cast<NeighborList &>(nlist).getEdgeData(headVertex, edge.getTime(), dummy));
         }
         return found;
     }
 
-    template <class EdgeData>
-    std::ostream & Candidate::print(std::ostream & out, ExpirationMap<EdgeData> const & map)
+    std::ostream & Candidate::print(std::ostream & out, ExpirationMap const & map)
     {
         for (auto it=numEdges_.begin(); it!=numEdges_.end(); ++it) {
             VertexId headVertex = it->first;

@@ -1,4 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -11,9 +12,9 @@
 using namespace std;
 using namespace intergdb::core;
 
-template <class VertexData, class EdgeData>
+template <class VertexData>
 unordered_map<VertexId, double> findClusteringCoefficients(
-    InteractionGraph<VertexData,EdgeData> & graph, double startTime, double endTime)
+    InteractionGraph<VertexData> & graph, double startTime, double endTime)
 {
     vector<VertexId> vertices;
     for (auto iqIt = graph.processIntervalQuery(startTime, endTime); 
@@ -53,7 +54,7 @@ int main()
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());
     
-    typedef InteractionGraph<string,string> Graph;
+    typedef InteractionGraph<string> Graph;
     Graph graph(conf);
 
     if (newDB) {  
@@ -63,11 +64,11 @@ int main()
         graph.createVertex(3, "v3");
         graph.createVertex(4, "v4");
         Timestamp ts = 1.0;
-        graph.addEdge(1, 3, ts++, "e1-3");
-        graph.addEdge(1, 4, ts++, "e1-4");
-        graph.addEdge(2, 3, ts++, "e2-3");
-        graph.addEdge(2, 4, ts++, "e2-4");
-        graph.addEdge(3, 4, ts++, "e3-4");
+        graph.addEdge(1, 3, ts++, EdgeData("e1-3"));
+        graph.addEdge(1, 4, ts++, EdgeData("e1-4"));
+        graph.addEdge(2, 3, ts++, EdgeData("e2-3"));
+        graph.addEdge(2, 4, ts++, EdgeData("e2-4"));
+        graph.addEdge(3, 4, ts++, EdgeData("e3-4"));
         graph.flush();
     }
 

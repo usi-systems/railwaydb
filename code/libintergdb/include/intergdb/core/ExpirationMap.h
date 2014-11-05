@@ -7,6 +7,7 @@
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/PriorityQueue.h>
 #include <intergdb/core/Candidate.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <vector>
 #include <algorithm>
@@ -49,7 +50,7 @@ namespace intergdb { namespace core
         double getAvgNListSize() const { return avgNListSize_ /  count_; }
         double getAvgLocality() const { return locality_ / count_; }
     };
-    template <class EdgeData>
+
     class ExpirationMap
     {
     private:
@@ -92,19 +93,19 @@ namespace intergdb { namespace core
             double score(VertexId v, size_t i) { return rand(); }
         };
     public:
-        ExpirationMap(Conf const & conf, HistoricalGraph<EdgeData> * histg);
+        ExpirationMap(Conf const & conf, HistoricalGraph * histg);
         void addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data);
         void flush();
-        std::unordered_map<VertexId, NeighborList<EdgeData> > const & getNeighborLists() const
+        std::unordered_map<VertexId, NeighborList > const & getNeighborLists() const
             { return neigLists_; }
         BlockStats const & getBlockStats() const { return stats_; }
     private:
         HeadVertexScorer * getHeadVertexScorer();
-        void removeEdges(Block<EdgeData> const & block);
+        void removeEdges(Block const & block);
         void removeEdge(Edge const & edge);
         void writeBlock();
-        void getBlock(Block<EdgeData> & block);
-        void getBlockSmart(Block<EdgeData> & block);
+        void getBlock(Block & block);
+        void getBlockSmart(Block & block);
         bool extendCandidate(Candidate & candidate);
     private:
         BlockStats stats_;
@@ -112,32 +113,30 @@ namespace intergdb { namespace core
         size_t maxSize_;
         Conf const & conf_;
         Conf::SmartLayoutConf::LocalityMetric locMetric_;
-        HistoricalGraph<EdgeData> * histg_;
+        HistoricalGraph * histg_;
         std::auto_ptr<HeadVertexScorer> hvScorer_;
         PriorityQueue<double, VertexId> scoreQueue_;
-        std::unordered_map<VertexId, NeighborList<EdgeData> > neigLists_;
+        std::unordered_map<VertexId, NeighborList > neigLists_;
     };
 
-    template <class EdgeData>
-    ExpirationMap<EdgeData>::ExpirationMap(Conf const & conf, HistoricalGraph<EdgeData> * histg)
+    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg)
         : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg)
     {
         locMetric_ = conf.smartLayoutConf().localityMetric();
         hvScorer_.reset(getHeadVertexScorer());
     }
 
-    template <class EdgeData>
-    void ExpirationMap<EdgeData>::addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data)
+    void ExpirationMap::addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data)
     {
-        typedef typename NeighborList<EdgeData>::Edge NLEdge;
+        typedef NeighborList::Edge NLEdge;
         {
-            NeighborList<EdgeData> & nlist = neigLists_[edge.getFirstVertex()];
+            NeighborList & nlist = neigLists_[edge.getFirstVertex()];
             nlist.headVertex() = edge.getFirstVertex();
             nlist.addEdge(NLEdge(edge.getSecondVertex(), edge.getTime(), data));
             scoreQueue_.updateItem(hvScorer_->score(nlist.headVertex(), 0), nlist.headVertex());
         }
         {
-            NeighborList<EdgeData> & nlist = neigLists_[edge.getSecondVertex()];
+            NeighborList & nlist = neigLists_[edge.getSecondVertex()];
             nlist.headVertex() = edge.getSecondVertex();
             nlist.addEdge(NLEdge(edge.getFirstVertex(), edge.getTime(), data));
             scoreQueue_.updateItem(hvScorer_->score(nlist.headVertex(), 0), nlist.headVertex());
@@ -147,8 +146,7 @@ namespace intergdb { namespace core
             writeBlock();
     }
 
-    template <class EdgeData>
-    typename ExpirationMap<EdgeData>::HeadVertexScorer * ExpirationMap<EdgeData>::getHeadVertexScorer()
+    ExpirationMap::HeadVertexMaxScorer::HeadVertexScorer * ExpirationMap::getHeadVertexScorer()
     {
         if (conf_.layoutMode()==Conf::LM_Max ||
                 (conf_.layoutMode()==Conf::LM_Smart &&
@@ -172,17 +170,15 @@ namespace intergdb { namespace core
         return 0;
     }
 
-    template <class EdgeData>
-    void ExpirationMap<EdgeData>::flush()
+    void ExpirationMap::flush()
     {
         while(size_>0)
             writeBlock();
     }
 
-    template <class EdgeData>
-    void ExpirationMap<EdgeData>::writeBlock()
+    void ExpirationMap::writeBlock()
     {
-        Block<EdgeData> block;
+        Block block;
         switch(conf_.layoutMode()) {
         case Conf::LM_Smart:
             getBlockSmart(block);
@@ -196,15 +192,14 @@ namespace intergdb { namespace core
         histg_->addBlock(block);
     }
 
-    template<class EdgeData>
-    void ExpirationMap<EdgeData>::removeEdges(Block<EdgeData> const & block)
+    void ExpirationMap::removeEdges(Block const & block)
     {
         auto const & nlists = block.getNeighborLists();
         for(auto it = nlists.begin(); it!=nlists.end(); ++it) {
-            NeighborList<EdgeData> const & nlist = it->second;
+            NeighborList const & nlist = it->second;
             VertexId from = nlist.headVertex();
             auto const & nedge = nlist.getNewestEdge();
-            NeighborList<EdgeData> & srcNlist = neigLists_[from];
+            NeighborList & srcNlist = neigLists_[from];
             bool done = false;
             while (!done) {
                 auto const & redge = srcNlist.getOldestEdge();
@@ -222,8 +217,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template <class EdgeData>
-    void ExpirationMap<EdgeData>::getBlock(Block<EdgeData> & block)
+    void ExpirationMap::getBlock(Block & block)
     {
         std::unordered_map<VertexId, size_t> nTaken;
         size_t maxBlockSize = conf_.blockSize();
@@ -234,7 +228,7 @@ namespace intergdb { namespace core
             if (nTaken.count(headVertex)==0)
                 nTaken[headVertex] = 0;
             size_t i = nTaken[headVertex]++;
-            NeighborList<EdgeData> const & nlist = neigLists_[headVertex];
+            NeighborList const & nlist = neigLists_[headVertex];
             auto const & edge = nlist.getNthOldestEdge(i);
             block.addEdge(headVertex, edge.getToVertex(), edge.getTime(), edge.getData());
             if (i==nlist.getEdges().size()-1)
@@ -263,8 +257,7 @@ namespace intergdb { namespace core
 
 namespace intergdb { namespace core
 {
-    template <class EdgeData>
-    void ExpirationMap<EdgeData>::getBlockSmart(Block<EdgeData> & block)
+    void ExpirationMap::getBlockSmart(Block & block)
     {
         std::unordered_set<std::shared_ptr<Candidate> > candidates;
         { // initialize candidates
@@ -333,8 +326,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template <class EdgeData>
-    bool ExpirationMap<EdgeData>::extendCandidate(Candidate & candidate)
+    bool ExpirationMap::extendCandidate(Candidate & candidate)
     {
         bool found = false;
         VertexId bestHeadVertex = 0;

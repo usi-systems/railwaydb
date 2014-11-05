@@ -1,4 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -15,14 +16,14 @@ int main()
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());
     
-    typedef InteractionGraph<std::string,std::string> Graph;
+    typedef InteractionGraph<std::string> Graph;
     Graph graph(conf);
 
     if (newDB) {  
         graph.createVertex(2, "v2");
         graph.createVertex(4, "v4");
         Timestamp ts = 7.0;
-        graph.addEdge(2, 4, ts, "e2-4");
+        graph.addEdge(2, 4, ts, EdgeData("e2-4"));
         graph.flush();
     }
 
