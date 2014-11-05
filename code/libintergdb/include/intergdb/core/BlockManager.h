@@ -6,6 +6,8 @@
 #include <intergdb/core/Types.h>
 #include <intergdb/core/Block.h>
 #include <intergdb/core/NetworkByteBuffer.h>
+#include <intergdb/core/EdgeData.h>
+
 #include <leveldb/db.h>
 
 #include <memory>
@@ -14,19 +16,18 @@
 
 namespace intergdb { namespace core
 {
-    template<class EdgeData>
     class BlockManager
     {
     private:
         struct BlockAndIdIter
         {
-            Block<EdgeData> block;
+            Block block;
             std::list<BlockId>::iterator iter;
         };
     public:
         BlockManager(Conf const & conf);
-        Block<EdgeData> const & getBlock(BlockId id);
-        void addBlock(Block<EdgeData> & data);
+        Block const & getBlock(BlockId id);
+        void addBlock(Block & data);
         double getHitRatio()
             { return hitCount_/static_cast<double>(reqCount_); }
         size_t getNumIOReads() const { return nIOReads_; }
@@ -47,8 +48,7 @@ namespace intergdb { namespace core
 
     #define BLOCK_DB_NAME "block_data"
 
-    template<class EdgeData>
-    BlockManager<EdgeData>::BlockManager(Conf const & conf)
+    BlockManager::BlockManager(Conf const & conf)
         : nIOReads_(0), nIOWrites_(0),
           reqCount_(0), hitCount_(0),
           blockBufferSize_(conf.blockBufferSize())
@@ -67,8 +67,7 @@ namespace intergdb { namespace core
 
     #undef BLOCK_DB_NAME
 
-    template<class EdgeData>
-    void BlockManager<EdgeData>::findNextBlockId()
+    void BlockManager::findNextBlockId()
     {
         std::auto_ptr<leveldb::Iterator> it(db_->NewIterator(leveldb::ReadOptions()));
         it->SeekToLast();
@@ -82,8 +81,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template<class EdgeData>
-    Block<EdgeData> const & BlockManager<EdgeData>::getBlock(BlockId id)
+    Block const & BlockManager::getBlock(BlockId id)
     {
         reqCount_++;
         auto it = cache_.find(id);
@@ -123,8 +121,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template<class EdgeData>
-    void BlockManager<EdgeData>::addBlock(Block<EdgeData> & block)
+    void BlockManager::addBlock(Block & block)
     {
         nIOWrites_++;
         block.id() = nextBlockId_++;

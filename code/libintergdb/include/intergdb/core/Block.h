@@ -5,6 +5,7 @@
 #include <intergdb/core/Types.h>
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/NetworkByteBuffer.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -13,11 +14,10 @@
 
 namespace intergdb { namespace core
 {
-    template <class EdgeData>
     class Block
     {
     public:
-        typedef std::unordered_map<VertexId, NeighborList<EdgeData> > NeighborListMap;
+        typedef std::unordered_map<VertexId, NeighborList > NeighborListMap;
         Block() : id_(0), serializedSize_(sizeof(BlockId)) {}
         Block(BlockId id) : id_ (id), serializedSize_(sizeof(BlockId)) {}
         BlockId id() const { return id_; }
@@ -27,26 +27,24 @@ namespace intergdb { namespace core
         void removeNewestEdge(VertexId headVertex);
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
-        void swap(Block<EdgeData> & other);
+        void swap(Block & other);
         std::ostream & print(std::ostream & out);
     private:
         void addNeighborList(VertexId id);
     private:
         BlockId id_;
         size_t serializedSize_;
-        std::unordered_map<VertexId, NeighborList<EdgeData> > neigs_;
+        std::unordered_map<VertexId, NeighborList > neigs_;
     };
 
-    template <class EdgeData>
-    void Block<EdgeData>::swap(Block<EdgeData> & other)
+    void Block::swap(Block & other)
     {
         std::swap(id_, other.id_);
         std::swap(serializedSize_, other.serializedSize_);
         neigs_.swap(other.neigs_);
     }
 
-    template <class EdgeData>
-    void Block<EdgeData>::addNeighborList(VertexId id)
+    void Block::addNeighborList(VertexId id)
     {
         if (neigs_.count(id)==0) {
             neigs_[id].headVertex() = id;
@@ -55,8 +53,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template <class EdgeData>
-    void Block<EdgeData>::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
+    void Block::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
                                   std::shared_ptr<EdgeData> data)
     {
         std::shared_ptr<EdgeData> sdata;
@@ -74,14 +71,13 @@ namespace intergdb { namespace core
         }
         addNeighborList(headVertex);
         auto & nlist = neigs_[headVertex];
-        typedef typename NeighborList<EdgeData>::Edge NLEdge;
+        typedef typename NeighborList::Edge NLEdge;
         nlist.addEdge(NLEdge(to, tm, sdata));
         serializedSize_ += sizeof(VertexId);
         serializedSize_ += sizeof(Timestamp);
     }
 
-    template <class EdgeData>
-    std::ostream & Block<EdgeData>::print(std::ostream & out)
+    std::ostream & Block::print(std::ostream & out)
     {
         for (auto it=neigs_.begin(); it!=neigs_.end(); ++it) {
             VertexId headVertex = it->first;
@@ -97,11 +93,10 @@ namespace intergdb { namespace core
         return out;
     }
 
-    template <class EdgeData>
-    void Block<EdgeData>::removeNewestEdge(VertexId headVertex)
+    void Block::removeNewestEdge(VertexId headVertex)
     {
         assert(neigs_.count(headVertex)>0);
-        NeighborList<EdgeData> & nlist = neigs_[headVertex];
+        NeighborList & nlist = neigs_[headVertex];
         auto const & edge = nlist.getNewestEdge();
         VertexId to = edge.getToVertex();
         if (neigs_.count(to)>0) {
@@ -156,8 +151,7 @@ namespace std {
 
 namespace intergdb { namespace core
 {
-    template <class EdgeData>
-    inline std::ostream & operator << (std::ostream & out, Block<EdgeData> const & block)
+    inline std::ostream & operator << (std::ostream & out, Block const & block)
     {
         out << "Block id: " << block.id() << "\n";
         for (auto it=block.getNeighborLists().begin(),
@@ -176,8 +170,7 @@ namespace intergdb { namespace core
 
     // TODO: variable length encode timestamps after applying a delta
     // TODO: optional compression
-    template <class EdgeData>
-    inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, Block<EdgeData> const & block)
+    inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, Block const & block)
     {
         std::unordered_set<EdgeTriplet> written;
         sbuf << block.id();
@@ -202,8 +195,7 @@ namespace intergdb { namespace core
         return sbuf;
     }
 
-    template <class EdgeData>
-    inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, Block<EdgeData> & block)
+    inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, Block & block)
     {
         std::unordered_map<EdgeTriplet, std::shared_ptr<EdgeData> > read;
         sbuf >> block.id();

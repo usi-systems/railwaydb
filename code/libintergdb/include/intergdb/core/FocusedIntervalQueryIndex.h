@@ -7,13 +7,14 @@
 #include <intergdb/core/Exceptions.h>
 #include <intergdb/core/Types.h>
 #include <intergdb/core/NetworkByteBuffer.h>
+#include <intergdb/core/EdgeData.h>
+
 #include <leveldb/db.h>
 
 #include <memory>
 
 namespace intergdb { namespace core
 {
-    template <class EdgeData>
     class FocusedIntervalQueryIndex
     {
     public:
@@ -43,7 +44,7 @@ namespace intergdb { namespace core
             std::auto_ptr<leveldb::Iterator> dbIter_;
         };
         FocusedIntervalQueryIndex(Conf const & conf);
-        void indexBlock(Block<EdgeData> const & block);
+        void indexBlock(Block const & block);
         std::shared_ptr<Iterator> query(VertexId vertex, Timestamp start, Timestamp end);
     private:
         std::auto_ptr<leveldb::DB> db_;
@@ -51,8 +52,7 @@ namespace intergdb { namespace core
 
     #define FOCUSED_INTERVAL_QUERY_INDEX_NAME "fiq_index"
 
-    template <class EdgeData>
-    FocusedIntervalQueryIndex<EdgeData>::FocusedIntervalQueryIndex(Conf const & conf)
+    FocusedIntervalQueryIndex::FocusedIntervalQueryIndex(Conf const & conf)
     {
         leveldb::Options options;
         options.create_if_missing = true;
@@ -67,8 +67,7 @@ namespace intergdb { namespace core
 
     #undef FOCUSED_INTERVAL_QUERY_INDEX_NAME
 
-    template <class EdgeData>
-    FocusedIntervalQueryIndex<EdgeData>::Iterator::Iterator(leveldb::DB * db,
+    FocusedIntervalQueryIndex::Iterator::Iterator(leveldb::DB * db,
             VertexId vertex, Timestamp start, Timestamp end)
         : vertex_(vertex), start_(start), end_(end)
     {
@@ -83,14 +82,12 @@ namespace intergdb { namespace core
             readCurrents();
     }
 
-    template <class EdgeData>
-    bool FocusedIntervalQueryIndex<EdgeData>::FocusedIntervalQueryIndex::Iterator::isValid()
+    bool FocusedIntervalQueryIndex::FocusedIntervalQueryIndex::Iterator::isValid()
     {
         return dbIter_->Valid() && currentVertex_==vertex_ && currentStart_ < end_;
     }
 
-    template <class EdgeData>
-    void FocusedIntervalQueryIndex<EdgeData>::Iterator::next()
+    void FocusedIntervalQueryIndex::Iterator::next()
     {
         assert(isValid());
         dbIter_->Next();
@@ -98,8 +95,7 @@ namespace intergdb { namespace core
             readCurrents();
     }
 
-    template <class EdgeData>
-    void FocusedIntervalQueryIndex<EdgeData>::Iterator::readCurrents()
+    void FocusedIntervalQueryIndex::Iterator::readCurrents()
     {
         assert(dbIter_->Valid());
         leveldb::Slice keyStr = dbIter_->key();
@@ -112,15 +108,13 @@ namespace intergdb { namespace core
         valueBuffer >> currentStart_;
     }
 
-    template <class EdgeData>
-    std::shared_ptr<typename FocusedIntervalQueryIndex<EdgeData>::Iterator> FocusedIntervalQueryIndex<EdgeData>::
+    std::shared_ptr<typename FocusedIntervalQueryIndex::Iterator> FocusedIntervalQueryIndex::
         query(VertexId vertex, Timestamp start, Timestamp end)
     {
         return std::shared_ptr<FocusedIntervalQueryIndex::Iterator>(new Iterator(db_.get(), vertex, start, end));
     }
 
-    template <class EdgeData>
-    void FocusedIntervalQueryIndex<EdgeData>::indexBlock(Block<EdgeData> const & block)
+    void FocusedIntervalQueryIndex::indexBlock(Block const & block)
     {
         auto const & nlists = block.getNeighborLists();
         for (auto  it=nlists.begin(); it!=nlists.end(); ++it) {

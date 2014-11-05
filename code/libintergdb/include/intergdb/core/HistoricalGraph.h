@@ -5,13 +5,12 @@
 #include <intergdb/core/BlockManager.h>
 #include <intergdb/core/IntervalQueryIndex.h>
 #include <intergdb/core/FocusedIntervalQueryIndex.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <unordered_set>
 
 namespace intergdb { namespace core
 {
-
-template<class EdgeData>
 class HistoricalGraph
 {
 public:
@@ -19,35 +18,35 @@ public:
     class VertexIterator
     {
     public:
-        VertexIterator(std::shared_ptr<typename IntervalQueryIndex<EdgeData>::Iterator> it);
+        VertexIterator(std::shared_ptr<IntervalQueryIndex::Iterator> it);
         bool isValid();
         void next();
         VertexId getVertexId();
     private:
         VertexId last_;
         std::unordered_set<VertexId> vertices_;
-        std::shared_ptr<typename IntervalQueryIndex<EdgeData>::Iterator> it_;
+        std::shared_ptr<IntervalQueryIndex::Iterator> it_;
     };
     class EdgeIterator
     {
     public:
-        EdgeIterator(std::shared_ptr<typename FocusedIntervalQueryIndex<EdgeData>::Iterator > it,
-                     BlockManager<EdgeData> * bman);
+        EdgeIterator(std::shared_ptr<FocusedIntervalQueryIndex::Iterator > it,
+                     BlockManager * bman);
         bool isValid();
         void next();
-        typename NeighborList<EdgeData>::Edge const & getEdge();
+        typename NeighborList::Edge const & getEdge();
     private:
         void initFromBlock();
     private:
         bool done_;
         size_t currentEdgeIndex_;
         size_t currentNumEdges_;
-        BlockManager<EdgeData> * bman_;
-        std::shared_ptr<typename FocusedIntervalQueryIndex<EdgeData>::Iterator> it_;
+        BlockManager * bman_;
+        std::shared_ptr<FocusedIntervalQueryIndex::Iterator> it_;
     };
 public:
     HistoricalGraph(Conf const & conf);
-    void addBlock(Block<EdgeData> & block);
+    void addBlock(Block & block);
     std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
     void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
     std::shared_ptr<EdgeIterator> focusedIntervalQuery(VertexId vertex, Timestamp start, Timestamp end);
@@ -55,14 +54,13 @@ public:
     size_t getEdgeReadIOCount() const { return bman_.getNumIOReads(); }
     size_t getEdgeWriteIOCount() const { return bman_.getNumIOWrites(); }
 private:
-    BlockManager<EdgeData> bman_;
-    IntervalQueryIndex<EdgeData> iqIndex_;
-    FocusedIntervalQueryIndex<EdgeData> fiqIndex_;
+    BlockManager bman_;
+    IntervalQueryIndex iqIndex_;
+    FocusedIntervalQueryIndex fiqIndex_;
 };
 
-template<class EdgeData>
-HistoricalGraph<EdgeData>::VertexIterator::
-    VertexIterator(std::shared_ptr<typename IntervalQueryIndex<EdgeData>::Iterator> it)
+HistoricalGraph::VertexIterator::
+    VertexIterator(std::shared_ptr<IntervalQueryIndex::Iterator> it)
   : it_(it)
 {
     if (it_->isValid()) {
@@ -71,14 +69,12 @@ HistoricalGraph<EdgeData>::VertexIterator::
     }
 }
 
-template<class EdgeData>
-bool HistoricalGraph<EdgeData>::VertexIterator::isValid()
+bool HistoricalGraph::VertexIterator::isValid()
 {
     return it_->isValid();
 }
 
-template<class EdgeData>
-void HistoricalGraph<EdgeData>::VertexIterator::next()
+void HistoricalGraph::VertexIterator::next()
 {
     assert(isValid());
     do {
@@ -90,30 +86,26 @@ void HistoricalGraph<EdgeData>::VertexIterator::next()
     }
 }
 
-template<class EdgeData>
-VertexId HistoricalGraph<EdgeData>::VertexIterator::getVertexId()
+VertexId HistoricalGraph::VertexIterator::getVertexId()
 {
     return last_;
 }
 
-template<class EdgeData>
-HistoricalGraph<EdgeData>::EdgeIterator::
-    EdgeIterator(std::shared_ptr<typename FocusedIntervalQueryIndex<EdgeData>::Iterator > it,
-                 BlockManager<EdgeData> * bman)
+HistoricalGraph::EdgeIterator::
+    EdgeIterator(std::shared_ptr<FocusedIntervalQueryIndex::Iterator > it,
+                 BlockManager * bman)
     : done_(false), bman_(bman), it_(it)
 {
     if (it_->isValid())
         initFromBlock();
 }
 
-template<class EdgeData>
-bool HistoricalGraph<EdgeData>::EdgeIterator::isValid()
+bool HistoricalGraph::EdgeIterator::isValid()
 {
     return it_->isValid() && !done_;
 }
 
-template<class EdgeData>
-void HistoricalGraph<EdgeData>::EdgeIterator::next()
+void HistoricalGraph::EdgeIterator::next()
 {
     assert(isValid());
     currentEdgeIndex_++;
@@ -128,16 +120,14 @@ void HistoricalGraph<EdgeData>::EdgeIterator::next()
     }
 }
 
-template<class EdgeData>
-typename NeighborList<EdgeData>::Edge const & HistoricalGraph<EdgeData>::EdgeIterator::
+NeighborList::Edge const & HistoricalGraph::EdgeIterator::
      getEdge()
 {
     auto const & nlist = bman_->getBlock(it_->getBlock()).getNeighborLists().find(it_->getVertex())->second;
     return nlist.getNthOldestEdge(currentEdgeIndex_);
 }
 
-template<class EdgeData>
-void HistoricalGraph<EdgeData>::EdgeIterator::initFromBlock()
+void HistoricalGraph::EdgeIterator::initFromBlock()
 {
     auto const & nlist = bman_->getBlock(it_->getBlock()).getNeighborLists().find(it_->getVertex())->second;
     currentNumEdges_ = nlist.getEdges().size();
@@ -149,37 +139,31 @@ void HistoricalGraph<EdgeData>::EdgeIterator::initFromBlock()
         done_ = true;
 }
 
-template<class EdgeData>
-HistoricalGraph<EdgeData>::HistoricalGraph(Conf const & conf)
+HistoricalGraph::HistoricalGraph(Conf const & conf)
   : bman_(conf), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
-template<class EdgeData>
-void HistoricalGraph<EdgeData>::addBlock(Block<EdgeData> & block)
+void HistoricalGraph::addBlock(Block & block)
 {
     bman_.addBlock(block); // sets the block id
     iqIndex_.indexBlock(block);
     fiqIndex_.indexBlock(block);
 }
 
-template<class EdgeData>
-std::shared_ptr<typename HistoricalGraph<EdgeData>::VertexIterator> HistoricalGraph<EdgeData>::
+std::shared_ptr<HistoricalGraph::VertexIterator> HistoricalGraph::
     intervalQuery(Timestamp start, Timestamp end)
 {
     return std::shared_ptr<VertexIterator>(new VertexIterator(iqIndex_.query(start, end)));
 }
 
-template<class EdgeData>
-void HistoricalGraph<EdgeData>::
-    intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
+void HistoricalGraph::intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
 {
     iqIndex_.queryBatch(start, end, results);
 }
 
 void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
 
-template<class EdgeData>
-std::shared_ptr<typename HistoricalGraph<EdgeData>::EdgeIterator> HistoricalGraph<EdgeData>::
+std::shared_ptr<HistoricalGraph::EdgeIterator> HistoricalGraph::
     focusedIntervalQuery(VertexId vertex, Timestamp start, Timestamp end)
 {
     return std::shared_ptr<EdgeIterator>(new EdgeIterator(fiqIndex_.query(vertex, start, end), &bman_));

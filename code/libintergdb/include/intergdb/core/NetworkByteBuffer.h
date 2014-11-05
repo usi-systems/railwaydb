@@ -2,6 +2,7 @@
 #define INTERGDB_NETWORKBYTEBUFFER_H
 
 #include <intergdb/core/EndianHelper.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <string>
 #include <stdexcept>
@@ -9,6 +10,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <inttypes.h>
+
+#include <iostream>
 
 namespace intergdb { namespace core
 {
@@ -382,6 +385,19 @@ inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1,
     sbuf >> val.second;
     return sbuf;
 }
+
+inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, EdgeData const & val)
+{
+    std::cerr << "Error. << not implemented for EdgeData" << std::endl;
+    return sbuf;
+}
+
+inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, EdgeData const & val)
+{  
+    std::cerr << "Error. >> not implemented for EdgeData" << std::endl;
+    return sbuf;
+}
+
 
 #undef BYTE_BUFFER_ADD_OPERATOR
 
