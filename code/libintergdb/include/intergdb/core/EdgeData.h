@@ -2,22 +2,41 @@
 #define INTERGDB_EDGEDATA_H
 
 #include <string>
+#include <vector>
+#include "boost/variant.hpp"
+#include <boost/iterator/zip_iterator.hpp>
+#include <boost/range.hpp>
 
 namespace intergdb { namespace core
 {
+
+    typedef boost::variant<int64_t, double, std::string> vType;
+
     class EdgeData
     {
     public:
         EdgeData() { }
-        EdgeData(int value) { }
-        EdgeData(int64_t value) { }
-        EdgeData(double value) { }
-        EdgeData(std::string value) { }
-        void addAttribute(int64_t value) const { }
-        void addAttribute(double value) const { }
-        void addAttribute(std::string value) const { }
+        EdgeData(vType value) { fields_.push_back(value); }
+        void addAttribute(vType value) { fields_.push_back(value); }
         std::string toString() const { return "EdgeData"; }
-        bool operator=(const EdgeData*) { return true; }
+        bool operator=(const EdgeData* rhs) {             
+            if (fields_.size() != rhs->fields_.size()) return false;
+/*
+            for(auto&& t : zip(fields_, rhs->fields_))
+                if (t.get<0>() != t.get<1>() ) return false;
+*/
+            return true; 
+        }
+    private:
+        std::vector<vType> fields_;
+        
+        template <typename... T>
+        auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
+        {
+            auto zip_begin = boost::make_zip_iterator(boost::make_tuple(std::begin(containers)...));
+            auto zip_end = boost::make_zip_iterator(boost::make_tuple(std::end(containers)...));
+            return boost::make_iterator_range(zip_begin, zip_end);
+        }
     };
 } } /* namespace */
 
