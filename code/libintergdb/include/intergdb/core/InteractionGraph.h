@@ -8,6 +8,7 @@
 #include <intergdb/core/InMemoryGraph.h>
 #include <intergdb/core/HistoricalGraph.h>
 #include <intergdb/core/EdgeData.h>
+#include <intergdb/core/Schema.h>
 
 #include <memory>
 
@@ -63,11 +64,13 @@ namespace intergdb { namespace core
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }
         size_t getEdgeWriteIOCount() const { return hisg_.getEdgeReadIOCount().getEdgeWriteIOCount(); }
+        Schema const & getSchema() const { return schema_; }
     private:
         Conf conf_;
         VertexManager<VertexData> vman_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
+        Schema schema_;
     };
 
     template<class VertexData>
