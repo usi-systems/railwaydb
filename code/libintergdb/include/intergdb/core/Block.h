@@ -213,7 +213,10 @@ namespace intergdb { namespace core
                 EdgeTriplet etrip(headVertex, toVertex, tm);
                 auto it = read.find(etrip);
                 if (it==read.end()) {
-                    sdata.reset(new EdgeData());
+                    // sdata.reset(new EdgeData());
+                    // Below should be a pointer to an EdgeData
+                    sdata.reset((EdgeData*)NULL);
+                    assert(false);
                     sbuf >> *sdata;
                     read[etrip] = sdata;
                 } else {

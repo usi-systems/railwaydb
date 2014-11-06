@@ -18,9 +18,11 @@ namespace intergdb { namespace core
     class EdgeData
     {
     public:
-        EdgeData() { }
-        EdgeData(vType value) { fields_.push_back(value); }
-        void addAttribute(vType value) { fields_.push_back(value); }
+        EdgeData(int size) { fields_.reserve(size); }
+
+        EdgeData & setAttribute(std::string attributeName, vType value) {  int i = 0; fields_[i] = value; return *this; }
+        EdgeData & setAttribute(int attributeIndex, vType value) { fields_[attributeIndex] = value; return *this; }
+
         std::string toString() const { 
             std::stringstream ss;
             for (auto a : fields_) {
