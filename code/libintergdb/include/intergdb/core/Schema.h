@@ -11,12 +11,12 @@
 namespace intergdb { namespace core
 {
 
-    class EdgeData;
-
     enum DataType { INT64, DOUBLE, STRING } ;
     static const char * dataTypesStrings[] = { "INT64", "DOUBLE", "STRING" };
 
-    const char * typeToString(int enumVal)
+    class EdgeData;
+
+    static const char * typeToString(int enumVal)
     {
         return dataTypesStrings[enumVal];
     }
@@ -28,9 +28,17 @@ namespace intergdb { namespace core
         friend class EdgeData;
     public:
         Schema() { }
-        EdgeData * newEdgeData() const ;
+        EdgeData * newEdgeData() ;
         Schema & addAttribute(std::string name, DataType type) ;
-        std::string toString() const { return "Schema"; }   
+        int getIndex(std::string name) { return nameToIndex_[name]; } 
+
+        std::string toString() const { 
+            std::stringstream ss;   
+            for (auto a : attributes_) {
+                ss << a.first << ":" << typeToString(a.second) << " ";
+            }
+            return ss.str(); 
+        }   
     private:
         std::list<attribute> attributes_;                  /* list of name/type pairs */
         std::unordered_map<std::string, int> nameToIndex_; /* map from name to index */

@@ -4,7 +4,7 @@
 
 using namespace intergdb::core;
 
-EdgeData * Schema::newEdgeData() const 
+EdgeData * Schema::newEdgeData()  
 { 
     return new EdgeData(*this, attributes_.size()); 
 }
