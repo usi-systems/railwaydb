@@ -5,7 +5,7 @@ using namespace intergdb::core;
 
 intergdb::core::EdgeData & EdgeData::setAttribute(std::string attributeName, vType value) 
 {  
-    int i = 0; fields_[i] = value; return *this; 
+    fields_[schema_.getIndex(attributeName)] = value; return *this; 
 }
 
 intergdb::core::EdgeData & EdgeData::setAttribute(int attributeIndex, vType value) { 
@@ -21,14 +21,18 @@ std::string EdgeData::toString() const
     return ss.str(); 
 }
 
-bool EdgeData::operator=(const EdgeData* rhs) 
+bool EdgeData::operator==(const EdgeData* other) 
 {             
-    if (fields_.size() != rhs->fields_.size()) return false;
-/*
-  for(auto&& t : zip(fields_, rhs->fields_))
-  if (t.get<0>() != t.get<1>() ) return false;
-*/
+    if (fields_.size() != other->fields_.size()) return false;    
+    for(auto&& t : zip(fields_, other->fields_))      
+        if (!(t.get<0>() == t.get<1>())) return false;
     return true; 
+}
+
+std::ostream& operator<<( std::ostream &os, const EdgeData& data)
+{      
+    os << data.toString();
+    return os;
 }
 
 
