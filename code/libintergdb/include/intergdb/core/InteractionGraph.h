@@ -64,7 +64,7 @@ namespace intergdb { namespace core
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }
         size_t getEdgeWriteIOCount() const { return hisg_.getEdgeReadIOCount().getEdgeWriteIOCount(); }
-        Schema const & getSchema() const { return schema_; }
+        Schema & getSchema() { return schema_; }
     private:
         Conf conf_;
         VertexManager<VertexData> vman_;
