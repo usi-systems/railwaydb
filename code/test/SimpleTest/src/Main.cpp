@@ -1,5 +1,6 @@
 #include <intergdb/core/InteractionGraph.h>
 #include <intergdb/core/EdgeData.h>
+#include <intergdb/core/Schema.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -19,11 +20,14 @@ int main()
     typedef InteractionGraph<std::string> Graph;
     Graph graph(conf);
 
+
+    graph.getSchema().addAttribute("label", DataType::STRING);
+
     if (newDB) {  
         graph.createVertex(2, "v2");
         graph.createVertex(4, "v4");
         Timestamp ts = 7.0;
-        graph.addEdge(2, 4, ts, graph.getSchema().newEdgeData()->setAttribute("a", "e2-4"));
+        graph.addEdge(2, 4, ts, graph.getSchema().newEdgeData()->setAttribute("label", "e2-4"));
         graph.flush();
     }
 
