@@ -40,7 +40,7 @@ namespace intergdb { namespace core
         }
     };
    
-   std::ostream& operator<<( std::ostream &os, const EdgeData& data)
+   inline std::ostream& operator<<( std::ostream &os, const EdgeData& data)
    {      
        os << data.toString();
        return os;
