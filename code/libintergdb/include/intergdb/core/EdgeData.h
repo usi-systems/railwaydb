@@ -5,9 +5,9 @@
 #include <vector>
 #include <iostream> 
 #include <sstream>     
-#include "boost/variant.hpp"
-#include <boost/iterator/zip_iterator.hpp>
-#include <boost/range.hpp>
+#include <boost/variant.hpp>
+//#include <boost/iterator/zip_iterator.hpp>
+//#include <boost/range.hpp>
 
 
 namespace intergdb { namespace core
