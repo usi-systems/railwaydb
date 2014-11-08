@@ -20,7 +20,7 @@ namespace intergdb { namespace core
     {
     public:
         InMemoryGraph(Conf const & conf, HistoricalGraph * hisg);
-        void addEdge(VertexId from, VertexId to, Timestamp ts, EdgeData const & data);
+        void addEdge(VertexId from, VertexId to, Timestamp ts, EdgeData * data);
         void flush();
         BlockStats const & getBlockStats() const { return expm_.getBlockStats(); }
     private:
@@ -34,11 +34,10 @@ namespace intergdb { namespace core
     InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg)
       : vfifo_(conf.windowSize()), expm_(conf, hisg) {}
 
-    void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts,
-                                          EdgeData const & data)
+    void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, EdgeData * data)
     {
         typedef NeighborList::Edge NLEdge;
-        std::shared_ptr<EdgeData> sdata(new EdgeData(data));
+        std::shared_ptr<EdgeData> sdata(data);
         {
             NeighborList & nlist = neigLists_[v];
             nlist.headVertex() = v;

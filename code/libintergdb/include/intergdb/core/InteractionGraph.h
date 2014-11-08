@@ -11,6 +11,7 @@
 #include <intergdb/core/Schema.h>
 
 #include <memory>
+#include <utility>
 
 namespace intergdb { namespace core
 {
@@ -51,11 +52,12 @@ namespace intergdb { namespace core
 
         void createVertex(VertexId id, VertexData const & data);
         std::shared_ptr<VertexData> getVertexData(VertexId id);
-        // The same vertex cannot be involved in more than one edge with the same timestamp
+        // TODO: The same vertex cannot be involved in more than one edge with the same timestamp
+        // This limitation can be removed with some additional work
+        template <typename... EdgeDataAttributes>
         void addEdge(VertexId v, VertexId u, 
                      Timestamp time /*=Helper::getCurrentTimestamp() */,
-                     EdgeData const & data);
-
+                     EdgeDataAttributes&&... edgeData);
         void flush();
         VertexIterator processIntervalQuery(Timestamp start, Timestamp end);
         EdgeIterator processFocusedIntervalQuery(VertexId headVertex, Timestamp start, Timestamp end);
@@ -97,15 +99,38 @@ namespace intergdb { namespace core
         return vman_.getVertexData(id);
     }
 
+    template<typename T1, typename... TN>
+    struct AttributeCollector
+    {
+      static void add(EdgeData * data, int index, T1&& t1, TN&&... tn) 
+      {
+        data->setAttribute(index, t1);
+        AttributeCollector<TN...>::add(data, index+1, std::forward<TN>(tn)...);
+      }
+    };
+
+    template<typename T>
+    struct AttributeCollector<T>
+    {
+      static void add(EdgeData * data, int index, T&& t) 
+      {
+        data->setAttribute(index, t);
+      }
+    };
+
     template<class VertexData>
+    template <typename... EdgeDataAttributes>
     void InteractionGraph<VertexData>::
         addEdge(VertexId v, VertexId u, 
                 Timestamp time,/*=Helper::getCurrentTimestamp()*/
-                EdgeData const & data)
+                EdgeDataAttributes&&... edgeData)
     {
         assert(v!=u);
         getVertexData(v);
         getVertexData(u);
+        EdgeData * data = getSchema().newEdgeData();
+        AttributeCollector<EdgeDataAttributes...>::
+            add(data, 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);
     }
 
