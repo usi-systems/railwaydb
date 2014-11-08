@@ -21,7 +21,7 @@ int main()
     Graph graph(conf);
 
 
-    graph.getSchema().addAttribute("label", DataType::STRING);
+    graph.getSchema().addAttribute("label", Schema::STRING);
 
     if (newDB) {  
         graph.createVertex(2, "v2");

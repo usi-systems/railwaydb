@@ -3,29 +3,37 @@
 
 using namespace intergdb::core;
 
-intergdb::core::EdgeData & EdgeData::setAttribute(std::string attributeName, vType value) 
+intergdb::core::EdgeData& EdgeData::setAttribute(std::string const& attributeName, vType value) 
 {  
-    fields_[schema_.getIndex(attributeName)] = value; return *this; 
+    fields_[schema_.getIndex(attributeName)] = value; 
+    return *this; 
 }
 
-intergdb::core::EdgeData & EdgeData::setAttribute(int attributeIndex, vType value) { 
-    fields_[attributeIndex] = value; return *this; 
+intergdb::core::EdgeData& EdgeData::setAttribute(int attributeIndex, vType value) { 
+    fields_[attributeIndex] = value; 
+    return *this; 
 }
 
 std::string EdgeData::toString() const 
 { 
     std::stringstream ss;
-    for (auto a : fields_) {
+    for (auto a : fields_) 
         ss << a;
-    }
     return ss.str(); 
 }
 
-bool EdgeData::operator==(const EdgeData* other) 
+bool EdgeData::operator==(EdgeData const& other) 
 {             
-    if (fields_.size() != other->fields_.size()) return false;    
+    if (fields_.size() != other.fields_.size()) 
+        return false;
+    for (size_t i=0, iu=fields_.size(); i<iu; ++i)
+        if ( !(fields_[i]==other.fields_[i]) )
+            return false;
+    /*
     for(auto&& t : zip(fields_, other->fields_))      
-        if (!(t.get<0>() == t.get<1>())) return false;
+        if (!(t.get<0>() == t.get<1>())) 
+            return false;
+    */
     return true; 
 }
 
