@@ -29,10 +29,6 @@ bool EdgeData::operator==(const EdgeData* other)
     return true; 
 }
 
-std::ostream& operator<<( std::ostream &os, const EdgeData& data)
-{      
-    os << data.toString();
-    return os;
-}
+
 
 
