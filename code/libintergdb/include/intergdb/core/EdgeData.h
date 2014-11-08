@@ -19,18 +19,20 @@ namespace intergdb { namespace core
 
     class EdgeData
     {
+        friend class Schema;
+    private:
+        EdgeData(Schema & schema, int size) : schema_(schema) { fields_.resize(size); }
     public:
-    EdgeData(Schema & schema, int size) : schema_(schema) { fields_.reserve(size); }
-        EdgeData & setAttribute(std::string attributeName, vType value);
-        EdgeData & setAttribute(int attributeIndex, vType value);
+        EdgeData& setAttribute(std::string const& attributeName, vType value);
+        EdgeData& setAttribute(int attributeIndex, vType value);
         std::string toString() const;
-        bool operator==(const EdgeData* other);
+        bool operator==(EdgeData const& other); 
 
     private:
         std::vector<vType> fields_;
-        
         Schema & schema_;
         
+        /*
         template <typename... T>
         auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
         {
@@ -38,14 +40,14 @@ namespace intergdb { namespace core
             auto zip_end = boost::make_zip_iterator(boost::make_tuple(std::end(containers)...));
             return boost::make_iterator_range(zip_begin, zip_end);
         }
+        */
     };
    
-   inline std::ostream& operator<<( std::ostream &os, const EdgeData& data)
-   {      
+    inline std::ostream& operator<<(std::ostream &os, EdgeData const& data)
+    {      
        os << data.toString();
        return os;
-   }
-
+    }
 
 } } /* namespace */
 

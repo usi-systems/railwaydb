@@ -4,14 +4,16 @@
 
 using namespace intergdb::core;
 
+char const * Schema::dataTypesStrings[] = { "INT64", "DOUBLE", "STRING" };
+ 
 EdgeData * Schema::newEdgeData()  
 { 
     return new EdgeData(*this, attributes_.size()); 
 }
 
-Schema & Schema::addAttribute(std::string name, DataType type) 
+Schema & Schema::addAttribute(std::string const& name, DataType type) 
 { 
-    attributes_.push_back(std::make_pair(name, type));
+    attributes_.emplace_back(name, type);
     return *this; 
 }
 
