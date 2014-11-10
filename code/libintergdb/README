@@ -1,0 +1,21 @@
+
+  *   InteractionGraph: This is the main class the end user interacts with. It has methods to add edges into the interaction graph (relayed to InMemoryGraph) and methods to query the historical graph (relayed to the HistoricalGraph)
+  *   HistorcialGraph: Manages the historical graph. Keeps the block manager and the index managers as members. It has methods for querying the historical graph and defines iterators for traversing the query results.
+  *   BlockManager: Manages block cache and the block disk store.
+  *   Block: Represents a disk block.
+  *   FocusedIntervalQueryIndex: Manages the focused interval query index (see the paper) and defines iterators for traversing query results.
+  *   IntervalQueryIndex: Manages the interval query index (see the paper) and defines iterators for traversing query results.
+  *   RTreeIntervalIndex: Wraps the external RTree library for use with the interval query index.
+  *   ExpirationMap: It implements the buffer between the in-memory graph and the historical graph. It is the in-memory store from which blocks are created and stored on the disk. Implements the block formation algorithms.
+  *   VertexFIFO (this should be renamed EdgeFIFO): Keeps a FIFO list of edges that are in the in-memory graph. It is used for handling expirations.
+  *   VertexManager: Manages the vertex data cache and the vertex data disk store.
+  *   NeighborList: Represents a temporal neighborlist.
+  *   Edge: Represents an edge.
+  *   Candidate: Represents a candidate block used during the block formation algorithm.
+  *   Types: Defines the types used.
+  *   Conf: Keeps database configuration used for creating/loading an interaction database.
+  *   Helper: Defines helper functions related to timing and serialization.
+  *   NetworkBytebuffer: Defines routines that help with serialization/deserialization.
+  *   EndienHelper: Defines routines that help with endian computations used during serialization.
+  *   PriorityQueue: Implements a priority queue.
+  *   Exceptions: Defines the exceptions used by the code.
