@@ -24,6 +24,14 @@ namespace intergdb { namespace core
         }
 
         Schema() {}
+        // TODO: this is a special empty schema so that we can 
+        // iterate over references
+        static Schema & empty()
+        {
+            static Schema emptySchema;  
+            return emptySchema;
+        }
+
         EdgeData * newEdgeData();
         Schema & addAttribute(std::string const& name, DataType type);
         int getIndex(std::string const& name) { return nameToIndex_[name]; } 

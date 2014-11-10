@@ -6,6 +6,7 @@
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <intergdb/core/EdgeData.h>
+#include <intergdb/core/Schema.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -18,8 +19,10 @@ namespace intergdb { namespace core
     {
     public:
         typedef std::unordered_map<VertexId, NeighborList > NeighborListMap;
-        Block() : id_(0), serializedSize_(sizeof(BlockId)) {}
-        Block(BlockId id) : id_ (id), serializedSize_(sizeof(BlockId)) {}
+        Block() : id_(0), serializedSize_(sizeof(BlockId)), schema_(Schema::empty()) {}
+        Block(Schema & schema) : id_(0), serializedSize_(sizeof(BlockId)), schema_(schema) {}
+        Block(BlockId id, Schema & schema) : id_ (id), serializedSize_(sizeof(BlockId)), schema_(schema) {}
+        Block(const Block & other) : id_(other.id_), serializedSize_(other.serializedSize_), schema_(other.schema_) {}
         BlockId id() const { return id_; }
         BlockId & id() { return id_; }
         void addEdge(VertexId headVertex, VertexId to, Timestamp tm,
@@ -28,12 +31,14 @@ namespace intergdb { namespace core
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
         void swap(Block & other);
+        Schema & getSchema() { return schema_; }
         std::ostream & print(std::ostream & out);
     private:
         void addNeighborList(VertexId id);
     private:
         BlockId id_;
         size_t serializedSize_;
+        Schema & schema_;
         std::unordered_map<VertexId, NeighborList > neigs_;
     };
 
@@ -213,10 +218,8 @@ namespace intergdb { namespace core
                 EdgeTriplet etrip(headVertex, toVertex, tm);
                 auto it = read.find(etrip);
                 if (it==read.end()) {
-                    // sdata.reset(new EdgeData());
                     // Below should be a pointer to an EdgeData
-                    sdata.reset((EdgeData*)NULL);
-                    assert(false);
+                    sdata.reset(block.getSchema().newEdgeData());
                     sbuf >> *sdata;
                     read[etrip] = sdata;
                 } else {
