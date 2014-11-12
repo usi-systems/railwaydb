@@ -17,6 +17,7 @@ namespace intergdb { namespace core
         friend class EdgeData;
     public:
         enum DataType { INT64, DOUBLE, STRING };
+        typedef std::pair<std::string, DataType> AttributeType;
         static char const * dataTypesStrings[];        
         static char const * typeToString(int enumVal)
         {
@@ -34,6 +35,7 @@ namespace intergdb { namespace core
 
         EdgeData * newEdgeData();
         Schema & addAttribute(std::string const& name, DataType type);
+        std::vector<AttributeType> & getAttributes() { return attributes_; }
         int getIndex(std::string const& name) { return nameToIndex_[name]; } 
         std::string toString() const 
         { 
@@ -43,7 +45,6 @@ namespace intergdb { namespace core
             return ss.str(); 
         }   
     private:
-        typedef std::pair<std::string, DataType> AttributeType;
         std::vector<AttributeType> attributes_;            /* list of name/type pairs */
         std::unordered_map<std::string, int> nameToIndex_; /* map from name to index */
     };

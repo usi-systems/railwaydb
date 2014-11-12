@@ -8,6 +8,7 @@
 #include <intergdb/core/PriorityQueue.h>
 #include <intergdb/core/Candidate.h>
 #include <intergdb/core/EdgeData.h>
+#include <intergdb/core/Schema.h>
 
 #include <vector>
 #include <algorithm>
@@ -95,7 +96,7 @@ namespace intergdb { namespace core
     public:
         ExpirationMap(Conf const & conf, HistoricalGraph * histg);
         void addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data);
-        void flush();
+        void flush(Schema & schema);
         std::unordered_map<VertexId, NeighborList > const & getNeighborLists() const
             { return neigLists_; }
         BlockStats const & getBlockStats() const { return stats_; }
@@ -103,7 +104,7 @@ namespace intergdb { namespace core
         HeadVertexScorer * getHeadVertexScorer();
         void removeEdges(Block const & block);
         void removeEdge(Edge const & edge);
-        void writeBlock();
+        void writeBlock(Schema & schema);
         void getBlock(Block & block);
         void getBlockSmart(Block & block);
         bool extendCandidate(Candidate & candidate);
@@ -143,7 +144,7 @@ namespace intergdb { namespace core
         }
         size_+=2;
         if (size_>maxSize_)
-            writeBlock();
+            writeBlock(data->getSchema());
     }
 
     ExpirationMap::HeadVertexMaxScorer::HeadVertexScorer * ExpirationMap::getHeadVertexScorer()
@@ -170,15 +171,15 @@ namespace intergdb { namespace core
         return 0;
     }
 
-    void ExpirationMap::flush()
+    void ExpirationMap::flush(Schema & schema)
     {
         while(size_>0)
-            writeBlock();
+            writeBlock(schema);
     }
 
-    void ExpirationMap::writeBlock()
+    void ExpirationMap::writeBlock(Schema & schema)
     {
-        Block block;
+        Block block(schema);
         switch(conf_.layoutMode()) {
         case Conf::LM_Smart:
             getBlockSmart(block);

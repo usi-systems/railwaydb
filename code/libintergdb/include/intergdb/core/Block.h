@@ -32,6 +32,7 @@ namespace intergdb { namespace core
         size_t getSerializedSize() const { return serializedSize_; }
         void swap(Block & other);
         Schema & getSchema() { return schema_; }
+        void setSchema(Schema & schema) { schema_ = schema; }
         std::ostream & print(std::ostream & out);
     private:
         void addNeighborList(VertexId id);

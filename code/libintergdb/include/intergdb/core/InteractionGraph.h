@@ -89,7 +89,7 @@ namespace intergdb { namespace core
     template<class VertexData>
     void InteractionGraph<VertexData>::flush()
     {
-        memg_.flush();
+        memg_.flush(schema_);
     }
 
     template<class VertexData>

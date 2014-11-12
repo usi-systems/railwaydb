@@ -3,6 +3,7 @@
 
 #include <intergdb/core/EndianHelper.h>
 #include <intergdb/core/EdgeData.h>
+#include <intergdb/core/Schema.h>
 
 #include <string>
 #include <stdexcept>
@@ -388,13 +389,44 @@ inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1,
 
 inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, EdgeData const & val)
 {
-    std::cerr << "Error. << not implemented for EdgeData" << std::endl;
+    Schema & schema = val.getSchema();
+    for (auto a : schema.getAttributes()) 
+        sbuf << a.first; 
     return sbuf;
 }
 
-inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, EdgeData const & val)
+inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, EdgeData & val)
 {  
-    std::cerr << "Error. >> not implemented for EdgeData" << std::endl;
+    Schema & schema = val.getSchema();
+    int i = 0;
+    for (auto a : schema.getAttributes()) {
+        switch (a.second) {
+        case Schema::INT64:
+        {
+            int64_t dataInt64;
+            sbuf >> dataInt64;
+            val.setAttribute(i, dataInt64);
+            break;
+        }
+        case Schema::DOUBLE:
+        {
+            double dataDouble;
+            sbuf >> dataDouble;
+            val.setAttribute(i, dataDouble);
+            break;
+        }
+        case Schema::STRING:
+        {
+            std::string dataString;
+            sbuf >> dataString;
+            val.setAttribute(i, dataString);
+            break;
+        }
+        default:
+            assert(false);
+        } 
+        i++;
+    }
     return sbuf;
 }
 

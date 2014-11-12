@@ -21,7 +21,7 @@ namespace intergdb { namespace core
     public:
         InMemoryGraph(Conf const & conf, HistoricalGraph * hisg);
         void addEdge(VertexId from, VertexId to, Timestamp ts, EdgeData * data);
-        void flush();
+        void flush(Schema & schema);
         BlockStats const & getBlockStats() const { return expm_.getBlockStats(); }
     private:
         std::shared_ptr<EdgeData> removeEdge(UEdge const & edge);
@@ -61,7 +61,7 @@ namespace intergdb { namespace core
         }
     }
 
-    void InMemoryGraph::flush()
+    void InMemoryGraph::flush(Schema & schema)
     {
         while(!vfifo_.isEmpty()) {
             UEdge & oldEdge = vfifo_.getOldestEdge();
@@ -69,7 +69,7 @@ namespace intergdb { namespace core
             expm_.addEdge(oldEdge, data);
             vfifo_.popOldestEdge();
         }
-        expm_.flush();
+        expm_.flush(schema);
     }
 
     std::shared_ptr<EdgeData> InMemoryGraph::removeEdge(UEdge const & edge)
