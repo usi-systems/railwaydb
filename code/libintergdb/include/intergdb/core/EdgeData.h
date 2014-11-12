@@ -23,11 +23,11 @@ namespace intergdb { namespace core
     private:
         EdgeData(Schema & schema, int size) : schema_(schema) { fields_.resize(size); }
     public:
-        EdgeData& setAttribute(std::string const& attributeName, vType value);
-        EdgeData& setAttribute(int attributeIndex, vType value);
+        EdgeData& setAttribute(std::string const& attributeName, vType value) ;
+        EdgeData& setAttribute(int attributeIndex, vType value) ;
         std::string toString() const;
         bool operator==(EdgeData const& other); 
-
+        Schema & getSchema() const { return schema_; }
     private:
         std::vector<vType> fields_;
         Schema & schema_;

@@ -140,7 +140,7 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
 }
 
 HistoricalGraph::HistoricalGraph(Conf const & conf)
-  : bman_(conf), iqIndex_(conf, &bman_), fiqIndex_(conf)
+    : bman_(conf), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
 void HistoricalGraph::addBlock(Block & block)
