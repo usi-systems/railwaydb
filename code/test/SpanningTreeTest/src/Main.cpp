@@ -1,4 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
+#include <intergdb/core/Schema.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -88,16 +89,12 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_msp");
+    Conf conf("test", "/tmp/myigdb_st", {{"vertex-label",Schema::STRING}}, {{"edge-label", Schema::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());
 
     set<pair<VertexId,VertexId> > tree;
-
     InteractionGraph graph(conf);
-    graph.getVertexSchema().addAttribute("vertex-label", Schema::STRING);
-    graph.getEdgeSchema().addAttribute("edge-label", Schema::STRING);
-
 
     if (newDB) {  
         createGraph(graph);

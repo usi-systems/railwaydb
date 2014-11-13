@@ -21,7 +21,7 @@ namespace intergdb { namespace core
             std::list<VertexId>::iterator iter;
         };
     public:
-        VertexManager(Conf const & conf, Schema const & vertexSchema);
+        VertexManager(Conf const & conf);
         void addVertex(VertexId id, AttributeData const & data);
         std::shared_ptr<AttributeData> getVertexData(VertexId id);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
@@ -38,10 +38,10 @@ namespace intergdb { namespace core
 
     #define VERTEX_DB_NAME "vertex_data"
 
-    VertexManager::VertexManager(Conf const & conf, Schema const & vertexSchema)
+    VertexManager::VertexManager(Conf const & conf)
       : reqCount_(0), hitCount_(0),
         vertexDataBufferSize_(conf.vertexDataBufferSize()),
-        vertexSchema_(vertexSchema)
+        vertexSchema_(conf.getVertexSchema())
     {
         leveldb::Options options;
         options.create_if_missing = true;

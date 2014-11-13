@@ -2,6 +2,7 @@
 #define INTERGDB_CONF_H
 
 #include <intergdb/core/Types.h>
+#include <intergdb/core/Schema.h>
 
 #include <string>
 #include <cassert>
@@ -56,7 +57,9 @@ namespace intergdb { namespace core
         };
         enum LayoutMode { LM_Random=0, LM_Old, LM_Max, LM_Smart };
     public:
-        Conf(std::string const & name, std::string const & storageDir)
+    Conf(std::string const & name, std::string const & storageDir, 
+         std::unordered_map<std::string, Schema::DataType> vertexSchema, 
+         std::unordered_map<std::string, Schema::DataType> edgeSchema)
           : name_(name), storageDir_(storageDir),
             windowSize_(1024*1024), // 1M edges
             blockSize_(16*1024), // in bytes (16K)
@@ -64,7 +67,10 @@ namespace intergdb { namespace core
             vertexDataBufferSize_(100*1024), // 100K vertices
             expirationMapSize_(std::max(windowSize_/100,
                     blockSize_/(sizeof(VertexId)+sizeof(Timestamp)))),
-            layoutMode_(LM_Smart) {}
+            layoutMode_(LM_Smart),
+            vertexSchema_(vertexSchema),
+            edgeSchema_(edgeSchema)
+        {}
 
         static std::string getLayoutModeName(LayoutMode layout)
         {
@@ -107,6 +113,10 @@ namespace intergdb { namespace core
 
         SmartLayoutConf const & smartLayoutConf() const { return layoutConf_; }
         SmartLayoutConf & smartLayoutConf() { return layoutConf_; }
+
+        Schema const & getEdgeSchema() const { return edgeSchema_; }
+        Schema const & getVertexSchema() const { return vertexSchema_; }
+
     private:
         std::string name_;
         std::string storageDir_;
@@ -117,6 +127,8 @@ namespace intergdb { namespace core
         size_t expirationMapSize_; // number of edges in the expiration map
         LayoutMode layoutMode_;
         SmartLayoutConf layoutConf_;
+        Schema vertexSchema_;
+        Schema edgeSchema_;
     };
 
 } } /* namespace */

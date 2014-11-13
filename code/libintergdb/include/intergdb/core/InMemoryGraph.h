@@ -19,7 +19,7 @@ namespace intergdb { namespace core
     class InMemoryGraph
     {
     public:
-        InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, Schema const & schema);
+        InMemoryGraph(Conf const & conf, HistoricalGraph * hisg);
         void addEdge(VertexId from, VertexId to, Timestamp ts, std::shared_ptr<AttributeData> data);
         void flush();
         BlockStats const & getBlockStats() const { return expm_.getBlockStats(); }
@@ -31,8 +31,8 @@ namespace intergdb { namespace core
         std::unordered_map<VertexId, NeighborList > neigLists_;
     };
 
-    InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, Schema const & schema)
-      : vfifo_(conf.windowSize()), expm_(conf, hisg, schema) {}
+    InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg)
+      : vfifo_(conf.windowSize()), expm_(conf, hisg) {}
 
     void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_ptr<AttributeData> data)
     {
