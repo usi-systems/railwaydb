@@ -56,6 +56,8 @@ int main()
     typedef InteractionGraph<string> Graph;
     Graph graph(conf);
 
+    graph.getSchema().addAttribute("label", Schema::STRING);
+
     if (newDB) {  
         // TODO: create a more meaningful graph
         graph.createVertex(1, "v1"); 
