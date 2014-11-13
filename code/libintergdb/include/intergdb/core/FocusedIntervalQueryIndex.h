@@ -7,7 +7,6 @@
 #include <intergdb/core/Exceptions.h>
 #include <intergdb/core/Types.h>
 #include <intergdb/core/NetworkByteBuffer.h>
-#include <intergdb/core/EdgeData.h>
 
 #include <leveldb/db.h>
 

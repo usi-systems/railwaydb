@@ -5,7 +5,7 @@
 #include <intergdb/core/Types.h>
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/NetworkByteBuffer.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
 #include <unordered_map>
@@ -26,7 +26,7 @@ namespace intergdb { namespace core
         BlockId id() const { return id_; }
         BlockId & id() { return id_; }
         void addEdge(VertexId headVertex, VertexId to, Timestamp tm,
-                    std::shared_ptr<EdgeData> data);
+                    std::shared_ptr<AttributeData> data);
         void removeNewestEdge(VertexId headVertex);
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
@@ -59,12 +59,12 @@ namespace intergdb { namespace core
     }
 
     void Block::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
-                                  std::shared_ptr<EdgeData> data)
+                                  std::shared_ptr<AttributeData> data)
     {
-        std::shared_ptr<EdgeData> sdata;
+        std::shared_ptr<AttributeData> sdata;
         if (neigs_.count(to)>0) {
             auto & nlist = neigs_[to];
-            bool there = nlist.getEdgeData(headVertex, tm, sdata);
+            bool there = nlist.getEdgeAttributeData(headVertex, tm, sdata);
             if (!(!there || (sdata.get()==data.get()))) {
                 print(std::cerr) << std::endl;
             }
@@ -106,8 +106,8 @@ namespace intergdb { namespace core
         VertexId to = edge.getToVertex();
         if (neigs_.count(to)>0) {
             auto & nlist = neigs_[to];
-            std::shared_ptr<EdgeData> sdata;
-            bool there = nlist.getEdgeData(headVertex, edge.getTime(), sdata);
+            std::shared_ptr<AttributeData> sdata;
+            bool there = nlist.getEdgeAttributeData(headVertex, edge.getTime(), sdata);
             if (!there)
                 serializedSize_ -= getSerializedSizeOf(*edge.getData());
         }
@@ -202,7 +202,7 @@ namespace intergdb { namespace core
 
     inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, Block & block)
     {
-        std::unordered_map<EdgeTriplet, std::shared_ptr<EdgeData> > read;
+        std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
         sbuf >> block.id();
         while (sbuf.getNRemainingBytes()>0) {
             VertexId headVertex;
@@ -214,12 +214,11 @@ namespace intergdb { namespace core
                 sbuf >> toVertex;
                 Timestamp tm;
                 sbuf >> tm;
-                std::shared_ptr<EdgeData> sdata;
+                std::shared_ptr<AttributeData> sdata;
                 EdgeTriplet etrip(headVertex, toVertex, tm);
                 auto it = read.find(etrip);
                 if (it==read.end()) {
-                    // Below should be a pointer to an EdgeData
-                    sdata.reset(block.getSchema().newEdgeData());
+                    sdata.reset(block.getSchema().newAttributeData());
                     sbuf >> *sdata;
                     read[etrip] = sdata;
                 } else {

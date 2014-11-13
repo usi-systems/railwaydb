@@ -5,7 +5,6 @@
 #include <intergdb/core/BlockManager.h>
 #include <intergdb/core/IntervalQueryIndex.h>
 #include <intergdb/core/FocusedIntervalQueryIndex.h>
-#include <intergdb/core/EdgeData.h>
 
 #include <unordered_set>
 

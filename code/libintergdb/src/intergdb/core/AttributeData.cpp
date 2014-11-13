@@ -1,20 +1,20 @@
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
 using namespace intergdb::core;
 
-intergdb::core::EdgeData& EdgeData::setAttribute(std::string const& attributeName, vType value) 
+intergdb::core::AttributeData& AttributeData::setAttribute(std::string const& attributeName, vType value) 
 {  
     fields_[schema_.getIndex(attributeName)] = value; 
     return *this; 
 }
 
-intergdb::core::EdgeData& EdgeData::setAttribute(int attributeIndex, vType value) { 
+intergdb::core::AttributeData& AttributeData::setAttribute(int attributeIndex, vType value) { 
     fields_[attributeIndex] = value; 
     return *this; 
 }
 
-std::string EdgeData::toString() const 
+std::string AttributeData::toString() const 
 { 
     std::stringstream ss;
     int i = 0;
@@ -43,7 +43,7 @@ std::string EdgeData::toString() const
     return ss.str(); 
 }
 
-bool EdgeData::operator==(EdgeData const& other) 
+bool AttributeData::operator==(AttributeData const& other) 
 {             
     if (fields_.size() != other.fields_.size()) 
         return false;

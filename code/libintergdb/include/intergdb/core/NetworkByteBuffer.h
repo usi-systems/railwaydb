@@ -2,7 +2,7 @@
 #define INTERGDB_NETWORKBYTEBUFFER_H
 
 #include <intergdb/core/EndianHelper.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
 #include <string>
@@ -387,7 +387,7 @@ inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1,
     return sbuf;
 }
 
-inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, EdgeData const & val)
+inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, AttributeData const & val)
 {
     Schema const & schema = val.getSchema();
     int i = 0;
@@ -417,7 +417,7 @@ inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, EdgeData const
 
 }
 
-inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, EdgeData & val)
+inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & val)
 {      
     Schema const & schema = val.getSchema();
     int i = 0;

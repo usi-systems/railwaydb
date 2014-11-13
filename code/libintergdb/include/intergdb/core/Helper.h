@@ -2,7 +2,7 @@
 #define INTERGDB_HELPER_H
 
 #include <intergdb/core/Types.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
 #include <stdexcept>
@@ -35,14 +35,11 @@ namespace intergdb { namespace core
         return sizeof(uint32_t) + str.size();
     }
 
-    inline size_t getSerializedSizeOf(EdgeData const & data)
-    {        
-        
+    inline size_t getSerializedSizeOf(AttributeData const & data)
+    {                
         size_t size = 0;        
         int i = 0;
-
         Schema const & schema = data.getSchema();
-
         for (auto a : schema.getAttributes()) {
             switch (a.second) {
             case Schema::INT64:

@@ -1,5 +1,4 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/EdgeData.h>
 #include <intergdb/core/Schema.h>
 
 #include <cstdlib>

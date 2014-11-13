@@ -10,11 +10,11 @@
 
 namespace intergdb { namespace core
 {
-    class EdgeData;
+    class AttributeData;
     
     class Schema
     {
-        friend class EdgeData;
+        friend class AttributeData;
     public:
         enum DataType { INT64, DOUBLE, STRING };
         typedef std::pair<std::string, DataType> AttributeType;
@@ -33,7 +33,7 @@ namespace intergdb { namespace core
             return emptySchema;
         }
 
-        EdgeData * newEdgeData() const;
+        AttributeData * newAttributeData() const;
         Schema & addAttribute(std::string const & name, DataType type);
         std::vector<AttributeType> const & getAttributes() const { return attributes_; }
         int getIndex(std::string const & name) const { return nameToIndex_.find(name)->second; } 

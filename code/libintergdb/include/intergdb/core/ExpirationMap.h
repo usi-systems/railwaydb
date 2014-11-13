@@ -7,7 +7,7 @@
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/PriorityQueue.h>
 #include <intergdb/core/Candidate.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
 #include <vector>
@@ -95,7 +95,7 @@ namespace intergdb { namespace core
         };
     public:
         ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & schema);
-        void addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data);
+        void addEdge(UEdge const & edge, std::shared_ptr<AttributeData> data);
         void flush();
         std::unordered_map<VertexId, NeighborList > const & getNeighborLists() const
             { return neigLists_; }
@@ -128,7 +128,7 @@ namespace intergdb { namespace core
         hvScorer_.reset(getHeadVertexScorer());
     }
 
-    void ExpirationMap::addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data)
+    void ExpirationMap::addEdge(UEdge const & edge, std::shared_ptr<AttributeData> data)
     {
         typedef NeighborList::Edge NLEdge;
         {
