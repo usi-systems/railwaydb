@@ -15,23 +15,22 @@
 
 namespace intergdb { namespace core
 {
-    template<class VertexData>
     class InteractionGraph
     {
     public:
         class VertexIterator
         {
         public:
-            VertexIterator(VertexManager<VertexData> * vman,
+            VertexIterator(VertexManager * vman,
               std::shared_ptr<typename HistoricalGraph::VertexIterator> it)
                 : vman_(vman), it_(it) {}
             bool isValid() { return it_->isValid(); }
             void next() { it_->next(); }
             VertexId getVertexId() { return it_->getVertexId(); }
-            std::shared_ptr<VertexData> getVertexData()
+            std::shared_ptr<AttributeData> getVertexData()
                 { return vman_->getVertexData(getVertexId()); }
         private:
-            VertexManager<VertexData> * vman_;
+            VertexManager * vman_;
             std::shared_ptr<typename HistoricalGraph::VertexIterator> it_;
         };
         class EdgeIterator
@@ -49,9 +48,9 @@ namespace intergdb { namespace core
         };
     public:
         InteractionGraph(Conf const & conf);
-
-        void createVertex(VertexId id, VertexData const & data);
-        std::shared_ptr<VertexData> getVertexData(VertexId id);
+        template <typename... VertexDataAttributes>
+        void createVertex(VertexId id, VertexDataAttributes&&... vertexData);
+        std::shared_ptr<AttributeData> getVertexData(VertexId id);
         // TODO: The same vertex cannot be involved in more than one edge with the same timestamp
         // This limitation can be removed with some additional work
         template <typename... EdgeDataAttributes>
@@ -65,39 +64,20 @@ namespace intergdb { namespace core
         BlockStats const & getBlockStats() const { return memg_.getBlockStats(); }
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }
-        size_t getEdgeWriteIOCount() const { return hisg_.getEdgeReadIOCount().getEdgeWriteIOCount(); }
+        size_t getEdgeWriteIOCount() const { return hisg_.getEdgeWriteIOCount(); }
+        Schema & getVertexSchema() { return vertexSchema_; }
         Schema & getEdgeSchema() { return edgeSchema_; }
     private:
         Conf conf_;
-        VertexManager<VertexData> vman_;
+        VertexManager vman_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
+        Schema vertexSchema_;
         Schema edgeSchema_;
     };
 
-    template<class VertexData>
-    InteractionGraph<VertexData>::InteractionGraph(Conf const & conf)
-      : conf_(conf), vman_(conf_), hisg_(conf_, edgeSchema_), memg_(conf_, &hisg_, edgeSchema_) { }
-
-    template<class VertexData>
-    void InteractionGraph<VertexData>::
-        createVertex(VertexId id, VertexData const & data)
-    {
-        vman_.addVertex(id, data);
-    }
-
-    template<class VertexData>
-    void InteractionGraph<VertexData>::flush()
-    {
-        memg_.flush();
-    }
-
-    template<class VertexData>
-    std::shared_ptr<VertexData> InteractionGraph<VertexData>::
-        getVertexData(VertexId id)
-    {
-        return vman_.getVertexData(id);
-    }
+    InteractionGraph::InteractionGraph(Conf const & conf)
+        : conf_(conf), vman_(conf_, vertexSchema_), hisg_(conf_, edgeSchema_), memg_(conf_, &hisg_, edgeSchema_) { }
 
     template<typename T1, typename... TN>
     struct AttributeCollector
@@ -118,9 +98,30 @@ namespace intergdb { namespace core
       }
     };
 
-    template<class VertexData>
+    template <typename... VertexDataAttributes>
+    void InteractionGraph::
+        createVertex(VertexId id, VertexDataAttributes&&... vertexData)
+    {
+        AttributeData * data = getVertexSchema().newAttributeData();
+        AttributeCollector<VertexDataAttributes...>::
+            add(data, 0, std::forward<VertexDataAttributes>(vertexData)...);
+        vman_.addVertex(id, data);
+    }
+
+    void InteractionGraph::flush()
+    {
+        memg_.flush();
+    }
+
+    std::shared_ptr<AttributeData> InteractionGraph::
+        getVertexData(VertexId id)
+    {
+        return vman_.getVertexData(id);
+    }
+
+
     template <typename... EdgeDataAttributes>
-    void InteractionGraph<VertexData>::
+    void InteractionGraph::
         addEdge(VertexId v, VertexId u, 
                 Timestamp time,/*=Helper::getCurrentTimestamp()*/
                 EdgeDataAttributes&&... edgeData)
@@ -134,22 +135,19 @@ namespace intergdb { namespace core
         memg_.addEdge(v, u, time, data);
     }
 
-    template<class VertexData>
-    typename InteractionGraph<VertexData>::VertexIterator InteractionGraph<VertexData>::
+    InteractionGraph::VertexIterator InteractionGraph::
         processIntervalQuery(Timestamp start, Timestamp end)
     {
         return VertexIterator(&vman_, hisg_.intervalQuery(start, end));
     }
 
-    template<class VertexData>
-    void InteractionGraph<VertexData>::
+    void InteractionGraph::
         processIntervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
     {
         return hisg_.intervalQueryBatch(start, end, results);
     }
 
-    template<class VertexData>
-    typename InteractionGraph<VertexData>::EdgeIterator InteractionGraph<VertexData>::
+    InteractionGraph::EdgeIterator InteractionGraph::
         processFocusedIntervalQuery(VertexId vertex, Timestamp start, Timestamp end)
     {
         return EdgeIterator(hisg_.focusedIntervalQuery(vertex, start, end));
