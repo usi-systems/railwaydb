@@ -94,7 +94,7 @@ namespace intergdb { namespace core
             double score(VertexId v, size_t i) { return rand(); }
         };
     public:
-        ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & schema);
+        ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & edgeSchema);
         void addEdge(UEdge const & edge, std::shared_ptr<AttributeData> data);
         void flush();
         std::unordered_map<VertexId, NeighborList > const & getNeighborLists() const
@@ -115,14 +115,14 @@ namespace intergdb { namespace core
         Conf const & conf_;
         Conf::SmartLayoutConf::LocalityMetric locMetric_;
         HistoricalGraph * histg_;
-        Schema const & schema_;
+        Schema const & edgeSchema_;
         std::auto_ptr<HeadVertexScorer> hvScorer_;
         PriorityQueue<double, VertexId> scoreQueue_;
         std::unordered_map<VertexId, NeighborList > neigLists_;
     };
 
-    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & schema)
-        : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg), schema_(schema)
+    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & edgeSchema)
+        : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg), edgeSchema_(edgeSchema)
     {
         locMetric_ = conf.smartLayoutConf().localityMetric();
         hvScorer_.reset(getHeadVertexScorer());
@@ -180,7 +180,7 @@ namespace intergdb { namespace core
 
     void ExpirationMap::writeBlock()
     {
-        Block block(schema_);
+        Block block(edgeSchema_);
         switch(conf_.layoutMode()) {
         case Conf::LM_Smart:
             getBlockSmart(block);

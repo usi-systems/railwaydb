@@ -19,10 +19,10 @@ namespace intergdb { namespace core
     {
     public:
         typedef std::unordered_map<VertexId, NeighborList > NeighborListMap;
-        Block() : id_(0), serializedSize_(sizeof(BlockId)), schema_(Schema::empty()) { throw std::runtime_error("empty schema"); }
-        Block(Schema const & schema) : id_(0), serializedSize_(sizeof(BlockId)), schema_(schema) {}
-        Block(BlockId id, Schema & schema) : id_ (id), serializedSize_(sizeof(BlockId)), schema_(schema) {}
-        Block(const Block & other) : id_(other.id_), serializedSize_(other.serializedSize_), schema_(other.schema_) {}
+        Block() : id_(0), serializedSize_(sizeof(BlockId)), edgeSchema_(Schema::empty()) { throw std::runtime_error("empty schema"); }
+        Block(Schema const & edgeSchema) : id_(0), serializedSize_(sizeof(BlockId)), edgeSchema_(edgeSchema) {}
+        Block(BlockId id, Schema & edgeSchema) : id_ (id), serializedSize_(sizeof(BlockId)), edgeSchema_(edgeSchema) {}
+        Block(const Block & other) : id_(other.id_), serializedSize_(other.serializedSize_), edgeSchema_(other.edgeSchema_) {}
         BlockId id() const { return id_; }
         BlockId & id() { return id_; }
         void addEdge(VertexId headVertex, VertexId to, Timestamp tm,
@@ -31,14 +31,14 @@ namespace intergdb { namespace core
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
         void swap(Block & other);
-        Schema const & getSchema() { return schema_; }
+        Schema const & getEdgeSchema() { return edgeSchema_; }
         std::ostream & print(std::ostream & out);
     private:
         void addNeighborList(VertexId id);
     private:
         BlockId id_;
         size_t serializedSize_;
-        Schema const & schema_;
+        Schema const & edgeSchema_;
         std::unordered_map<VertexId, NeighborList > neigs_;
     };
 
@@ -218,7 +218,7 @@ namespace intergdb { namespace core
                 EdgeTriplet etrip(headVertex, toVertex, tm);
                 auto it = read.find(etrip);
                 if (it==read.end()) {
-                    sdata.reset(block.getSchema().newAttributeData());
+                    sdata.reset(block.getEdgeSchema().newAttributeData());
                     sbuf >> *sdata;
                     read[etrip] = sdata;
                 } else {

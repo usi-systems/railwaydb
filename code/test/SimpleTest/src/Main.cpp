@@ -18,7 +18,7 @@ int main()
     typedef InteractionGraph<std::string> Graph;
     Graph graph(conf);
 
-    graph.getSchema().addAttribute("label", Schema::STRING);
+    graph.getEdgeSchema().addAttribute("label", Schema::STRING);
 
     if (newDB) {  
         graph.createVertex(2, "v2");
