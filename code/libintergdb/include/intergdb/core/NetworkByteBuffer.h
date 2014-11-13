@@ -389,10 +389,33 @@ inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1,
 
 inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, EdgeData const & val)
 {
+   
     Schema & schema = val.getSchema();
-    for (auto a : schema.getAttributes()) 
-        sbuf << a.first; 
+    int i = 0;
+    for (auto a : schema.getAttributes()) {
+        switch (a.second) {
+        case Schema::INT64:
+        {
+            sbuf << (int64_t)val.getAttribute(i);
+            break;
+        }
+        case Schema::DOUBLE:
+        {
+            sbuf << (double)val.getAttribute(i);
+            break;
+        }
+        case Schema::STRING:
+        {
+            sbuf << (std::string)val.getAttribute(i);
+            break;
+        }
+        default:
+            assert(false);
+        } 
+        i++;
+    }
     return sbuf;
+
 }
 
 inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, EdgeData & val)
