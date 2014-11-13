@@ -2,6 +2,7 @@
 #define INTERGDB_HELPER_H
 
 #include <intergdb/core/Types.h>
+#include <intergdb/core/EdgeData.h>
 
 #include <stdexcept>
 #include <typeinfo>
@@ -32,6 +33,12 @@ namespace intergdb { namespace core
     {
         return sizeof(uint32_t) + str.size();
     }
+
+    inline size_t getSerializedSizeOf(EdgeData const & data)
+    {        
+        return getSerializedSizeOf("e2-4");
+    }
+
 
 } } /* namespace */
 
