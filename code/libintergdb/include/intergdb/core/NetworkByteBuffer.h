@@ -396,17 +396,17 @@ inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, EdgeData const
         switch (a.second) {
         case Schema::INT64:
         {
-            sbuf << (int64_t)val.getAttribute(i);
+            sbuf << boost::get<int64_t>(val.getAttribute(i));
             break;
         }
         case Schema::DOUBLE:
         {
-            sbuf << (double)val.getAttribute(i);
+            sbuf << boost::get<double>(val.getAttribute(i));
             break;
         }
         case Schema::STRING:
         {
-            sbuf << (std::string)val.getAttribute(i);
+            sbuf << boost::get<std::string>(val.getAttribute(i));
             break;
         }
         default:
