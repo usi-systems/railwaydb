@@ -36,6 +36,33 @@ namespace intergdb { namespace core
 
     inline size_t getSerializedSizeOf(EdgeData const & data)
     {        
+        /*
+        size_t size = 0;        
+        Schema & schema = val.getSchema();
+        for (auto a : schema.getAttributes()) {
+            switch (a.second) {
+            case Schema::INT64:
+            {
+                size += getSerializedSizeOf(std::string("e2-4"));
+                break;
+            }
+            case Schema::DOUBLE:
+            {
+                size += getSerializedSizeOf(std::string("e2-4"));
+                break;
+            }
+            case Schema::STRING:
+            {
+                size += getSerializedSizeOf(std::string("e2-4"));
+                break;
+            }
+            default:
+                assert(false);
+            } 
+        }
+        return size;
+        */
+        
         return getSerializedSizeOf(std::string("e2-4"));
     }
 

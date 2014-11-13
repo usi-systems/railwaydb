@@ -25,6 +25,8 @@ namespace intergdb { namespace core
     public:
         EdgeData& setAttribute(std::string const& attributeName, vType value) ;
         EdgeData& setAttribute(int attributeIndex, vType value) ;
+        vType getAttribute(int attributeIndex) const { return fields_[attributeIndex]; };
+
         std::string toString() const;
         bool operator==(EdgeData const& other); 
         Schema & getSchema() const { return schema_; }
