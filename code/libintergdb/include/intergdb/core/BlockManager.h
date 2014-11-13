@@ -27,7 +27,7 @@ namespace intergdb { namespace core
             std::list<BlockId>::iterator iter;
         };
     public:
-        BlockManager(Conf const & conf, Schema const & edgeSchema);
+        BlockManager(Conf const & conf);
         Block const & getBlock(BlockId id);
         void addBlock(Block & data);
         double getHitRatio()
@@ -51,10 +51,10 @@ namespace intergdb { namespace core
 
     #define BLOCK_DB_NAME "block_data"
 
-    BlockManager::BlockManager(Conf const & conf, Schema const & edgeSchema)
+    BlockManager::BlockManager(Conf const & conf)
         : nIOReads_(0), nIOWrites_(0),
           reqCount_(0), hitCount_(0),
-          blockBufferSize_(conf.blockBufferSize()), edgeSchema_(edgeSchema)
+        blockBufferSize_(conf.blockBufferSize()), edgeSchema_(conf.getEdgeSchema())
     {
         leveldb::Options options;
         options.create_if_missing = true;

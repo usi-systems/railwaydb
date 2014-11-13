@@ -94,7 +94,7 @@ namespace intergdb { namespace core
             double score(VertexId v, size_t i) { return rand(); }
         };
     public:
-        ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & edgeSchema);
+        ExpirationMap(Conf const & conf, HistoricalGraph * histg);
         void addEdge(UEdge const & edge, std::shared_ptr<AttributeData> data);
         void flush();
         std::unordered_map<VertexId, NeighborList > const & getNeighborLists() const
@@ -121,8 +121,8 @@ namespace intergdb { namespace core
         std::unordered_map<VertexId, NeighborList > neigLists_;
     };
 
-    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & edgeSchema)
-        : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg), edgeSchema_(edgeSchema)
+    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg)
+        : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg), edgeSchema_(conf.getEdgeSchema())
     {
         locMetric_ = conf.smartLayoutConf().localityMetric();
         hvScorer_.reset(getHeadVertexScorer());

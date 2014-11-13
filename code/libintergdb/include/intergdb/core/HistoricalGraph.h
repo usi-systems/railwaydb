@@ -44,7 +44,7 @@ public:
         std::shared_ptr<FocusedIntervalQueryIndex::Iterator> it_;
     };
 public:
-    HistoricalGraph(Conf const & conf, Schema const & schema);
+    HistoricalGraph(Conf const & conf);
     void addBlock(Block & block);
     std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
     void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
@@ -138,8 +138,8 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
         done_ = true;
 }
 
-HistoricalGraph::HistoricalGraph(Conf const & conf, Schema const & schema)
-    : bman_(conf, schema), iqIndex_(conf, &bman_), fiqIndex_(conf)
+HistoricalGraph::HistoricalGraph(Conf const & conf)
+    : bman_(conf), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
 void HistoricalGraph::addBlock(Block & block)

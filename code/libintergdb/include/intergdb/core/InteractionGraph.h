@@ -65,19 +65,17 @@ namespace intergdb { namespace core
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }
         size_t getEdgeWriteIOCount() const { return hisg_.getEdgeWriteIOCount(); }
-        Schema & getVertexSchema() { return vertexSchema_; }
-        Schema & getEdgeSchema() { return edgeSchema_; }
+        Schema const & getVertexSchema() { return conf_.getVertexSchema(); }
+        Schema const & getEdgeSchema() { return conf_.getEdgeSchema(); }
     private:
         Conf conf_;
         VertexManager vman_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
-        Schema vertexSchema_;
-        Schema edgeSchema_;
     };
 
     InteractionGraph::InteractionGraph(Conf const & conf)
-        : conf_(conf), vman_(conf_, vertexSchema_), hisg_(conf_, edgeSchema_), memg_(conf_, &hisg_, edgeSchema_) { }
+        : conf_(conf), vman_(conf_), hisg_(conf_), memg_(conf_, &hisg_) { }
 
     template<typename T1, typename... TN>
     struct AttributeCollector

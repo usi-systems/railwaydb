@@ -25,6 +25,7 @@ namespace intergdb { namespace core
         }
 
         Schema() {}
+        Schema(std::unordered_map<std::string, Schema::DataType> nameAndType );
         // TODO: this is a special empty schema so that we can 
         // iterate over references
         static Schema & empty()
