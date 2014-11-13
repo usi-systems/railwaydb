@@ -7,7 +7,7 @@
 #include <intergdb/core/VertexManager.h>
 #include <intergdb/core/InMemoryGraph.h>
 #include <intergdb/core/HistoricalGraph.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
 #include <memory>
@@ -43,7 +43,7 @@ namespace intergdb { namespace core
             void next() { it_->next(); }
             VertexId getToVertex() { return it_->getEdge().getToVertex(); }
             Timestamp getTime() { return it_->getEdge().getTime(); }
-            std::shared_ptr<EdgeData> getEdgeData() { return it_->getEdge().getData(); }
+            std::shared_ptr<AttributeData> getEdgeData() { return it_->getEdge().getData(); }
         private:
             std::shared_ptr<typename HistoricalGraph::EdgeIterator> it_;
         };
@@ -102,7 +102,7 @@ namespace intergdb { namespace core
     template<typename T1, typename... TN>
     struct AttributeCollector
     {
-      static void add(EdgeData * data, int index, T1&& t1, TN&&... tn) 
+      static void add(AttributeData * data, int index, T1&& t1, TN&&... tn) 
       {
         data->setAttribute(index, t1);
         AttributeCollector<TN...>::add(data, index+1, std::forward<TN>(tn)...);
@@ -112,7 +112,7 @@ namespace intergdb { namespace core
     template<typename T>
     struct AttributeCollector<T>
     {
-      static void add(EdgeData * data, int index, T&& t) 
+      static void add(AttributeData * data, int index, T&& t) 
       {
         data->setAttribute(index, t);
       }
@@ -128,7 +128,7 @@ namespace intergdb { namespace core
         assert(v!=u);
         getVertexData(v);
         getVertexData(u);
-        EdgeData * data = getSchema().newEdgeData();
+        AttributeData * data = getSchema().newAttributeData();
         AttributeCollector<EdgeDataAttributes...>::
             add(data, 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);

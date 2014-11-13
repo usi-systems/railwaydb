@@ -1,14 +1,14 @@
 
 #include <intergdb/core/Schema.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 
 using namespace intergdb::core;
 
 char const * Schema::dataTypesStrings[] = { "INT64", "DOUBLE", "STRING" };
  
-EdgeData * Schema::newEdgeData() const
+AttributeData * Schema::newAttributeData() const
 { 
-    return new EdgeData(*this, attributes_.size()); 
+    return new AttributeData(*this, attributes_.size()); 
 }
 
 Schema & Schema::addAttribute(std::string const& name, DataType type) 

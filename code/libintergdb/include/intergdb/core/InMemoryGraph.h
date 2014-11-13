@@ -7,7 +7,7 @@
 #include <intergdb/core/VertexFIFO.h>
 #include <intergdb/core/HistoricalGraph.h>
 #include <intergdb/core/ExpirationMap.h>
-#include <intergdb/core/EdgeData.h>
+#include <intergdb/core/AttributeData.h>
 
 #include <deque>
 #include <memory>
@@ -20,11 +20,11 @@ namespace intergdb { namespace core
     {
     public:
         InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, Schema const & schema);
-        void addEdge(VertexId from, VertexId to, Timestamp ts, EdgeData * data);
+        void addEdge(VertexId from, VertexId to, Timestamp ts, AttributeData * data);
         void flush();
         BlockStats const & getBlockStats() const { return expm_.getBlockStats(); }
     private:
-        std::shared_ptr<EdgeData> removeEdge(UEdge const & edge);
+        std::shared_ptr<AttributeData> removeEdge(UEdge const & edge);
     private:
         VertexFIFO vfifo_;
         ExpirationMap expm_;
@@ -34,10 +34,10 @@ namespace intergdb { namespace core
     InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, Schema const & schema)
       : vfifo_(conf.windowSize()), expm_(conf, hisg, schema) {}
 
-    void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, EdgeData * data)
+    void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, AttributeData * data)
     {
         typedef NeighborList::Edge NLEdge;
-        std::shared_ptr<EdgeData> sdata(data);
+        std::shared_ptr<AttributeData> sdata(data);
         {
             NeighborList & nlist = neigLists_[v];
             nlist.headVertex() = v;
@@ -55,7 +55,7 @@ namespace intergdb { namespace core
                 (!vfifo_.isEmpty() && vfifo_.getOldestEdge().getTime()==lastExpired)*/) {
             UEdge & oldEdge = vfifo_.getOldestEdge();
             //lastExpired = oldEdge.getTime();
-            std::shared_ptr<EdgeData> data = removeEdge(oldEdge);
+            std::shared_ptr<AttributeData> data = removeEdge(oldEdge);
             expm_.addEdge(oldEdge, data);
             vfifo_.popOldestEdge();
         }
@@ -65,16 +65,16 @@ namespace intergdb { namespace core
     {
         while(!vfifo_.isEmpty()) {
             UEdge & oldEdge = vfifo_.getOldestEdge();
-            std::shared_ptr<EdgeData> data = removeEdge(oldEdge);
+            std::shared_ptr<AttributeData> data = removeEdge(oldEdge);
             expm_.addEdge(oldEdge, data);
             vfifo_.popOldestEdge();
         }
         expm_.flush();
     }
 
-    std::shared_ptr<EdgeData> InMemoryGraph::removeEdge(UEdge const & edge)
+    std::shared_ptr<AttributeData> InMemoryGraph::removeEdge(UEdge const & edge)
     {
-        std::shared_ptr<EdgeData> data;
+        std::shared_ptr<AttributeData> data;
         {
             VertexId v = edge.getFirstVertex();
             NeighborList & nlist = neigLists_[v];
