@@ -1,5 +1,4 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/Schema.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -18,7 +17,6 @@ int main()
     
     typedef InteractionGraph<std::string> Graph;
     Graph graph(conf);
-
 
     graph.getSchema().addAttribute("label", Schema::STRING);
 
