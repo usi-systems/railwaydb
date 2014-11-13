@@ -36,7 +36,7 @@ namespace intergdb { namespace core
 
     inline size_t getSerializedSizeOf(EdgeData const & data)
     {        
-        return getSerializedSizeOf("e2-4");
+        return getSerializedSizeOf(std::string("e2-4"));
     }
 
 
