@@ -50,11 +50,6 @@ bool EdgeData::operator==(EdgeData const& other)
     for (size_t i=0, iu=fields_.size(); i<iu; ++i)
         if ( !(fields_[i]==other.fields_[i]) )
             return false;
-    /*
-    for(auto&& t : zip(fields_, other->fields_))      
-        if (!(t.get<0>() == t.get<1>())) 
-            return false;
-    */
     return true; 
 }
 
