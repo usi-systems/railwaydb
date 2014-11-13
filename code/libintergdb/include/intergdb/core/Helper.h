@@ -3,6 +3,7 @@
 
 #include <intergdb/core/Types.h>
 #include <intergdb/core/EdgeData.h>
+#include <intergdb/core/Schema.h>
 
 #include <stdexcept>
 #include <typeinfo>
@@ -36,37 +37,35 @@ namespace intergdb { namespace core
 
     inline size_t getSerializedSizeOf(EdgeData const & data)
     {        
-        /*
+        
         size_t size = 0;        
         int i = 0;
-    
-        Schema & schema = val.getSchema();
+
+        Schema & schema = data.getSchema();
+
         for (auto a : schema.getAttributes()) {
             switch (a.second) {
             case Schema::INT64:
             {
-                size += getSerializedSizeOf((int64_t)val.getAttribute(i));
+                size += getSerializedSizeOf(boost::get<int64_t>(data.getAttribute(i)));
                 break;
             }
             case Schema::DOUBLE:
             {
-                size += getSerializedSizeOf(std::string("e2-4"));
+                size += getSerializedSizeOf(boost::get<double>(data.getAttribute(i)));
                 break;
             }
             case Schema::STRING:
             {
-                size += getSerializedSizeOf(std::string("e2-4"));
+                size += getSerializedSizeOf(boost::get<std::string>(data.getAttribute(i)));
                 break;
             }
             default:
                 assert(false);
             } 
-            i++
+            i++;
         }
-        return size;
-        
-        */
-        return getSerializedSizeOf(std::string("e2-4"));
+        return size;    
     }
 
 
