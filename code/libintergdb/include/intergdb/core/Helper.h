@@ -38,12 +38,14 @@ namespace intergdb { namespace core
     {        
         /*
         size_t size = 0;        
+        int i = 0;
+    
         Schema & schema = val.getSchema();
         for (auto a : schema.getAttributes()) {
             switch (a.second) {
             case Schema::INT64:
             {
-                size += getSerializedSizeOf(std::string("e2-4"));
+                size += getSerializedSizeOf((int64_t)val.getAttribute(i));
                 break;
             }
             case Schema::DOUBLE:
@@ -59,10 +61,11 @@ namespace intergdb { namespace core
             default:
                 assert(false);
             } 
+            i++
         }
         return size;
-        */
         
+        */
         return getSerializedSizeOf(std::string("e2-4"));
     }
 
