@@ -21,13 +21,13 @@ namespace intergdb { namespace core
         struct BlockAndIdIter
         {
             BlockAndIdIter() {};
-            BlockAndIdIter(Schema const & schema)
-                : block(schema) {};
+            BlockAndIdIter(Schema const & edgeSchema)
+                : block(edgeSchema) {};
             Block block;
             std::list<BlockId>::iterator iter;
         };
     public:
-        BlockManager(Conf const & conf, Schema const & schema);
+        BlockManager(Conf const & conf, Schema const & edgeSchema);
         Block const & getBlock(BlockId id);
         void addBlock(Block & data);
         double getHitRatio()
@@ -44,17 +44,17 @@ namespace intergdb { namespace core
         size_t hitCount_;
         size_t blockBufferSize_;
         std::list<BlockId> lruList_;
-        Schema const & schema_;
+        Schema const & edgeSchema_;
         std::unordered_map<BlockId, BlockAndIdIter> cache_;
         std::auto_ptr<leveldb::DB> db_;
     };
 
     #define BLOCK_DB_NAME "block_data"
 
-    BlockManager::BlockManager(Conf const & conf, Schema const & schema)
+    BlockManager::BlockManager(Conf const & conf, Schema const & edgeSchema)
         : nIOReads_(0), nIOWrites_(0),
           reqCount_(0), hitCount_(0),
-          blockBufferSize_(conf.blockBufferSize()), schema_(schema)
+          blockBufferSize_(conf.blockBufferSize()), edgeSchema_(edgeSchema)
     {
         leveldb::Options options;
         options.create_if_missing = true;
@@ -110,7 +110,7 @@ namespace intergdb { namespace core
             else if (!status.ok())
                 throw std::runtime_error(status.ToString());
             NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
-            BlockAndIdIter & blockAndIter = cache_.emplace(id, BlockAndIdIter(schema_)).first->second;
+            BlockAndIdIter & blockAndIter = cache_.emplace(id, BlockAndIdIter(edgeSchema_)).first->second;
             dataBuf >> blockAndIter.block;
             lruList_.push_front(id);
             blockAndIter.iter = lruList_.begin();

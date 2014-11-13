@@ -97,7 +97,7 @@ int main()
     set<pair<VertexId,VertexId> > tree;
 
     Graph graph(conf);
-    graph.getSchema().addAttribute("label", Schema::STRING);
+    graph.getEdgeSchema().addAttribute("label", Schema::STRING);
 
     if (newDB) {  
         createGraph(graph);

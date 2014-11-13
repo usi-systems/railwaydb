@@ -66,18 +66,18 @@ namespace intergdb { namespace core
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }
         size_t getEdgeWriteIOCount() const { return hisg_.getEdgeReadIOCount().getEdgeWriteIOCount(); }
-        Schema & getSchema() { return schema_; }
+        Schema & getEdgeSchema() { return edgeSchema_; }
     private:
         Conf conf_;
         VertexManager<VertexData> vman_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
-        Schema schema_;
+        Schema edgeSchema_;
     };
 
     template<class VertexData>
     InteractionGraph<VertexData>::InteractionGraph(Conf const & conf)
-      : conf_(conf), vman_(conf_), hisg_(conf_, schema_), memg_(conf_, &hisg_, schema_) { }
+      : conf_(conf), vman_(conf_), hisg_(conf_, edgeSchema_), memg_(conf_, &hisg_, edgeSchema_) { }
 
     template<class VertexData>
     void InteractionGraph<VertexData>::
@@ -128,7 +128,7 @@ namespace intergdb { namespace core
         assert(v!=u);
         getVertexData(v);
         getVertexData(u);
-        AttributeData * data = getSchema().newAttributeData();
+        AttributeData * data = getEdgeSchema().newAttributeData();
         AttributeCollector<EdgeDataAttributes...>::
             add(data, 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);

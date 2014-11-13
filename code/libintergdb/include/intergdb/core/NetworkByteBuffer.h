@@ -417,9 +417,9 @@ inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, AttributeData 
 
 }
 
-inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & val)
+inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & data)
 {      
-    Schema const & schema = val.getSchema();
+    Schema const & schema = data.getSchema();
     int i = 0;
     for (auto const & a : schema.getAttributes()) {
         switch (a.second) {
@@ -427,21 +427,21 @@ inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData 
         {
             int64_t dataInt64;
             sbuf >> dataInt64;
-            val.setAttribute(i, dataInt64);
+            data.setAttribute(i, dataInt64);
             break;
         }
         case Schema::DOUBLE:
         {
             double dataDouble;
             sbuf >> dataDouble;
-            val.setAttribute(i, dataDouble);
+            data.setAttribute(i, dataDouble);
             break;
         }
         case Schema::STRING:
         {
             std::string dataString;
             sbuf >> dataString;
-            val.setAttribute(i, dataString);
+            data.setAttribute(i, dataString);
             break;
         }
         default:
