@@ -4,6 +4,11 @@
 #include <boost/filesystem.hpp>
 #include <unordered_set>
 
+// TODO: remove the following 3 includes
+#include <exception>
+#include <typeinfo>
+#include <stdexcept>
+
 using namespace SpatialIndex;
 using namespace intergdb::core;
 using namespace std;
@@ -54,7 +59,16 @@ void RTreeIntervalIndex::openOrCreate(std::string const & baseName)
         rtidx_.reset(RTree::createNewRTree(*buffer_, 0.8, 100, 100, 2, RTree::RV_RSTAR, indexId));
         assert(indexId==1);
     } else { // file is already there
-        disk_ = StorageManager::loadDiskStorageManager(name);
+        std::cout << "RTreeIntervalIndex::openOrCreate loadDiskStorageManager(" + name + ") called" << std::endl;
+        try {
+            disk_ = StorageManager::loadDiskStorageManager(name);
+        } catch (...) {
+            std::exception_ptr p = std::current_exception();
+            //std::cout <<(p ? p.__cxa_exception_type()->name() : "null") << std::endl;
+            //std::cout <<(p ? p.what() : "null") << std::endl;
+            std::cout << "RTreeIntervalIndex::openOrCreate exception caught" << std::endl;        
+            std::rethrow_exception(p);
+        }
         buffer_  = StorageManager::createNewLRUEvictionsBuffer(*disk_, nbuffBlocks, false);
         rtidx_.reset(RTree::loadRTree(*buffer_, 1));
         IStatistics * stats;
