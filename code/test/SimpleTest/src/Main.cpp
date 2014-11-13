@@ -13,12 +13,10 @@ int main()
 {
     Conf conf("test", "/tmp/myigdb");
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
-    boost::filesystem::create_directories(conf.getStorageDir());
-    
-    typedef InteractionGraph<std::string> Graph;
-    Graph graph(conf);
-
-    graph.getEdgeSchema().addAttribute("label", Schema::STRING);
+    boost::filesystem::create_directories(conf.getStorageDir());   
+    InteractionGraph graph(conf);
+    graph.getVertexSchema().addAttribute("vertex-label", Schema::STRING);
+    graph.getEdgeSchema().addAttribute("edge-label", Schema::STRING);
 
     if (newDB) {  
         graph.createVertex(2, "v2");
@@ -28,13 +26,13 @@ int main()
         graph.flush();
     }
 
-    Graph::VertexIterator iqIt = graph.processIntervalQuery(5.0, 10.0);
+    InteractionGraph::VertexIterator iqIt = graph.processIntervalQuery(5.0, 10.0);
     while(iqIt.isValid()) {
         cout << *iqIt.getVertexData() << endl; 
         cout << iqIt.getVertexId() << endl; 
         iqIt.next();
     }
-    Graph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(2, 5.0, 10.0);
+    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(2, 5.0, 10.0);
     while(fiqIt.isValid()) {
         cout << *fiqIt.getEdgeData() << endl;  
         cout << fiqIt.getToVertex() << endl; 

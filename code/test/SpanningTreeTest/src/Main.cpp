@@ -12,11 +12,9 @@ using namespace std;
 using namespace intergdb::core;
 using boost::lexical_cast;
 
-typedef InteractionGraph<std::string> Graph;
-
 #define MAX_WT std::numeric_limits<double>::max()
 
-void createGraph(Graph &graph) 
+void createGraph(InteractionGraph &graph) 
 {
     graph.createVertex(0, "v0");
     graph.createVertex(1, "v1");
@@ -42,7 +40,7 @@ void createGraph(Graph &graph)
     graph.flush();     
 }
 
-int msp(Graph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tree, double startTime, double endTime)
+int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tree, double startTime, double endTime)
 {
     std::set<VertexId> out; // The set of vertices not in the tree
     std::set<VertexId> in;  // The set of vertices in the tree
@@ -96,8 +94,10 @@ int main()
 
     set<pair<VertexId,VertexId> > tree;
 
-    Graph graph(conf);
-    graph.getEdgeSchema().addAttribute("label", Schema::STRING);
+    InteractionGraph graph(conf);
+    graph.getVertexSchema().addAttribute("vertex-label", Schema::STRING);
+    graph.getEdgeSchema().addAttribute("edge-label", Schema::STRING);
+
 
     if (newDB) {  
         createGraph(graph);

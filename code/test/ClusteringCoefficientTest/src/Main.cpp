@@ -11,9 +11,8 @@
 using namespace std;
 using namespace intergdb::core;
 
-template <class VertexData>
 unordered_map<VertexId, double> findClusteringCoefficients(
-    InteractionGraph<VertexData> & graph, double startTime, double endTime)
+    InteractionGraph & graph, double startTime, double endTime)
 {
     vector<VertexId> vertices;
     for (auto iqIt = graph.processIntervalQuery(startTime, endTime); 
@@ -51,12 +50,10 @@ int main()
 {
     Conf conf("test", "/tmp/myigdb_cc");
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
-    boost::filesystem::create_directories(conf.getStorageDir());
-    
-    typedef InteractionGraph<string> Graph;
-    Graph graph(conf);
-
-    graph.getEdgeSchema().addAttribute("label", Schema::STRING);
+    boost::filesystem::create_directories(conf.getStorageDir());    
+    InteractionGraph graph(conf);
+    graph.getVertexSchema().addAttribute("vertex-label", Schema::STRING);
+    graph.getEdgeSchema().addAttribute("edge-label", Schema::STRING);
 
     if (newDB) {  
         // TODO: create a more meaningful graph

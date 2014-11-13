@@ -12,19 +12,18 @@
 
 namespace intergdb { namespace core
 {
-    template<class VertexData>
     class VertexManager
     {
     private:
         struct VertexDataAndIdIter
         {
-            std::shared_ptr<VertexData> data;
+            std::shared_ptr<AttributeData> data;
             std::list<VertexId>::iterator iter;
         };
     public:
-        VertexManager(Conf const & conf);
-        void addVertex(VertexId id, VertexData const & data);
-        std::shared_ptr<VertexData> getVertexData(VertexId id);
+        VertexManager(Conf const & conf, Schema const & vertexSchema);
+        void addVertex(VertexId id, AttributeData * data);
+        std::shared_ptr<AttributeData> getVertexData(VertexId id);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
     private:
         size_t reqCount_;
@@ -33,14 +32,16 @@ namespace intergdb { namespace core
         std::list<VertexId> lruList_;
         std::unordered_map<VertexId, VertexDataAndIdIter> cache_;
         std::auto_ptr<leveldb::DB> db_;
+        Schema const & vertexSchema_;
+
     };
 
     #define VERTEX_DB_NAME "vertex_data"
 
-    template<class VertexData>
-    VertexManager<VertexData>::VertexManager(Conf const & conf)
+    VertexManager::VertexManager(Conf const & conf, Schema const & vertexSchema)
       : reqCount_(0), hitCount_(0),
-        vertexDataBufferSize_(conf.vertexDataBufferSize())
+        vertexDataBufferSize_(conf.vertexDataBufferSize()),
+        vertexSchema_(vertexSchema)
     {
         leveldb::Options options;
         options.create_if_missing = true;
@@ -54,8 +55,7 @@ namespace intergdb { namespace core
 
     #undef VERTEX_DB_NAME
 
-    template<class VertexData>
-    std::shared_ptr<VertexData> VertexManager<VertexData>::getVertexData(VertexId id)
+    std::shared_ptr<AttributeData> VertexManager::getVertexData(VertexId id)
     {
         reqCount_++;
         auto it = cache_.find(id);
@@ -80,7 +80,7 @@ namespace intergdb { namespace core
                 throw std::runtime_error(status.ToString());
             NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
             VertexDataAndIdIter & dataAndIter = cache_[id];
-            dataAndIter.data.reset(new VertexData());
+            dataAndIter.data.reset(vertexSchema_.newAttributeData());            
             dataBuf >> *dataAndIter.data;
             lruList_.push_front(id);
             dataAndIter.iter = lruList_.begin();
@@ -93,8 +93,7 @@ namespace intergdb { namespace core
         }
     }
 
-    template<class VertexData>
-    void VertexManager<VertexData>::addVertex(VertexId id, VertexData const & data)
+    void VertexManager::addVertex(VertexId id, AttributeData * data)
     {
         if (cache_.count(id)!=0)
             throw vertex_already_exists_exception(id);
