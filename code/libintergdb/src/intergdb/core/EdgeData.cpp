@@ -17,8 +17,29 @@ intergdb::core::EdgeData& EdgeData::setAttribute(int attributeIndex, vType value
 std::string EdgeData::toString() const 
 { 
     std::stringstream ss;
-    for (auto a : fields_) 
-        ss << a;
+    int i = 0;
+    for (auto a : schema_.getAttributes()) {
+        switch (a.second) {
+        case Schema::INT64:
+        {
+            ss << boost::get<int64_t>(fields_[i]);
+            break;
+        }
+        case Schema::DOUBLE:
+        {
+            ss << boost::get<double>(fields_[i]);
+            break;
+        }
+        case Schema::STRING:
+        {
+            ss << boost::get<std::string>(fields_[i]);
+            break;
+        }
+        default:
+            assert(false);
+        } 
+        i++;
+    }
     return ss.str(); 
 }
 
