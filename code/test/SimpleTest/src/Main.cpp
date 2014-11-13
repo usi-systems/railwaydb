@@ -39,7 +39,7 @@ int main()
     }
     Graph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(2, 5.0, 10.0);
     while(fiqIt.isValid()) {
-        cout << *fiqIt.getEdgeData() << endl; 
+        cout << *fiqIt.getEdgeData() << endl;  
         cout << fiqIt.getToVertex() << endl; 
         cout << fiqIt.getTime() << endl; 
         fiqIt.next();

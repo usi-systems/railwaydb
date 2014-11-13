@@ -41,7 +41,7 @@ namespace intergdb { namespace core
         size_t size = 0;        
         int i = 0;
 
-        Schema & schema = data.getSchema();
+        Schema const & schema = data.getSchema();
 
         for (auto a : schema.getAttributes()) {
             switch (a.second) {

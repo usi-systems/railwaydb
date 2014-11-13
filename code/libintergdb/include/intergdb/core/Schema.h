@@ -33,10 +33,10 @@ namespace intergdb { namespace core
             return emptySchema;
         }
 
-        EdgeData * newEdgeData();
-        Schema & addAttribute(std::string const& name, DataType type);
-        std::vector<AttributeType> & getAttributes() { return attributes_; }
-        int getIndex(std::string const& name) { return nameToIndex_[name]; } 
+        EdgeData * newEdgeData() const;
+        Schema & addAttribute(std::string const & name, DataType type);
+        std::vector<AttributeType> const & getAttributes() const { return attributes_; }
+        int getIndex(std::string const & name) const { return nameToIndex_.find(name)->second; } 
         std::string toString() const 
         { 
             std::stringstream ss;   

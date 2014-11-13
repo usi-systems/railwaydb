@@ -94,9 +94,9 @@ namespace intergdb { namespace core
             double score(VertexId v, size_t i) { return rand(); }
         };
     public:
-        ExpirationMap(Conf const & conf, HistoricalGraph * histg);
+        ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & schema);
         void addEdge(UEdge const & edge, std::shared_ptr<EdgeData> data);
-        void flush(Schema & schema);
+        void flush();
         std::unordered_map<VertexId, NeighborList > const & getNeighborLists() const
             { return neigLists_; }
         BlockStats const & getBlockStats() const { return stats_; }
@@ -104,7 +104,7 @@ namespace intergdb { namespace core
         HeadVertexScorer * getHeadVertexScorer();
         void removeEdges(Block const & block);
         void removeEdge(Edge const & edge);
-        void writeBlock(Schema & schema);
+        void writeBlock();
         void getBlock(Block & block);
         void getBlockSmart(Block & block);
         bool extendCandidate(Candidate & candidate);
@@ -115,13 +115,14 @@ namespace intergdb { namespace core
         Conf const & conf_;
         Conf::SmartLayoutConf::LocalityMetric locMetric_;
         HistoricalGraph * histg_;
+        Schema const & schema_;
         std::auto_ptr<HeadVertexScorer> hvScorer_;
         PriorityQueue<double, VertexId> scoreQueue_;
         std::unordered_map<VertexId, NeighborList > neigLists_;
     };
 
-    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg)
-        : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg)
+    ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg, Schema const & schema)
+        : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg), schema_(schema)
     {
         locMetric_ = conf.smartLayoutConf().localityMetric();
         hvScorer_.reset(getHeadVertexScorer());
@@ -144,7 +145,7 @@ namespace intergdb { namespace core
         }
         size_+=2;
         if (size_>maxSize_)
-            writeBlock(data->getSchema());
+            writeBlock();
     }
 
     ExpirationMap::HeadVertexMaxScorer::HeadVertexScorer * ExpirationMap::getHeadVertexScorer()
@@ -171,15 +172,15 @@ namespace intergdb { namespace core
         return 0;
     }
 
-    void ExpirationMap::flush(Schema & schema)
+    void ExpirationMap::flush()
     {
         while(size_>0)
-            writeBlock(schema);
+            writeBlock();
     }
 
-    void ExpirationMap::writeBlock(Schema & schema)
+    void ExpirationMap::writeBlock()
     {
-        Block block(schema);
+        Block block(schema_);
         switch(conf_.layoutMode()) {
         case Conf::LM_Smart:
             getBlockSmart(block);

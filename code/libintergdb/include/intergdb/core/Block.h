@@ -19,8 +19,8 @@ namespace intergdb { namespace core
     {
     public:
         typedef std::unordered_map<VertexId, NeighborList > NeighborListMap;
-        Block() : id_(0), serializedSize_(sizeof(BlockId)), schema_(Schema::empty()) {}
-        Block(Schema & schema) : id_(0), serializedSize_(sizeof(BlockId)), schema_(schema) {}
+        Block() : id_(0), serializedSize_(sizeof(BlockId)), schema_(Schema::empty()) { throw std::runtime_error("empty schema"); }
+        Block(Schema const & schema) : id_(0), serializedSize_(sizeof(BlockId)), schema_(schema) {}
         Block(BlockId id, Schema & schema) : id_ (id), serializedSize_(sizeof(BlockId)), schema_(schema) {}
         Block(const Block & other) : id_(other.id_), serializedSize_(other.serializedSize_), schema_(other.schema_) {}
         BlockId id() const { return id_; }
@@ -31,15 +31,14 @@ namespace intergdb { namespace core
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
         void swap(Block & other);
-        Schema & getSchema() { return schema_; }
-        void setSchema(Schema & schema) { schema_ = schema; }
+        Schema const & getSchema() { return schema_; }
         std::ostream & print(std::ostream & out);
     private:
         void addNeighborList(VertexId id);
     private:
         BlockId id_;
         size_t serializedSize_;
-        Schema & schema_;
+        Schema const & schema_;
         std::unordered_map<VertexId, NeighborList > neigs_;
     };
 

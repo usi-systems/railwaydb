@@ -6,7 +6,7 @@ using namespace intergdb::core;
 
 char const * Schema::dataTypesStrings[] = { "INT64", "DOUBLE", "STRING" };
  
-EdgeData * Schema::newEdgeData()  
+EdgeData * Schema::newEdgeData() const
 { 
     return new EdgeData(*this, attributes_.size()); 
 }
