@@ -102,10 +102,10 @@ namespace intergdb { namespace core
     void InteractionGraph::
         createVertex(VertexId id, VertexDataAttributes&&... vertexData)
     {
-        AttributeData * data = getVertexSchema().newAttributeData();
+        std::unique_ptr<AttributeData> data(getVertexSchema().newAttributeData());
         AttributeCollector<VertexDataAttributes...>::
-            add(data, 0, std::forward<VertexDataAttributes>(vertexData)...);
-        vman_.addVertex(id, data);
+            add(data.get(), 0, std::forward<VertexDataAttributes>(vertexData)...);
+        vman_.addVertex(id, *data);
     }
 
     void InteractionGraph::flush()
@@ -129,9 +129,9 @@ namespace intergdb { namespace core
         assert(v!=u);
         getVertexData(v);
         getVertexData(u);
-        AttributeData * data = getEdgeSchema().newAttributeData();
+        std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());
         AttributeCollector<EdgeDataAttributes...>::
-            add(data, 0, std::forward<EdgeDataAttributes>(edgeData)...);
+            add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);
     }
 

@@ -20,7 +20,7 @@ namespace intergdb { namespace core
     {
     public:
         InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, Schema const & schema);
-        void addEdge(VertexId from, VertexId to, Timestamp ts, AttributeData * data);
+        void addEdge(VertexId from, VertexId to, Timestamp ts, std::shared_ptr<AttributeData> data);
         void flush();
         BlockStats const & getBlockStats() const { return expm_.getBlockStats(); }
     private:
@@ -34,19 +34,18 @@ namespace intergdb { namespace core
     InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, Schema const & schema)
       : vfifo_(conf.windowSize()), expm_(conf, hisg, schema) {}
 
-    void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, AttributeData * data)
+    void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_ptr<AttributeData> data)
     {
         typedef NeighborList::Edge NLEdge;
-        std::shared_ptr<AttributeData> sdata(data);
         {
             NeighborList & nlist = neigLists_[v];
             nlist.headVertex() = v;
-            nlist.addEdge(NLEdge(u, ts, sdata));
+            nlist.addEdge(NLEdge(u, ts, data));
         }
         {
             NeighborList & nlist = neigLists_[u];
             nlist.headVertex() = u;
-            nlist.addEdge(NLEdge(v, ts, sdata));
+            nlist.addEdge(NLEdge(v, ts, data));
         }
         UEdge edge(v, u, ts);
         vfifo_.addEdge(edge);

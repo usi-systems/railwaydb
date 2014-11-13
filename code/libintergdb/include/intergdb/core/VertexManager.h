@@ -22,7 +22,7 @@ namespace intergdb { namespace core
         };
     public:
         VertexManager(Conf const & conf, Schema const & vertexSchema);
-        void addVertex(VertexId id, AttributeData * data);
+        void addVertex(VertexId id, AttributeData const & data);
         std::shared_ptr<AttributeData> getVertexData(VertexId id);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
     private:
@@ -91,9 +91,9 @@ namespace intergdb { namespace core
             }
             return dataAndIter.data;
         }
-    }
+    } 
 
-    void VertexManager::addVertex(VertexId id, AttributeData * data)
+    void VertexManager::addVertex(VertexId id, AttributeData const & data)
     {
         if (cache_.count(id)!=0)
             throw vertex_already_exists_exception(id);
