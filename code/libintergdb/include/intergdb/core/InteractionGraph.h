@@ -77,7 +77,7 @@ namespace intergdb { namespace core
 
     template<class VertexData>
     InteractionGraph<VertexData>::InteractionGraph(Conf const & conf)
-      : conf_(conf), vman_(conf_), hisg_(conf_), memg_(conf_, &hisg_) { }
+      : conf_(conf), vman_(conf_), hisg_(conf_, schema_), memg_(conf_, &hisg_, schema_) { }
 
     template<class VertexData>
     void InteractionGraph<VertexData>::
@@ -89,7 +89,7 @@ namespace intergdb { namespace core
     template<class VertexData>
     void InteractionGraph<VertexData>::flush()
     {
-        memg_.flush(schema_);
+        memg_.flush();
     }
 
     template<class VertexData>

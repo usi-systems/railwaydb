@@ -12,7 +12,6 @@
 
 namespace intergdb { namespace core
 {
-
     typedef boost::variant<int64_t, double, std::string> vType;
 
     class Schema;
@@ -21,19 +20,17 @@ namespace intergdb { namespace core
     {
         friend class Schema;
     private:
-        EdgeData(Schema & schema, int size) : schema_(schema) { fields_.resize(size); }
+        EdgeData(Schema const & schema, int size) : schema_(schema) { fields_.resize(size); }
     public:
-        EdgeData& setAttribute(std::string const& attributeName, vType value) ;
-        EdgeData& setAttribute(int attributeIndex, vType value) ;
+        EdgeData& setAttribute(std::string const& attributeName, vType value);
+        EdgeData& setAttribute(int attributeIndex, vType value);
         vType getAttribute(int attributeIndex) const { return fields_[attributeIndex]; };
-
         std::string toString() const;
         bool operator==(EdgeData const& other); 
-        Schema & getSchema() const { return schema_; }
+        Schema const & getSchema() const { return schema_; }
     private:
         std::vector<vType> fields_;
-        Schema & schema_;
-        
+        Schema const & schema_;
         /*
         template <typename... T>
         auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
