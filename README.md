@@ -1,4 +1,4 @@
-graphdb
+. Railway Adaptive Storage for Interaction Graphs
 =======
 
 This repository contains an adaptive disk layout called the railway layout for
