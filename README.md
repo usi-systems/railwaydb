@@ -1,4 +1,4 @@
-. Railway Adaptive Storage for Interaction Graphs
+# Railway Adaptive Storage for Interaction Graphs
 =======
 
 This repository contains an adaptive disk layout called the railway layout for
@@ -13,9 +13,11 @@ alternatives, yet achieve close to optimal query I/O. To demonstrate the
 benefits of the railway layout, we provide an extensive experimental study
 comparing our approach to a few baseline alternatives.
 
-# First fetch and build boost using libc++
-# We expect this libc++ boost to be installed at '/opt/local/libcpp-software'
+1. First fetch and build boost using libc++
+2. We expect this libc++ boost to be installed at '/opt/local/libcpp-software'
 
+
+```
 mkdir tmp
 cd tmp
 wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz
@@ -25,38 +27,55 @@ cd boost_1_55_0
 sudo ./b2 toolset=clang cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++" --layout=tagged  install
 cd ../../
 rm -fr tmp
+```
 
-# Second, build the dependent libraries included in the 'ext' directory
-# These are the 'leveldb' and the 'libspatialindex' libraries
+3. Second, build the dependent libraries included in the 'ext' directory. These are the 'leveldb' and the 'libspatialindex' libraries
 
-## Enter into the external software dir
+4. Enter into the external software dir
+
+```
 cd ext/src
+```
 
-## Build leveldb
+5. Build leveldb
+
+```
 cd leveldb
 CC=clang CXX=clang++ make -j 4
 cd ..
+```
 
-## Build libspatialindex
+6. Build libspatialindex
+
+```
 cd libspatialindex
 CC=clang CXX=clang++ ./configure --prefix $(cd ../..; pwd)
 make -j 4
 make install
 cd ..
+```
 
-## Go back to the top level
+7. Go back to the top level
+
+```
 cd ../..
+```
 
-# Third, build libintergdb
+8. Third, build libintergdb
+
+```
 cd libintergdb
 make -j 4
 cd ..
+```
 
-# Last, run a test application
+9. Last, run a test application
+
+```
 cd test/SimpleTest
 make
 ./bin/SimpleTest 
-
+```
 
 
 
