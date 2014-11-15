@@ -1,5 +1,4 @@
-#ifndef RTREE_INTERGB_INTERVALINDEX_H
-#define RTREE_INTERGB_INTERVALINDEX_H
+#pragma once
 
 #include <intergdb/core/Types.h>
 #include <intergdb/core/auto_array.h>
@@ -104,4 +103,3 @@ namespace intergdb { namespace core
 } } /* end namespace */
 
 
-#endif /* RTREE_INTERGB_INTERVALINDEX_H_H_ */

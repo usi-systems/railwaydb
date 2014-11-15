@@ -1,5 +1,4 @@
-#ifndef INTERGDB_EXCEPTIONS_H
-#define INTERGDB_EXCEPTIONS_H
+#pragma once
 
 #include <intergdb/core/Types.h>
 
@@ -37,5 +36,3 @@ namespace intergdb { namespace core
     };
 
 } } /* namespace */
-
-#endif /* INTERGDB_EXCEPTIONS_H */

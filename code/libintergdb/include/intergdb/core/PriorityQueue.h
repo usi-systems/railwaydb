@@ -1,5 +1,4 @@
-#ifndef INTERGDB_VECTOR_H
-#define INTERGDB_VECTOR_H
+#pragma once
 
 #include <intergdb/core/Types.h>
 
@@ -111,4 +110,4 @@ namespace intergdb { namespace core
     };
 } } /* namespace */
 
-#endif /* INTERGDB_VECTOR_H */
+

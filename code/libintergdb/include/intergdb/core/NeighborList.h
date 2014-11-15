@@ -1,12 +1,11 @@
-#ifndef INTERGDB_NEIGHBORLIST_H
-#define INTERGDB_NEIGHBORLIST_H
+#pragma once
 
 #include <intergdb/core/AttributeData.h>
 
 #include <memory>
 #include <deque>
-#include <unordered_map>
-#include <algorithm>
+
+#include <intergdb/core/Types.h>
 
 namespace intergdb { namespace core
 {
@@ -45,33 +44,5 @@ namespace intergdb { namespace core
         std::deque<Edge> edges_;
     };
 
-    bool NeighborList::getEdgeAttributeData(VertexId to, Timestamp tm,
-            std::shared_ptr<AttributeData> & sdata)
-    {
-        bool found = false;
-        Edge tmEdge(to, tm, std::shared_ptr<AttributeData>());
-        auto it = std::lower_bound(edges_.begin(), edges_.end(), tmEdge);
-        for (; it!=edges_.end() && it->getTime()==tm; ++it) {
-            if (it->getToVertex()==to) {
-                sdata = it->getData();
-                found = true;
-                break;
-            }
-        }
-        assert(!found|| (it->getToVertex()==to && it->getTime()==tm));
-        return found;
-    }
-
-    bool NeighborList::hasEdgesInRange(Timestamp start, Timestamp end) const
-    {
-        Edge startEdge(0, start, std::shared_ptr<AttributeData>());
-        auto it = std::lower_bound(edges_.begin(), edges_.end(), startEdge);
-        if (it==edges_.end())
-            return false;
-        if (it->getTime()>=end)
-            return false;
-        return true;
-    }
 } } /* namespace */
 
-#endif /* INTERGDB_NEIGHBORLIST_H */

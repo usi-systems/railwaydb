@@ -1,5 +1,4 @@
-#ifndef INTERGDB_NETWORKBYTEBUFFER_H
-#define INTERGDB_NETWORKBYTEBUFFER_H
+#pragma once
 
 #include <intergdb/core/EndianHelper.h>
 #include <intergdb/core/AttributeData.h>
@@ -387,74 +386,6 @@ inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1,
     return sbuf;
 }
 
-inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, AttributeData const & val)
-{
-    Schema const & schema = val.getSchema();
-    int i = 0;
-    for (auto const & a : schema.getAttributes()) {
-        switch (a.second) {
-        case Schema::INT64:
-        {
-            sbuf << boost::get<int64_t>(val.getAttribute(i));
-            break;
-        }
-        case Schema::DOUBLE:
-        {
-            sbuf << boost::get<double>(val.getAttribute(i));
-            break;
-        }
-        case Schema::STRING:
-        {
-            sbuf << boost::get<std::string>(val.getAttribute(i));
-            break;
-        }
-        default:
-            assert(false);
-        }
-        i++; 
-    }
-    return sbuf;
-
-}
-
-inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & data)
-{      
-    Schema const & schema = data.getSchema();
-    int i = 0;
-    for (auto const & a : schema.getAttributes()) {
-        switch (a.second) {
-        case Schema::INT64:
-        {
-            int64_t dataInt64;
-            sbuf >> dataInt64;
-            data.setAttribute(i, dataInt64);
-            break;
-        }
-        case Schema::DOUBLE:
-        {
-            double dataDouble;
-            sbuf >> dataDouble;
-            data.setAttribute(i, dataDouble);
-            break;
-        }
-        case Schema::STRING:
-        {
-            std::string dataString;
-            sbuf >> dataString;
-            data.setAttribute(i, dataString);
-            break;
-        }
-        default:
-            assert(false);
-        } 
-        i++;
-    }
-    return sbuf;
-}
-
-
 #undef BYTE_BUFFER_ADD_OPERATOR
 
 } } /* namespace */
-
-#endif /* INTERGDB_NETWORKBYTEBUFFER_H */

@@ -1,5 +1,4 @@
-#ifndef INTERGDB_ATTRIBUTEDATA_H
-#define INTERGDB_ATTRIBUTEDATA_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -7,16 +6,16 @@
 #include <sstream>     
 #include <boost/variant.hpp>
 
-
 namespace intergdb { namespace core
 {
-    typedef boost::variant<int64_t, double, std::string> vType;
-
     class Schema;
+    class NetworkByteBuffer;
 
     class AttributeData
     {
+    public:
         friend class Schema;
+        typedef boost::variant<int64_t, double, std::string> vType;
     private:
         AttributeData(Schema const & schema, int size) : schema_(schema) { fields_.resize(size); }
     public:
@@ -33,10 +32,12 @@ namespace intergdb { namespace core
    
     inline std::ostream& operator<<(std::ostream &os, AttributeData const& data)
     {      
-       os << data.toString();
-       return os;
+       return os << data.toString();
     }
+
+    NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, AttributeData const & val);
+    NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & data);
 
 } } /* namespace */
 
-#endif /* INTERGDB_ATTRIBUTEDATA_H */
+

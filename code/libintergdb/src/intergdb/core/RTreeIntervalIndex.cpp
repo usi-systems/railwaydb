@@ -1,13 +1,9 @@
 #include <intergdb/core/RTreeIntervalIndex.h>
+
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <spatialindex/tools/Tools.h>
 #include <boost/filesystem.hpp>
 #include <unordered_set>
-
-// TODO: remove the following 3 includes
-#include <exception>
-#include <typeinfo>
-#include <stdexcept>
 
 using namespace SpatialIndex;
 using namespace intergdb::core;

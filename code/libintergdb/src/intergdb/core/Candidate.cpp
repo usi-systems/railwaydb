@@ -1,6 +1,7 @@
 #include <intergdb/core/Candidate.h>
 
 #include <intergdb/core/ExpirationMap.h>
+#include <intergdb/core/Helper.h>
 
 using namespace std;
 using namespace intergdb::core;

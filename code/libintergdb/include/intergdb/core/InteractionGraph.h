@@ -1,5 +1,4 @@
-#ifndef INTERGDB_INTERACTIONGRAPH_H
-#define INTERGDB_INTERACTIONGRAPH_H
+#pragma once
 
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/Types.h>
@@ -21,14 +20,11 @@ namespace intergdb { namespace core
         class VertexIterator
         {
         public:
-            VertexIterator(VertexManager * vman,
-              std::shared_ptr<typename HistoricalGraph::VertexIterator> it)
-                : vman_(vman), it_(it) {}
+            VertexIterator(VertexManager * vman, std::shared_ptr<typename HistoricalGraph::VertexIterator> it) : vman_(vman), it_(it) {}
             bool isValid() { return it_->isValid(); }
             void next() { it_->next(); }
             VertexId getVertexId() { return it_->getVertexId(); }
-            std::shared_ptr<AttributeData> getVertexData()
-                { return vman_->getVertexData(getVertexId()); }
+            std::shared_ptr<AttributeData> getVertexData() { return vman_->getVertexData(getVertexId()); }
         private:
             VertexManager * vman_;
             std::shared_ptr<typename HistoricalGraph::VertexIterator> it_;
@@ -36,8 +32,7 @@ namespace intergdb { namespace core
         class EdgeIterator
         {
         public:
-            EdgeIterator(std::shared_ptr<typename HistoricalGraph::EdgeIterator> it)
-                : it_(it) {}
+            EdgeIterator(std::shared_ptr<typename HistoricalGraph::EdgeIterator> it) : it_(it) {}
             bool isValid() { return it_->isValid(); }
             void next() { it_->next(); }
             VertexId getToVertex() { return it_->getEdge().getToVertex(); }
@@ -74,9 +69,6 @@ namespace intergdb { namespace core
         InMemoryGraph memg_;
     };
 
-    InteractionGraph::InteractionGraph(Conf const & conf)
-        : conf_(conf), vman_(conf_), hisg_(conf_), memg_(conf_, &hisg_) { }
-
     template<typename T1, typename... TN>
     struct AttributeCollector
     {
@@ -101,55 +93,20 @@ namespace intergdb { namespace core
         createVertex(VertexId id, VertexDataAttributes&&... vertexData)
     {
         std::unique_ptr<AttributeData> data(getVertexSchema().newAttributeData());
-        AttributeCollector<VertexDataAttributes...>::
-            add(data.get(), 0, std::forward<VertexDataAttributes>(vertexData)...);
+        AttributeCollector<VertexDataAttributes...>::add(data.get(), 0, std::forward<VertexDataAttributes>(vertexData)...);
         vman_.addVertex(id, *data);
     }
 
-    void InteractionGraph::flush()
-    {
-        memg_.flush();
-    }
-
-    std::shared_ptr<AttributeData> InteractionGraph::
-        getVertexData(VertexId id)
-    {
-        return vman_.getVertexData(id);
-    }
-
-
     template <typename... EdgeDataAttributes>
-    void InteractionGraph::
-        addEdge(VertexId v, VertexId u, 
-                Timestamp time,/*=Helper::getCurrentTimestamp()*/
-                EdgeDataAttributes&&... edgeData)
+    void InteractionGraph::addEdge(VertexId v, VertexId u, Timestamp time,/*=Helper::getCurrentTimestamp()*/ EdgeDataAttributes&&... edgeData)
     {
         assert(v!=u);
         getVertexData(v);
         getVertexData(u);
         std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());
-        AttributeCollector<EdgeDataAttributes...>::
-            add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);
+        AttributeCollector<EdgeDataAttributes...>::add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);
-    }
-
-    InteractionGraph::VertexIterator InteractionGraph::
-        processIntervalQuery(Timestamp start, Timestamp end)
-    {
-        return VertexIterator(&vman_, hisg_.intervalQuery(start, end));
-    }
-
-    void InteractionGraph::
-        processIntervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
-    {
-        return hisg_.intervalQueryBatch(start, end, results);
-    }
-
-    InteractionGraph::EdgeIterator InteractionGraph::
-        processFocusedIntervalQuery(VertexId vertex, Timestamp start, Timestamp end)
-    {
-        return EdgeIterator(hisg_.focusedIntervalQuery(vertex, start, end));
     }
 } } /* namespace */
 
-#endif /* INTERGDB_INTERACTIONGRAPH_H */
+
