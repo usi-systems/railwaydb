@@ -1,5 +1,4 @@
-#ifndef INTERGDB_EDGE_H
-#define INTERGDB_EDGE_H
+#pragma once
 
 namespace intergdb { namespace core
 {
@@ -31,4 +30,3 @@ namespace intergdb { namespace core
     };
 } } /* namespace */
 
-#endif /* INTERGDB_EDGE_H */

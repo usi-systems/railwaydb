@@ -1,5 +1,4 @@
-#ifndef INTERGDB_CANDIDATE_H
-#define INTERGDB_CANDIDATE_H
+#pragma once
 
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/NeighborList.h>
@@ -15,12 +14,10 @@ namespace intergdb { namespace core
     private:
         VertexId u_, v_;
     public:
-        SUEdge(VertexId u, VertexId v)
-            { if (u>v) { u_ = v; v_ = u; } else { u_ = u; v_ = u; } }
+        SUEdge(VertexId u, VertexId v) { if (u>v) { u_ = v; v_ = u; } else { u_ = u; v_ = u; } }
         VertexId getFromVertex() const { return v_; }
         VertexId getToVertex() const { return u_; }
-        bool operator == (SUEdge const & other) const
-            { return u_==other.u_ && v_==other.v_; }
+        bool operator == (SUEdge const & other) const { return u_==other.u_ && v_==other.v_; }
     };
 } } /* namespace */
 
@@ -72,5 +69,3 @@ namespace intergdb { namespace core
         std::unordered_map<SUEdge, size_t> internalEdges_; // neiglist to neiglist edges
     };
 } } /* namespace */
-
-#endif /* INTERGDB_CANDIDATE_H */

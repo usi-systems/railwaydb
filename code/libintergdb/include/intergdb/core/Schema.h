@@ -1,5 +1,4 @@
-#ifndef INTERGDB_SCHEMA_H
-#define INTERGDB_SCHEMA_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -51,4 +50,3 @@ namespace intergdb { namespace core
     };
 } } /* namespace */
 
-#endif /* INTERGDB_SCHEMA_H */

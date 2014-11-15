@@ -1,5 +1,4 @@
-#ifndef INTERGDB_TYPES_H
-#define INTERGDB_TYPES_H
+#pragma once
 
 #include <unordered_map>
 #include <iostream>
@@ -13,4 +12,3 @@ namespace intergdb { namespace core
 
 } } /* namespace */
 
-#endif /* INTERGDB_INMEM_INMEMORYGRAPH_H */

@@ -1,5 +1,4 @@
-#ifndef INTERGDB_ENDIANHELPER_H
-#define INTERGDB_ENDIANHELPER_H
+#pragma once
 
 #ifdef __MACH__
 #include <machine/endian.h>
@@ -71,5 +70,3 @@ namespace intergdb { namespace core {
     }
     #endif
 } } /* namespace */
-
-#endif /* INTERGDB_ENDIANHELPER_H */

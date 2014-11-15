@@ -1,5 +1,4 @@
-#ifndef AUTO_ARRAY_H_
-#define AUTO_ARRAY_H_
+#pragma once
 
 template<typename T>
 class auto_array
@@ -38,4 +37,4 @@ private:
     T * data_;
 };
 
-#endif /* AUTO_ARRAY_H_ */
+

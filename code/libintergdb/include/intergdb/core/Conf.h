@@ -1,5 +1,4 @@
-#ifndef INTERGDB_CONF_H
-#define INTERGDB_CONF_H
+#pragma once
 
 #include <intergdb/core/Types.h>
 #include <intergdb/core/Schema.h>
@@ -133,4 +132,3 @@ namespace intergdb { namespace core
 
 } } /* namespace */
 
-#endif /* INTERGDB_CONF_H */

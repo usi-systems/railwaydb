@@ -1,5 +1,7 @@
 #include <intergdb/core/AttributeData.h>
+
 #include <intergdb/core/Schema.h>
+#include <intergdb/core/NetworkByteBuffer.h>
 
 using namespace intergdb::core;
 
@@ -53,6 +55,72 @@ bool AttributeData::operator==(AttributeData const& other)
     return true; 
 }
 
+namespace intergdb { namespace core
+{
 
+    NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, AttributeData const & val)
+    {
+        Schema const & schema = val.getSchema();
+        int i = 0;
+        for (auto const & a : schema.getAttributes()) {
+            switch (a.second) {
+            case Schema::INT64:
+            {
+                sbuf << boost::get<int64_t>(val.getAttribute(i));
+                break;
+            }
+            case Schema::DOUBLE:
+            {
+                sbuf << boost::get<double>(val.getAttribute(i));
+                break;
+            }
+            case Schema::STRING:
+            {
+                sbuf << boost::get<std::string>(val.getAttribute(i));
+                break;
+            }
+            default:
+                assert(false);
+            }
+            i++; 
+        }
+        return sbuf;
 
+    }
 
+    NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & data)
+    {      
+        Schema const & schema = data.getSchema();
+        int i = 0;
+        for (auto const & a : schema.getAttributes()) {
+            switch (a.second) {
+            case Schema::INT64:
+            {
+                int64_t dataInt64;
+                sbuf >> dataInt64;
+                data.setAttribute(i, dataInt64);
+                break;
+            }
+            case Schema::DOUBLE:
+            {
+                double dataDouble;
+                sbuf >> dataDouble;
+                data.setAttribute(i, dataDouble);
+                break;
+            }
+            case Schema::STRING:
+            {
+                std::string dataString;
+                sbuf >> dataString;
+                data.setAttribute(i, dataString);
+                break;
+            }
+            default:
+                assert(false);
+            } 
+            i++;
+        }
+        return sbuf;
+    }
+
+} }

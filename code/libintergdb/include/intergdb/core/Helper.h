@@ -1,5 +1,4 @@
-#ifndef INTERGDB_HELPER_H
-#define INTERGDB_HELPER_H
+#pragma once
 
 #include <intergdb/core/Types.h>
 #include <intergdb/core/AttributeData.h>
@@ -67,5 +66,3 @@ namespace intergdb { namespace core
 
 
 } } /* namespace */
-
-#endif /* INTERGDB_HELPER_H */
