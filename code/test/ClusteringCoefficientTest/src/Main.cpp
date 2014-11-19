@@ -13,10 +13,11 @@ using namespace std;
 using namespace intergdb::core;
 
 unordered_map<VertexId, double> findClusteringCoefficients(
-    InteractionGraph & graph, double startTime, double endTime)
+    InteractionGraph & graph, double startTime, double endTime, std::vector<std::string> attributes)
 {
     vector<VertexId> vertices;
-    for (auto iqIt = graph.processIntervalQuery(startTime, endTime); 
+    IntervalQuery iq(startTime, endTime, attributes);
+    for (auto iqIt = graph.processIntervalQuery(iq); 
             iqIt.isValid(); iqIt.next()) 
         vertices.push_back(iqIt.getVertexId()); 
 
@@ -24,13 +25,15 @@ unordered_map<VertexId, double> findClusteringCoefficients(
     for (VertexId v : vertices) {
         double clusteringCoefficient = 0.0;
         unordered_set<VertexId> tz;
-        for (auto fiqIt = graph.processFocusedIntervalQuery(v, startTime, endTime); 
+        FocusedIntervalQuery fiq1(v, startTime, endTime, attributes);
+        for (auto fiqIt = graph.processFocusedIntervalQuery(fiq1); 
                 fiqIt.isValid(); fiqIt.next()) {
             auto to = fiqIt.getToVertex();
             tz.insert(to);
         }
         for (VertexId const & ov : tz) {
-            for (auto fiqIt = graph.processFocusedIntervalQuery(ov, startTime, endTime); 
+            FocusedIntervalQuery fiq2(ov, startTime, endTime, attributes);
+            for (auto fiqIt = graph.processFocusedIntervalQuery(fiq2); 
                     fiqIt.isValid(); fiqIt.next()) {
                 auto to = fiqIt.getToVertex();
                 if (tz.count(to)>0)
@@ -49,7 +52,7 @@ unordered_map<VertexId, double> findClusteringCoefficients(
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_cc", {{"vertex-label",Schema::STRING}}, {{"edge-label", Schema::STRING}});
+    Conf conf("test", "/tmp/myigdb_cc", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());    
     InteractionGraph graph(conf);
@@ -70,15 +73,16 @@ int main()
     }
 
     double startTime = 0.0, endTime = 2.0;
+    std::vector<std::string> attributes = {"a"};
     cout << "For range [" << startTime << "," << endTime << "]" << endl;
-    auto clusteringCoefficients = findClusteringCoefficients(graph, startTime, endTime);
+    auto clusteringCoefficients = findClusteringCoefficients(graph, startTime, endTime, attributes);
     for (auto const & idScorePair : clusteringCoefficients)
         cout << "id: " << idScorePair.first << " => cc: " << idScorePair.second << endl; 
     cout << endl;
 
     endTime += 5.0;
     cout << "For range [" << startTime << "," << endTime << "]" << endl;
-    clusteringCoefficients = findClusteringCoefficients(graph, startTime, endTime);
+    clusteringCoefficients = findClusteringCoefficients(graph, startTime, endTime, attributes);
     for (auto const & idScorePair : clusteringCoefficients)
         cout << "id: " << idScorePair.first << " => cc: " << idScorePair.second << endl;
 

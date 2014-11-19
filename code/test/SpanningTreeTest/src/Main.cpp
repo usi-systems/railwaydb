@@ -41,7 +41,8 @@ void createGraph(InteractionGraph &graph)
     graph.flush();     
 }
 
-int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tree, double startTime, double endTime)
+int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tree,
+        double startTime, double endTime, std::vector<std::string> attributes)
 {
     std::set<VertexId> out; // The set of vertices not in the tree
     std::set<VertexId> in;  // The set of vertices in the tree
@@ -49,7 +50,8 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
     VertexId u;
 
     int i = 0;
-    for (auto iqIt = graph.processIntervalQuery(startTime, endTime); iqIt.isValid(); iqIt.next()) {
+    IntervalQuery q1(startTime, endTime, attributes);
+    for (auto iqIt = graph.processIntervalQuery(q1); iqIt.isValid(); iqIt.next()) {
         if (i == 0) {
             v = iqIt.getVertexId();
         }
@@ -69,7 +71,8 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
         minWeight = MAX_WT;
         for (auto it=in.begin(); it!=in.end(); ++it) {
             u = *it;
-            for (auto fiqIt = graph.processFocusedIntervalQuery(u, startTime, endTime); fiqIt.isValid(); fiqIt.next()) {
+            FocusedIntervalQuery fiq(u, startTime, endTime, attributes);
+            for (auto fiqIt = graph.processFocusedIntervalQuery(fiq); fiqIt.isValid(); fiqIt.next()) {
                 v = fiqIt.getToVertex();               
                 if (in.find(v) == in.end()) {
                     edgeWeight = lexical_cast<double>(*fiqIt.getEdgeData());
@@ -89,7 +92,7 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_st", {{"vertex-label",Schema::STRING}}, {{"edge-label", Schema::STRING}});
+    Conf conf("test", "/tmp/myigdb_st", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());
 
@@ -101,7 +104,8 @@ int main()
     }
 
     double startTime = 0.0, endTime = 2.0;
-    msp(graph, 0, tree, startTime, endTime);
+    std::vector<std::string> attributes = {"a"};
+    msp(graph, 0, tree, startTime, endTime, attributes);
 
     for (auto it=tree.begin(); it!=tree.end(); ++it) {
         cout << it->first << "->" <<it->second << " in tree" << endl;
