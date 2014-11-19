@@ -8,6 +8,7 @@
 #include <intergdb/core/HistoricalGraph.h>
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
+#include <intergdb/core/Query.h>
 
 #include <memory>
 #include <utility>
@@ -53,8 +54,8 @@ namespace intergdb { namespace core
                      Timestamp time /*=Helper::getCurrentTimestamp() */,
                      EdgeDataAttributes&&... edgeData);
         void flush();
-        VertexIterator processIntervalQuery(Timestamp start, Timestamp end);
-        EdgeIterator processFocusedIntervalQuery(VertexId headVertex, Timestamp start, Timestamp end);
+        VertexIterator processIntervalQuery(Query q);
+        EdgeIterator processFocusedIntervalQuery(FocusedIntervalQuery q);
         void processIntervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
         BlockStats const & getBlockStats() const { return memg_.getBlockStats(); }
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
@@ -104,6 +105,7 @@ namespace intergdb { namespace core
         getVertexData(v);
         getVertexData(u);
         std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());
+        // TODO (rjs): Need to check that the edge added has the correct data for the schema
         AttributeCollector<EdgeDataAttributes...>::add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);
     }

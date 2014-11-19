@@ -25,13 +25,16 @@ int main()
         graph.flush();
     }
 
-    InteractionGraph::VertexIterator iqIt = graph.processIntervalQuery(5.0, 10.0);
+    IntervalQuery q1(5.0, 10.0, {"a"});
+    FocusedIntervalQuery q2(2, 5.0, 10.0, {"a"});
+
+    InteractionGraph::VertexIterator iqIt = graph.processIntervalQuery(q1);
     while(iqIt.isValid()) {
         cout << *iqIt.getVertexData() << endl; 
         cout << iqIt.getVertexId() << endl; 
         iqIt.next();
     }
-    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(2, 5.0, 10.0);
+    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(q2);
     while(fiqIt.isValid()) {
         cout << *fiqIt.getEdgeData() << endl;  
         cout << fiqIt.getToVertex() << endl; 
