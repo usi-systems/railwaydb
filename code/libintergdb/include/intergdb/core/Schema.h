@@ -37,6 +37,7 @@ namespace intergdb { namespace core
         Schema & addAttribute(std::string const & name, DataType type);
         std::vector<AttributeType> const & getAttributes() const { return attributes_; }
         int getIndex(std::string const & name) const { return nameToIndex_.find(name)->second; } 
+        int numAttributes() const { return attributes_.size(); }
         std::string toString() const 
         { 
             std::stringstream ss;   

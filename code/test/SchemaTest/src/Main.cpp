@@ -28,20 +28,38 @@ int main()
     graph.createVertex(2, "v2");
     graph.createVertex(4, "v4");
     Timestamp ts = 7.0;
-    
+    bool caughtError = false;
+
     try {
-        graph.addEdge(2, 4, ts, "1");            
+        graph.addEdge(2, 4, ts, 1LL, 2LL);            
     } catch(runtime_error const & e) {
-        // TODO: This should be an error
-    }
-    try {
-        graph.addEdge(2, 4, ts, "1", "2", "3");            
-    } catch(runtime_error const & e) {
-        // TODO: This should be an error
+        cout << "test FAILED\n" << endl;
+        return EXIT_FAILURE;
     }
 
+    caughtError = false;
+    try {
+        graph.addEdge(2, 4, ts, 1LL, 2LL, 3LL);            
+    } catch(runtime_error const & e) {
+        caughtError = true;
+    }
+    if (!caughtError) {
+        cout << "test FAILED: did not catch wrong schema size.\n" << endl;
+        return EXIT_FAILURE;
+    }
+/*
+    caughtError = false;
+    try {
+        graph.addEdge(2, 4, ts, "1", "2");            
+    } catch(runtime_error const & e) {
+        caughtError = true;
+    }
+    if (!caughtError) {
+        cout << "test FAILED: did not catch wrong schema type.\n" << endl;
+        return EXIT_FAILURE;
+    }
     graph.flush();
-    
+*/
     return EXIT_SUCCESS;
 }
 

@@ -14,3 +14,5 @@ code/test/OptimizerTest/bin/
 code/test/ClusteringCoefficientTest/bin/
 code/test/SimpleTest/bin/
 code/test/SpanningTreeTest/bin/
+code/test/QueryTest/bin/
+code/test/SchemaTest/bin/
