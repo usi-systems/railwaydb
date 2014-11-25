@@ -1,6 +1,7 @@
 #pragma once
 
 #include <intergdb/core/Schema.h>
+#include <intergdb/core/Types.h>
 
 namespace intergdb { namespace core
 {
