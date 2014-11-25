@@ -9,6 +9,7 @@
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/Query.h>
+#include <intergdb/core/QueryCollector.h>
 
 #include <memory>
 #include <utility>
@@ -68,6 +69,7 @@ namespace intergdb { namespace core
         VertexManager vman_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
+        QueryCollector qcol_;
     };
 
     template<typename T1, typename... TN>
