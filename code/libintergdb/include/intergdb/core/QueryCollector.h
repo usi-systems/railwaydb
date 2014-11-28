@@ -25,6 +25,7 @@ namespace intergdb { namespace core
     public:
         NaiveBucketer(int bucketSize) { }        
         virtual BucketId getBucket(Query q) { 
+            #ifdef DEBUG
             std::cout << "NaiveBucketer::getBucket" << std::endl;
             Timestamp start = q.getStart();
             Timestamp end = q.getEnd();
@@ -33,10 +34,14 @@ namespace intergdb { namespace core
             int lastBucket = 0.0 == fmod(end, bucketSize_) ? (end / bucketSize_) :  (end / bucketSize_ + 1);
             std::cout << "NaiveBucketer::getBucket firstBucket " << firstBucket << std::endl;
             std::cout << "NaiveBucketer::getBucket lastBucket " << lastBucket << std::endl;
+            #endif
             return 1; 
         } 
     private:
+#ifdef DEBUG
         int bucketSize_;
+#endif
+
     };
 
     class QueryCollector
