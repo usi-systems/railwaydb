@@ -13,69 +13,59 @@ alternatives, yet achieve close to optimal query I/O. To demonstrate the
 benefits of the railway layout, we provide an extensive experimental study
 comparing our approach to a few baseline alternatives.
 
-1. First fetch and build boost using libc++
-2. We expect this libc++ boost to be installed at '/opt/local/libcpp-software'
 
+1. The partitioning algorithm depends on the Gurobi optimizer library. This is available
+   for free under an academic license. Follow the instructions at: http://www.gurobi.com to install Gurobi.
 
-```
-mkdir tmp
+2. First fetch and build boost using libc++
+3. We expect this libc++ boost to be installed at '/opt/local/libcpp-software'
+<br/><br/><pre><code>mkdir tmp
 cd tmp
-wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz
+http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz
 tar -zxvf boost_1_55_0.tar.gz
 cd boost_1_55_0
 ./bootstrap.sh --prefix=/opt/local/libcpp-software
 sudo ./b2 toolset=clang cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++" --layout=tagged  install
 cd ../../
 rm -fr tmp
-```
+</code></pre>
 
-3. Second, build the dependent libraries included in the 'ext' directory. These are the 'leveldb' and the 'libspatialindex' libraries
+4. Second, build the dependent libraries included in the 'ext' directory. These are the 'leveldb' and the 'libspatialindex' libraries
 
-4. Enter into the external software dir
-
-```
+5. Enter into the external software dir
+<br/><br/><pre><code>
 cd ext/src
-```
+</code></pre>
 
-5. Build leveldb
-
-```
-cd leveldb
+6. Build leveldb
+<br/><br/><pre><code>cd leveldb
 CC=clang CXX=clang++ make -j 4
 cd ..
-```
+</code></pre>
 
-6. Build libspatialindex
-
-```
-cd libspatialindex
+7. Build libspatialindex
+<br/><br/><pre><code>cd libspatialindex
 CC=clang CXX=clang++ ./configure --prefix $(cd ../..; pwd)
 make -j 4
 make install
 cd ..
-```
+</code></pre>
 
-7. Go back to the top level
+8. Go back to the top level
+<br/><br/><pre><code>cd ../..
+</code></pre>
 
-```
-cd ../..
-```
-
-8. Third, build libintergdb
-
-```
-cd libintergdb
+9. Third, build libintergdb
+<br/><br/><pre><code>cd libintergdb
 make -j 4
 cd ..
-```
+</code></pre>
 
-9. Last, run a test application
-
-```
-cd test/SimpleTest
+10. Last, run a test application
+<br/><br/><pre><code>cd test/SimpleTest
 make
 ./bin/SimpleTest 
-```
+</code></pre>
 
 
 
