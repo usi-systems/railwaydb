@@ -21,7 +21,8 @@ LIBRARY   = libintergdb.so
 CPPFLAGS  = 
 INCLUDES  = -isystem /opt/local/libcpp-software/include \
  -I $(THISDIR)../ext/include \
- -I $(THISDIR)../ext/src/leveldb/include
+ -I $(THISDIR)../ext/src/leveldb/include \
+ -I $(THISDIR)../libcommon/include 
 LDFLAGS   = -L /opt/local/libcpp-software/lib \
  -L $(THISDIR)../ext/lib \
  -L $(THISDIR)../ext/src/leveldb \
