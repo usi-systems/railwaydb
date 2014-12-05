@@ -1,7 +1,9 @@
 #pragma once
 
 #include <intergdb/core/Query.h>
+#include <intergdb/common/QueryWorkload.h>
 #include <math.h>
+#include <map>
 #include <iostream>
 
 namespace intergdb { namespace core
@@ -44,6 +46,7 @@ namespace intergdb { namespace core
         void collectFocusedIntervalQuery(Query q);
     private:
         NaiveBucketer bucketer_;
+        std::map<BucketId,common::QueryWorkload> workloads_;
     };
 
 } } /* namespace */

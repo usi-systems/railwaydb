@@ -55,7 +55,6 @@ void RTreeIntervalIndex::openOrCreate(std::string const & baseName)
         rtidx_.reset(RTree::createNewRTree(*buffer_, 0.8, 100, 100, 2, RTree::RV_RSTAR, indexId));
         assert(indexId==1);
     } else { // file is already there
-        std::cout << "RTreeIntervalIndex::openOrCreate loadDiskStorageManager(" + name + ") called" << std::endl;
         try {
             disk_ = StorageManager::loadDiskStorageManager(name);
         } catch (...) {
