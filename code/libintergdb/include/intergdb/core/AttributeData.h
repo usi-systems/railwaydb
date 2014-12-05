@@ -15,18 +15,18 @@ namespace intergdb { namespace core
     {
     public:
         friend class Schema;
-        typedef boost::variant<int64_t, double, std::string> vType;
+        typedef boost::variant<int64_t, double, std::string> Type;
     private:
         AttributeData(Schema const & schema, int size) : schema_(schema) { fields_.resize(size); }
     public:
-        AttributeData& setAttribute(std::string const& attributeName, vType value);
-        AttributeData& setAttribute(int attributeIndex, vType value);
-        vType getAttribute(int attributeIndex) const { return fields_[attributeIndex]; };
+        AttributeData& setAttribute(std::string const& attributeName, Type value);
+        AttributeData& setAttribute(int attributeIndex, Type value);
+        Type getAttribute(int attributeIndex) const { return fields_[attributeIndex]; };
         std::string toString() const;
         bool operator==(AttributeData const& other); 
         Schema const & getSchema() const { return schema_; }
     private:
-        std::vector<vType> fields_;
+        std::vector<Type> fields_;
         Schema const & schema_;
     };
    
