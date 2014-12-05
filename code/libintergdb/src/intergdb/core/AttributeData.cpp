@@ -5,13 +5,13 @@
 
 using namespace intergdb::core;
 
-intergdb::core::AttributeData& AttributeData::setAttribute(std::string const& attributeName, vType value) 
+intergdb::core::AttributeData& AttributeData::setAttribute(std::string const& attributeName, Type value) 
 {  
     fields_[schema_.getIndex(attributeName)] = value; 
     return *this; 
 }
 
-intergdb::core::AttributeData& AttributeData::setAttribute(int attributeIndex, vType value) { 
+intergdb::core::AttributeData& AttributeData::setAttribute(int attributeIndex, Type value) { 
     fields_[attributeIndex] = value; 
     return *this; 
 }
