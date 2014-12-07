@@ -43,7 +43,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
     attrbFreq[&attrb] = 0;
     attributes.push_back(&attrb);
   }
-  for (QuerySummary const & query : workload.getQueries())
+  for (QuerySummary const & query : workload.getQuerySummaries())
     for (Attribute const * attrb : query.getAttributes())
       ++(attrbFreq[attrb]);
   std::sort(begin(attributes), end(attributes), 

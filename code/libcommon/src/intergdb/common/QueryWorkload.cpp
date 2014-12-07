@@ -1,11 +1,12 @@
 #include <intergdb/common/QueryWorkload.h>
+#include <intergdb/core/Query.h>
 
 #include <string>
-//#include <unordered_map>
 
 using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
+using namespace intergdb::core;
 
 string Attribute::toString() const
 { 
@@ -34,4 +35,9 @@ string QueryWorkload::toString() const
   return str;
 }
 
+
+void QueryWorkload::addQuery(Query q) 
+{
+    std::cout << "QueryWorkload::addQuery" << std::endl;
+}
 
