@@ -7,6 +7,8 @@
 #include <list>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
+#include <map>
 #include <limits>
 
 namespace intergdb { namespace core
@@ -49,9 +51,10 @@ namespace intergdb { namespace core
         std::vector<TimeSlicedPartitioning> const & replacement);
     // to be replaced partitionings must be contigious in time
     void replacePartitionings(std::vector<TimeSlicedPartitioning> const & toReplace, 
-        Partitioning const & replacement);
+        TimeSlicedPartitioning const & replacement);
   private:
     void addPartitioning(TimeSlicedPartitioning const & partitioning);
+    void removePartitioning(TimeSlicedPartitioning const & partitioning);
   private:
     struct PartitioningAndIter 
     {
@@ -60,7 +63,7 @@ namespace intergdb { namespace core
     }; 
     size_t partitioningBufferSize_;
     std::list<Timestamp> lruList_;
-    std::unordered_map<Timestamp, PartitioningAndIter> cache_;
+    std::map<Timestamp, PartitioningAndIter> cache_;
     std::auto_ptr<leveldb::DB> db_; // to store the index on disk
   };
 

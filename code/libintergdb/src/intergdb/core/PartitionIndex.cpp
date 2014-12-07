@@ -40,58 +40,78 @@ PartitionIndex::PartitionIndex(Conf const & conf)
 
 void PartitionIndex::addPartitioning(TimeSlicedPartitioning const & partitioning)
 {
-    NetworkByteBuffer keyBuf(sizeof(Timestamp));
-    keyBuf << partitioning.getEndTime();
-    leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
-    NetworkByteBuffer dataBuf;
-    dataBuf << partitioning;
-    leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()), dataBuf.getSerializedDataSize());
-    leveldb::Status status = db_->Put(leveldb::WriteOptions(), key, dataSlice);
-    if (!status.ok())
-        throw std::runtime_error(status.ToString());
+
+  NetworkByteBuffer keyBuf(sizeof(Timestamp));
+  keyBuf << partitioning.getEndTime();
+  leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
+  NetworkByteBuffer dataBuf;
+  dataBuf << partitioning;
+  leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()), dataBuf.getSerializedDataSize());
+  leveldb::Status status = db_->Put(leveldb::WriteOptions(), key, dataSlice);
+  if (!status.ok())
+    throw std::runtime_error(status.ToString());
 } 
+
+void  PartitionIndex::removePartitioning(TimeSlicedPartitioning const & partitioning)
+{
+  NetworkByteBuffer keyBuf(sizeof(Timestamp));
+  keyBuf << partitioning.getEndTime();
+  leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
+  leveldb::Status status = db_->Delete(leveldb::WriteOptions(), key);
+  if (!status.ok())
+    throw std::runtime_error(status.ToString());
+  auto it = cache_.find(partitioning.getEndTime());
+  if (it!=cache_.end()) {  
+    PartitioningAndIter & partingAndIter = it->second;
+    lruList_.erase(partingAndIter.iter);
+    cache_.erase(it);
+  }
+}
 
 TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time) 
 {
-  auto it = cache_.find(time);
-  if (it!=cache_.end()) {
-    PartitioningAndIter & partingAndIter = it->second;
-    if (partingAndIter.iter != lruList_.begin()) {
-      lruList_.erase(partingAndIter.iter);
-      lruList_.push_front(time);
-      partingAndIter.iter = lruList_.begin();
+  auto cit = cache_.lower_bound(time);
+  if (cit!=cache_.end()) {    
+    PartitioningAndIter & partingAndIter = cit->second;
+    auto const & partitioning = partingAndIter.partitioning;
+    if (time>=partitioning.getStartTime() && time<partitioning.getEndTime()) {
+      if (partingAndIter.iter != lruList_.begin()) {
+        lruList_.erase(partingAndIter.iter);
+        lruList_.push_front(time);
+        partingAndIter.iter = lruList_.begin();
+      }
+      return partitioning;
     }
-    return partingAndIter.partitioning;
-  } else {
-    NetworkByteBuffer startKeyBuf(sizeof(Timestamp));
-    startKeyBuf << time;
-    leveldb::Slice startKey(reinterpret_cast<char *>(startKeyBuf.getPtr()), startKeyBuf.getSerializedDataSize());
-    unique_ptr<leveldb::Iterator> it(db_->NewIterator(leveldb::ReadOptions()));
-    it->Seek(startKey); 
-    if (!it->Valid()) 
-        throw time_sliced_partition_not_found_exception(time);
-    leveldb::Slice foundKey = it->key();
-    NetworkByteBuffer foundKeyBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(foundKey.data())), foundKey.size());
-    Timestamp endTime;
-    foundKeyBuf >> endTime;   
-    if (endTime == time) {
-      it->Next();
-      if (!it->Valid()) 
-        throw time_sliced_partition_not_found_exception(time);
-    }
-    leveldb::Slice value = it->value();
-    NetworkByteBuffer valueBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
-    PartitioningAndIter & partingAndIter = cache_.emplace(endTime, PartitioningAndIter()).first->second;
-    valueBuf >> partingAndIter.partitioning;
-    lruList_.push_front(endTime);
-    partingAndIter.iter = lruList_.begin();
-    if (lruList_.size()>partitioningBufferSize_) {
-        Timestamp t = lruList_.back();
-        lruList_.pop_back();
-        cache_.erase(t); 
-    }
-    return partingAndIter.partitioning;
   }
+  // not in the case, so go to the DB
+  NetworkByteBuffer startKeyBuf(sizeof(Timestamp));
+  startKeyBuf << time;
+  leveldb::Slice startKey(reinterpret_cast<char *>(startKeyBuf.getPtr()), startKeyBuf.getSerializedDataSize());
+  unique_ptr<leveldb::Iterator> it(db_->NewIterator(leveldb::ReadOptions()));
+  it->Seek(startKey); 
+  if (!it->Valid()) 
+    throw time_sliced_partition_not_found_exception(time);
+  leveldb::Slice foundKey = it->key();
+  NetworkByteBuffer foundKeyBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(foundKey.data())), foundKey.size());
+  Timestamp endTime;
+  foundKeyBuf >> endTime;   
+  if (endTime == time) {
+    it->Next();
+    if (!it->Valid()) 
+      throw time_sliced_partition_not_found_exception(time);
+  }
+  leveldb::Slice value = it->value();
+  NetworkByteBuffer valueBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
+  PartitioningAndIter & partingAndIter = cache_.emplace(endTime, PartitioningAndIter()).first->second;
+  valueBuf >> partingAndIter.partitioning;
+  lruList_.push_front(endTime);
+  partingAndIter.iter = lruList_.begin();
+  if (lruList_.size()>partitioningBufferSize_) {
+      Timestamp t = lruList_.back();
+      lruList_.pop_back();
+      cache_.erase(t); 
+  }
+  return partingAndIter.partitioning;
 }
 
 vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(
@@ -108,17 +128,21 @@ vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(
 }
 
 // relacement partitionings must be contigious in time
-void replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toReplace, 
+void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toReplace, 
     std::vector<TimeSlicedPartitioning> const & replacement)
 {
-  // TODO
+  removePartitioning(toReplace);
+  for (auto const & partitioning : replacement)
+    addPartitioning(partitioning);
 }
 
 // to be replaced partitionings must be contigious in time
-void replacePartitionings(std::vector<TimeSlicedPartitioning> const & toReplace, 
-    Partitioning const & replacement)
+void PartitionIndex::replacePartitionings(std::vector<TimeSlicedPartitioning> const & toReplace, 
+    TimeSlicedPartitioning const & replacement)
 {
- // TODO
+  for (auto const & partitioning : toReplace)
+    removePartitioning(partitioning);
+  addPartitioning(replacement);
 }
 
 namespace intergdb { namespace core {
