@@ -13,6 +13,7 @@ namespace intergdb { namespace core
 {
 
   class Conf;
+  class NetworkByteBuffer;
 
   typedef std::vector<std::unordered_set<std::string>> Partitioning;
   
@@ -41,8 +42,8 @@ namespace intergdb { namespace core
   {
   public:
     PartitionIndex(Conf const & conf);
-    TimeSlicedPartitioning getTimeSlicedPartitioning(Timestamp time) const;
-    std::vector<TimeSlicedPartitioning> getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime) const;
+    TimeSlicedPartitioning getTimeSlicedPartitioning(Timestamp time);
+    std::vector<TimeSlicedPartitioning> getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime);
     // relacement partitionings must be contigious in time
     void replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toReplace, 
         std::vector<TimeSlicedPartitioning> const & replacement);
@@ -56,11 +57,16 @@ namespace intergdb { namespace core
     {
       TimeSlicedPartitioning partitioning;
       std::list<Timestamp>::iterator iter;
-    };
+    }; 
+    size_t partitioningBufferSize_;
     std::list<Timestamp> lruList_;
     std::unordered_map<Timestamp, PartitioningAndIter> cache_;
     std::auto_ptr<leveldb::DB> db_; // to store the index on disk
   };
+
+  NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, TimeSlicedPartitioning const & block);
+  NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, TimeSlicedPartitioning & block);
+
 } }
 
 

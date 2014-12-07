@@ -63,6 +63,7 @@ namespace intergdb { namespace core
             windowSize_(1024*1024), // 1M edges
             blockSize_(16*1024), // in bytes (16K)
             blockBufferSize_(16*1024), // in blocks (256MB)
+            partitioningBufferSize_(16*1024), // in partitionings 
             vertexDataBufferSize_(100*1024), // 100K vertices
             expirationMapSize_(std::max(windowSize_/100,
                     blockSize_/(sizeof(VertexId)+sizeof(Timestamp)))),
@@ -99,6 +100,10 @@ namespace intergdb { namespace core
         size_t blockBufferSize() const { return blockBufferSize_; }
         size_t & blockBufferSize() { return blockBufferSize_; }
 
+        // in partitionings
+        size_t partitioningBufferSize() const { return partitioningBufferSize_; }
+        size_t & partitioningsBufferSize() { return partitioningBufferSize_; }
+
         // number of vertices whose data is cached in memory
         size_t vertexDataBufferSize() const { return vertexDataBufferSize_; }
         size_t & vertexDataBufferSize() { return vertexDataBufferSize_; }
@@ -122,6 +127,7 @@ namespace intergdb { namespace core
         size_t windowSize_; // number of edges in the in memory graph
         size_t blockSize_; // in bytes
         size_t blockBufferSize_;  // in blocks
+        size_t partitioningBufferSize_; // in partitionings
         size_t vertexDataBufferSize_; // number of vertices whose data is cached
         size_t expirationMapSize_; // number of edges in the expiration map
         LayoutMode layoutMode_;
