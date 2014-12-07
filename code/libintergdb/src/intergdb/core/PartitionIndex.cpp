@@ -98,7 +98,12 @@ vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(
     Timestamp startTime, Timestamp endTime) 
 {
   vector<TimeSlicedPartitioning> results;
-  // TODO
+  Timestamp time = startTime;
+  do {
+    TimeSlicedPartitioning partitioning = getTimeSlicedPartitioning(time);
+    time = partitioning.getEndTime();
+    results.push_back(std::move(partitioning));  
+  } while (time < endTime);
   return results;
 }
 
