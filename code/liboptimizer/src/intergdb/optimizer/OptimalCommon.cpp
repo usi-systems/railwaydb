@@ -92,7 +92,7 @@ double OptimalCommon::s(std::vector<Attribute> const & attributes)
     return sum;
 }
 
-int OptimalCommon::accesses(std::vector<Query> const & queries, int q, int a)
+int OptimalCommon::accesses(std::vector<QuerySummary> const & queries, int q, int a)
 {
     for (auto & attribute : queries[q].getAttributes()) {
         if (attribute->getIndex() == a) return 1;
@@ -226,7 +226,7 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
 void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload) 
 {
 
-    std::vector<Query> queries = workload->getQueries();
+    std::vector<QuerySummary> queries = workload->getQueries();
 
 
     for (int a = 0; a < e->A; ++a) {

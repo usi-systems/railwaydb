@@ -5,11 +5,11 @@
 namespace intergdb { namespace common
 {
   class Attribute;
-  class Query
+  class QuerySummary
   {
   public:
-    Query() {}
-    Query(std::vector<Attribute const *> const & attributes, double frequency) 
+    QuerySummary() {}
+    QuerySummary(std::vector<Attribute const *> const & attributes, double frequency) 
       : attributes_(attributes), frequency_(frequency) {} 
     void addAttribute(Attribute const & attribute) { attributes_.push_back(&attribute); }
     void setAttributes(std::vector<Attribute const *> const & attributes) { attributes_ = attributes; }

@@ -12,7 +12,7 @@ string Attribute::toString() const
   return "(index: " + to_string(index_) + ", size:" + to_string(size_) + ")";
 }
 
-string Query::toString() const
+string QuerySummary::toString() const
 { 
   if (attributes_.size()==0)
     return "[attributes: ]";
@@ -29,7 +29,7 @@ string QueryWorkload::toString() const
   for (Attribute const & attribute : attributes_) 
     str += "\t" + attribute.toString() + "\n";
   str += "Queries:\n";
-  for (Query const & query : queries_) 
+  for (QuerySummary const & query : queries_) 
     str += "\t" + query.toString() + "\n";
   return str;
 }

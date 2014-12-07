@@ -5,7 +5,7 @@
 
 #include <intergdb/common/QueryWorkload.h>
 #include <intergdb/common/Partitioning.h>
-#include <intergdb/common/Query.h>
+#include <intergdb/common/QuerySummary.h>
 
 #include <intergdb/optimizer/Solver.h>
 #include <intergdb/optimizer/SolverFactory.h>
@@ -20,7 +20,7 @@ void nov_ex1(QueryWorkload & workload, double & storageOverheadThreshold)
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     for (auto const & attribute : workload.getAttributes()) {
-        Query query;
+        QuerySummary query;
         query.addAttribute(attribute);
         query.setFrequency(0.5);
         workload.addQuery(query);
@@ -97,7 +97,7 @@ void nov_ex3(QueryWorkload & workload, double & storageOverheadThreshold)
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     for (size_t j=0, ju=2; j<ju; ++j) {
-        Query query;
+        QuerySummary query;
         for (auto const & attribute : workload.getAttributes()) 
             query.addAttribute(attribute);        
         query.setFrequency(0.5);
@@ -138,14 +138,14 @@ void ov_ex1(QueryWorkload & workload, double & storageOverheadThreshold)
         workload.addAttribute(Attribute(i, 8));    
     auto const & attributes = workload.getAttributes();
     {
-        Query query;
+        QuerySummary query;
         query.addAttribute(attributes[0]);
         query.addAttribute(attributes[1]);
         query.setFrequency(0.5);
         workload.addQuery(query);
     }
     {
-        Query query;
+        QuerySummary query;
         query.addAttribute(attributes[1]);
         query.setFrequency(0.5);
         workload.addQuery(query);
