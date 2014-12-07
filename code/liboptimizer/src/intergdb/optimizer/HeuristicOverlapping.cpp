@@ -19,7 +19,7 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
   unordered_set<Attribute const *> missingAttributes;
   for (auto const & attrb : allAttributes)
     missingAttributes.insert(&attrb);
-  for (Query const & query : workload.getQueries()) {
+  for (QuerySummary const & query : workload.getQueries()) {
     Partition partition;
     for (Attribute const * attrb : query.getAttributes()) {
       partition.addAttribute(attrb);

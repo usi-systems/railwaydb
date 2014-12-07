@@ -8,7 +8,7 @@ using namespace intergdb;
 using namespace intergdb::common;
 
 vector<Partition const *> Cost::getUsedPartitions(vector<Partition> const & partitions, 
-  std::unordered_set<Attribute const *> const & attributes, Query const & query)
+  std::unordered_set<Attribute const *> const & attributes, QuerySummary const & query)
 {
   // attributes present in the query
   unordered_set<Attribute const *> queryAttributes; 
@@ -74,7 +74,7 @@ double Cost::getIOCost(vector<Partition> const & partitions, QueryWorkload const
 {
   double totalIOCost = 0.0;
   auto const & queries = workload.getQueries();
-  for (Query const & query : queries) {
+  for (QuerySummary const & query : queries) {
     double partitionIOCost = 0.0;
     vector<Partition const *> usedPartitions = getUsedPartitions(partitions, attributes, query);
     for (Partition const * partition : usedPartitions) 
