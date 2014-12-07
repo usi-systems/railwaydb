@@ -185,7 +185,7 @@ void OptimalCommon::print_name_variables(var_env *e, char** vname)
 void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
 {
     e->P = workload->getAttributes().size();
-    e->Q = workload->getQueries().size();
+    e->Q = workload->getQuerySummaries().size();
     e->A = workload->getAttributes().size();
     
     e->num_vars 
@@ -226,7 +226,7 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
 void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload) 
 {
 
-    std::vector<QuerySummary> queries = workload->getQueries();
+    std::vector<QuerySummary> queries = workload->getQuerySummaries();
 
 
     for (int a = 0; a < e->A; ++a) {
