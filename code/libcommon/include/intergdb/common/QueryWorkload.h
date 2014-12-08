@@ -28,7 +28,6 @@ namespace intergdb { namespace common
     std::vector<QuerySummary> const & getQuerySummaries() const { return queries_; }
     std::vector<QuerySummary> & getQuerySummaries() { return queries_; }
     std::string toString() const;
-
     void addQuery(Query q);
 
   private:
