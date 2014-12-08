@@ -1,10 +1,12 @@
 #pragma once
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
 
 #include <leveldb/db.h>
 
 #include <memory>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

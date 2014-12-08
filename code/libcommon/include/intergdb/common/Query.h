@@ -1,9 +1,10 @@
 #pragma once
 
-#include <intergdb/core/Schema.h>
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
+#include <vector>
 
-namespace intergdb { namespace core
+
+namespace intergdb { namespace common
 {
     class Query
     {
