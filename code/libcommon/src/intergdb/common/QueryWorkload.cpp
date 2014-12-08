@@ -1,12 +1,11 @@
 #include <intergdb/common/QueryWorkload.h>
-#include <intergdb/core/Query.h>
+#include <intergdb/common/Query.h>
 
 #include <string>
 
 using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
-using namespace intergdb::core;
 
 string Attribute::toString() const
 { 

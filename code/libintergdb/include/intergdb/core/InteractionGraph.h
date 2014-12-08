@@ -1,18 +1,21 @@
 #pragma once
 
+#include <intergdb/common/Types.h>
+#include <intergdb/common/Query.h>
+
 #include <intergdb/core/Conf.h>
-#include <intergdb/core/Types.h>
 #include <intergdb/core/Helper.h>
 #include <intergdb/core/VertexManager.h>
 #include <intergdb/core/InMemoryGraph.h>
 #include <intergdb/core/HistoricalGraph.h>
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
-#include <intergdb/core/Query.h>
 #include <intergdb/core/QueryCollector.h>
 
 #include <memory>
 #include <utility>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

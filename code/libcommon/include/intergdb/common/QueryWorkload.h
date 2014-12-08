@@ -2,7 +2,7 @@
 
 #include <intergdb/common/Attribute.h>
 #include <intergdb/common/QuerySummary.h>
-#include <intergdb/core/Query.h>
+#include <intergdb/common/Query.h>
 
 #include <vector>
 
@@ -29,7 +29,7 @@ namespace intergdb { namespace common
     std::vector<QuerySummary> & getQuerySummaries() { return queries_; }
     std::string toString() const;
 
-    void addQuery(core::Query q);
+    void addQuery(Query q);
 
   private:
     std::vector<Attribute> attributes_;

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <intergdb/core/Query.h>
+#include <intergdb/common/Query.h>
 #include <intergdb/common/QueryWorkload.h>
 #include <math.h>
 #include <map>
 #include <iostream>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {
