@@ -15,11 +15,13 @@ namespace intergdb { namespace common
     protected:
     Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
         : start_(start), end_(end), attributeNames_(attributeNames) { } 
+    std::vector<std::string> getAttributeNames() { return attributeNames_; }
 
     protected:
     Timestamp start_;
     Timestamp end_;
     std::vector<std::string> attributeNames_;   
+
     };
 
 

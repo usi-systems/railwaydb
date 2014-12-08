@@ -1,8 +1,10 @@
 #include <intergdb/core/QueryCollector.h>
+#include <intergdb/common/QueryWorkload.h>
 #include <iostream>
 
 using namespace std;
 using namespace intergdb::core;
+using namespace intergdb::common;
 
 void QueryCollector::collectIntervalQuery(Query q) 
 {
@@ -20,8 +22,9 @@ void QueryCollector::collectIntervalQuery(Query q)
             // iter->second.addQuery();
         } else {
             std::cout << "QueryCollector::collectIntervalQuery workloads empty" << std::endl;
-            common::QueryWorkload workload; 
-            //workload.addQuery(q);
+            QueryWorkload workload; 
+            conf_.getEdgeSchema();
+            workload.addQuery(q);
             workloads_[i] = workload;       
         }
        

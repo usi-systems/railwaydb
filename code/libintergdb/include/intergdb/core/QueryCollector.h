@@ -2,6 +2,8 @@
 
 #include <intergdb/common/Query.h>
 #include <intergdb/common/QueryWorkload.h>
+#include <intergdb/core/Conf.h>
+
 #include <math.h>
 #include <map>
 #include <iostream>
@@ -53,10 +55,11 @@ namespace intergdb { namespace core
     class QueryCollector
     {
     public:
-    QueryCollector() : bucketer_(1) { }
+    QueryCollector(Conf const & conf) : conf_(conf), bucketer_(1) { }
         void collectIntervalQuery(Query q);
         void collectFocusedIntervalQuery(Query q);
     private:
+        Conf const & conf_;
         NaiveBucketer bucketer_;
         std::map<BucketId,common::QueryWorkload> workloads_;
     };
