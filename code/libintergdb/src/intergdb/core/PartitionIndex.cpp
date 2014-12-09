@@ -32,7 +32,7 @@ PartitionIndex::PartitionIndex(Conf const & conf)
       auto const & attributes = schema.getAttributes();
       for (auto const & attribute : attributes)
         allAttributes.insert(attribute.first);
-      TimeSlicedPartitioning initialPartitioning;
+      TimeSlicedPartitioning initialPartitioning{};
       initialPartitioning.getPartitioning().push_back(std::move(allAttributes));
       addPartitioning(initialPartitioning);
     }
@@ -40,7 +40,6 @@ PartitionIndex::PartitionIndex(Conf const & conf)
 
 void PartitionIndex::addPartitioning(TimeSlicedPartitioning const & partitioning)
 {
-
   NetworkByteBuffer keyBuf(sizeof(Timestamp));
   keyBuf << partitioning.getEndTime();
   leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
@@ -83,12 +82,12 @@ TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time)
       return partitioning;
     }
   }
-  // not in the case, so go to the DB
-  NetworkByteBuffer startKeyBuf(sizeof(Timestamp));
-  startKeyBuf << time;
-  leveldb::Slice startKey(reinterpret_cast<char *>(startKeyBuf.getPtr()), startKeyBuf.getSerializedDataSize());
+  // not in the cache, so go to the DB
+  NetworkByteBuffer searchKeyBuf(sizeof(Timestamp));
+  searchKeyBuf << time;
+  leveldb::Slice searchKey(reinterpret_cast<char *>(searchKeyBuf.getPtr()), searchKeyBuf.getSerializedDataSize());
   unique_ptr<leveldb::Iterator> it(db_->NewIterator(leveldb::ReadOptions()));
-  it->Seek(startKey); 
+  it->Seek(searchKey); 
   if (!it->Valid()) 
     throw time_sliced_partition_not_found_exception(time);
   leveldb::Slice foundKey = it->key();
@@ -114,8 +113,7 @@ TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time)
   return partingAndIter.partitioning;
 }
 
-vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(
-    Timestamp startTime, Timestamp endTime) 
+vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime) 
 {
   vector<TimeSlicedPartitioning> results;
   Timestamp time = startTime;
@@ -128,19 +126,39 @@ vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(
 }
 
 // relacement partitionings must be contigious in time
-void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toReplace, 
+void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced, 
     std::vector<TimeSlicedPartitioning> const & replacement)
 {
-  removePartitioning(toReplace);
+  if (replacement.empty())
+    throw time_sliced_partition_replacement_exception("replacement time slice sequence is empty");
+  if (toBeReplaced.getStartTime() != replacement.begin()->getStartTime())
+    throw time_sliced_partition_replacement_exception("start time of the time slice to be replaced does not match that of the replacement time slice sequence");
+  if (toBeReplaced.getEndTime() != replacement.rbegin()->getEndTime())
+    throw time_sliced_partition_replacement_exception("end time of the time slice to be replaced does not match that of the replacement time slice sequence");
+  for (size_t i=1, iu=replacement.size(); i<iu; ++i) 
+    if (replacement[i].getStartTime()!=replacement[i-1].getEndTime())
+      throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
+  // all is ok, proceed to replace
+  removePartitioning(toBeReplaced);
   for (auto const & partitioning : replacement)
     addPartitioning(partitioning);
 }
 
 // to be replaced partitionings must be contigious in time
-void PartitionIndex::replacePartitionings(std::vector<TimeSlicedPartitioning> const & toReplace, 
+void PartitionIndex::replacePartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
     TimeSlicedPartitioning const & replacement)
 {
-  for (auto const & partitioning : toReplace)
+  if (toBeReplaced.empty())
+    throw time_sliced_partition_replacement_exception("time slice sequence to be replaced is empty");
+  if (toBeReplaced.begin()->getStartTime() != replacement.getStartTime())
+    throw time_sliced_partition_replacement_exception("start time of the time slice sequence to be replaced does not match that of the replacement time slice");
+  if (toBeReplaced.rbegin()->getEndTime() != replacement.getEndTime())
+    throw time_sliced_partition_replacement_exception("end time of the time slice sequence to be replaced does not match that of the replacement time slice");
+  for (size_t i=1, iu=toBeReplaced.size(); i<iu; ++i) 
+    if (toBeReplaced[i].getStartTime()!=toBeReplaced[i-1].getEndTime())
+      throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
+  // all is ok, proceed to replace
+  for (auto const & partitioning : toBeReplaced)
     removePartitioning(partitioning);
   addPartitioning(replacement);
 }

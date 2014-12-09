@@ -42,4 +42,11 @@ namespace intergdb { namespace core
           : std::runtime_error("time sliced partition that contains timestamp  "+boost::lexical_cast<std::string>(time)+" not found") {}
     };
 
+    class time_sliced_partition_replacement_exception : public std::runtime_error
+    {
+    public:
+        time_sliced_partition_replacement_exception(std::string const & description)
+          : std::runtime_error("error in replacing time sliced partition(s): " + description) {}
+    };
+
 } } /* namespace */
