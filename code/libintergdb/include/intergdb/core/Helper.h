@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
@@ -8,6 +8,8 @@
 #include <typeinfo>
 #include <type_traits>
 #include <string>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

@@ -1,5 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/Query.h>
+#include <intergdb/common/Query.h>
 
 #include <cstdlib>
 #include <iostream>

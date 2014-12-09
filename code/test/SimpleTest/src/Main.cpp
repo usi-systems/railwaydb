@@ -12,7 +12,7 @@ using namespace intergdb::core;
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb", {{"vertex-label",Schema::STRING}}, {{"edge-label", Schema::STRING}});
+    Conf conf("test", "/tmp/myigdb", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());   
     InteractionGraph graph(conf);
@@ -26,7 +26,8 @@ int main()
     }
 
     IntervalQuery q1(5.0, 10.0, {"a"});
-    FocusedIntervalQuery q2(2, 5.0, 10.0, {"a"});
+    IntervalQuery q2(5.0, 10.0, {"a"});
+    FocusedIntervalQuery q3(2, 5.0, 10.0, {"a"});
 
     InteractionGraph::VertexIterator iqIt = graph.processIntervalQuery(q1);
     while(iqIt.isValid()) {
@@ -34,7 +35,10 @@ int main()
         cout << iqIt.getVertexId() << endl; 
         iqIt.next();
     }
-    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(q2);
+
+    graph.processIntervalQuery(q2);
+
+    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(q3);
     while(fiqIt.isValid()) {
         cout << *fiqIt.getEdgeData() << endl;  
         cout << fiqIt.getToVertex() << endl; 

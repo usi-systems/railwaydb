@@ -18,7 +18,10 @@ INCDIR  = include
 EXECUTABLE   = simulation
 
 CPPFLAGS  = 
-INCLUDES  = -isystem /opt/local/libcpp-software/include -I ../libcommon/include -I ../liboptimizer/include
+INCLUDES  = -isystem /opt/local/libcpp-software/include \
+ -I ../libcommon/include \
+ -I ../liboptimizer/include \
+ -I ../libintergdb/include 
 LDFLAGS   = -L /opt/local/libcpp-software/lib -L ../libcommon/bin  -L ../liboptimizer/bin \
  -lboost_filesystem-mt -lboost_iostreams-mt -lboost_chrono-mt \
  -lboost_date_time-mt -lboost_system-mt -lboost_thread-mt -lcommon -loptimizer

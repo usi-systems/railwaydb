@@ -1,10 +1,12 @@
 #pragma once
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
 #include <intergdb/core/Schema.h>
 
 #include <string>
 #include <cassert>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

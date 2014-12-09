@@ -5,7 +5,9 @@
 #include <memory>
 #include <deque>
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

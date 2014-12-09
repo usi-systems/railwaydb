@@ -21,6 +21,7 @@ LIBRARY   = liboptimizer.so
 CPPFLAGS  = 
 INCLUDES  = \
  -I ../libcommon/include \
+ -I ../libintergdb/include \
  -I $(GUROBI_HOME)/include
 
 LDFLAGS   =  -L $(GUROBI_HOME)/lib \

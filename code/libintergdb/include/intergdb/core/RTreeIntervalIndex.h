@@ -1,12 +1,14 @@
 #pragma once
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
 #include <intergdb/core/auto_array.h>
 #include <spatialindex/SpatialIndex.h>
 #include <spatialindex/RTree.h>
 
 #include <boost/bind.hpp>
 #include <boost/coroutine/coroutine.hpp>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {
