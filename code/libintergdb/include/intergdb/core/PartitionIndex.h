@@ -47,10 +47,10 @@ namespace intergdb { namespace core
     TimeSlicedPartitioning getTimeSlicedPartitioning(Timestamp time);
     std::vector<TimeSlicedPartitioning> getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime);
     // relacement partitionings must be contigious in time
-    void replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toReplace, 
+    void replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced, 
         std::vector<TimeSlicedPartitioning> const & replacement);
     // to be replaced partitionings must be contigious in time
-    void replacePartitionings(std::vector<TimeSlicedPartitioning> const & toReplace, 
+    void replacePartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
         TimeSlicedPartitioning const & replacement);
   private:
     void addPartitioning(TimeSlicedPartitioning const & partitioning);
