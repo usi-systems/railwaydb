@@ -3,6 +3,7 @@
 #include <intergdb/core/AttributeData.h>
 
 #include <iostream> 
+#include <sstream> 
 
 using namespace intergdb::core;
 
@@ -27,3 +28,11 @@ Schema & Schema::addAttribute(std::string const& name, DataType type)
     return *this; 
 }
 
+
+std::string Schema::toString() const 
+{ 
+    std::stringstream ss;   
+    for (auto a : attributes_) 
+        ss << a.first << ":" << typeToString(a.second) << " ";        
+    return ss.str(); 
+}   
