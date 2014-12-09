@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
 
 #include <leveldb/db.h>
 
@@ -8,6 +8,8 @@
 #include <vector>
 #include <unordered_set>
 #include <limits>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

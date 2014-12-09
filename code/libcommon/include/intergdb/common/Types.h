@@ -8,6 +8,6 @@ namespace intergdb { namespace common
 {
     typedef uint64_t VertexId;
     typedef uint64_t BlockId;
-    typedef double Timestamp;
+    typedef double Timestamp; // in millisecs
 } } /* namespace */
 
