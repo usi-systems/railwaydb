@@ -3,6 +3,7 @@
 #include <intergdb/core/Helper.h>
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
+#include <intergdb/common/Types.h>
 
 #include <unordered_set>
 #include <algorithm>
@@ -11,6 +12,7 @@
 
 using namespace std;
 using namespace intergdb::core;
+using namespace intergdb::common;
 
 class EdgeTriplet
 {
@@ -121,9 +123,9 @@ namespace std {
     struct hash<EdgeTriplet> {
         inline size_t operator()(EdgeTriplet const & et) const {
             size_t hval = 17;
-            hval = hval * 37 + hash<intergdb::core::VertexId>()(et.getLowId());
-            hval = hval * 37 + hash<intergdb::core::VertexId>()(et.getHighId());
-            hval = hval * 37 + hash<intergdb::core::Timestamp>()(et.getTime());
+            hval = hval * 37 + hash<intergdb::common::VertexId>()(et.getLowId());
+            hval = hval * 37 + hash<intergdb::common::VertexId>()(et.getHighId());
+            hval = hval * 37 + hash<intergdb::common::Timestamp>()(et.getTime());
             return hval;
         }
     };

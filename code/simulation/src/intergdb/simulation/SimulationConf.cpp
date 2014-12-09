@@ -35,7 +35,7 @@ QueryWorkload SimulationConf::getQueryWorkload()
   iota(attributeIndices.begin(), attributeIndices.end(), 0);
   double totalFrequency = 0.0;
   for (size_t i=0, iu=getQueryTypeCount(); i<iu; ++i) {
-    Query query;
+    QuerySummary query;
     size_t queryLength = std::min(static_cast<size_t>(queryLengthGen_.getRandomValue()), attributes.size());
     for (size_t j=0; j<queryLength; ++j) {
       uniform_int_distribution<> udis(0, attributes.size()-j-1);
@@ -47,9 +47,9 @@ QueryWorkload SimulationConf::getQueryWorkload()
         queryTypeFrequencyGen_.getRandomValue());
     query.setFrequency(queryFrequency);
     totalFrequency += queryFrequency;
-    workload.addQuery(query);
+    workload.addQuerySummary(query);
   } 
-  for (Query & query : workload.getQueries()) 
+  for (QuerySummary & query : workload.getQuerySummaries()) 
     query.setFrequency(query.getFrequency()/totalFrequency);
   return workload;
 }

@@ -1,10 +1,14 @@
 #pragma once
 
-#include <intergdb/core/Query.h>
+#include <intergdb/common/Query.h>
 #include <intergdb/common/QueryWorkload.h>
+#include <intergdb/core/Conf.h>
+
 #include <math.h>
 #include <map>
 #include <iostream>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {
@@ -27,8 +31,18 @@ namespace intergdb { namespace core
             std::vector<BucketId> bucketIds;
             Timestamp start = q.getStart();
             Timestamp end = q.getEnd();
+
+
             int firstBucket = 0.0 == fmod(start, bucketSize_) ? (start / bucketSize_) :  (start / bucketSize_ + 1);
             int lastBucket = 0.0 == fmod(end, bucketSize_) ? (end / bucketSize_) :  (end / bucketSize_ + 1);
+
+            std::cout << "NaiveBucketer::getBuckets " 
+                      << "start " << start << " " 
+                      << "end " << end << " " 
+                      << "firstBucket " << firstBucket << " " 
+                      << "lastBucket " << lastBucket << " " 
+                      << std:: endl;
+
             for (int i = firstBucket; i <= lastBucket; i += bucketSize_) {
                 bucketIds.push_back(i);
             }
@@ -41,10 +55,11 @@ namespace intergdb { namespace core
     class QueryCollector
     {
     public:
-    QueryCollector() : bucketer_(1) { }
+    QueryCollector(Conf const & conf) : conf_(conf), bucketer_(1) { }
         void collectIntervalQuery(Query q);
         void collectFocusedIntervalQuery(Query q);
     private:
+        Conf const & conf_;
         NaiveBucketer bucketer_;
         std::map<BucketId,common::QueryWorkload> workloads_;
     };

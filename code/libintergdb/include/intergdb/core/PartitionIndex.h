@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intergdb/core/Types.h>
+#include <intergdb/common/Types.h>
 
 #include <leveldb/db.h>
 
@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <map>
 #include <limits>
+
+using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {

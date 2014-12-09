@@ -24,7 +24,7 @@ int OptimalOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload c
 {
     int error = 0;
     int j = 0;
-    std::vector<Query> const & queries = workload->getQueries();
+    std::vector<QuerySummary> const & queries = workload->getQuerySummaries();
 
     /* First set of constraints */    
     for (int a = 0; a < e->A; ++a) {

@@ -4,7 +4,7 @@ using namespace std;
 using namespace intergdb::core;
 
 InteractionGraph::InteractionGraph(Conf const & conf)
-    : conf_(conf), vman_(conf_), hisg_(conf_), memg_(conf_, &hisg_) { }
+    : conf_(conf), vman_(conf_), hisg_(conf_), memg_(conf_, &hisg_), qcol_(conf) { }
 
 void InteractionGraph::flush()
 {

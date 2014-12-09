@@ -14,7 +14,7 @@ THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 OBJDIR  = obj
 BINDIR  = bin
 SRCDIR  = src
-INCDIR  = include
+INCDIR  = include 
 
 LIBRARY   = libcommon.so
 

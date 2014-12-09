@@ -1,24 +1,48 @@
 #pragma once
 
+#include <intergdb/common/Types.h>
 #include <vector>
+
 
 namespace intergdb { namespace common
 {
-  class Attribute;
-  class Query
-  {
-  public:
-    Query() {}
-    Query(std::vector<Attribute const *> const & attributes, double frequency) 
-      : attributes_(attributes), frequency_(frequency) {} 
-    void addAttribute(Attribute const & attribute) { attributes_.push_back(&attribute); }
-    void setAttributes(std::vector<Attribute const *> const & attributes) { attributes_ = attributes; }
-    std::vector<Attribute const *> const & getAttributes() const { return attributes_; }
-    void setFrequency(double frequency) { frequency_ = frequency; }
-    double getFrequency() const { return frequency_; }
-    std::string toString() const;
-  private:
-    std::vector<Attribute const *> attributes_;
-    double frequency_;
-  };
-} }
+    class Query
+    {
+    public:
+    Timestamp getStart() { return start_; }
+    Timestamp getEnd() { return end_; }
+    
+    protected:
+    Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
+        : start_(start), end_(end), attributeNames_(attributeNames) { } 
+    std::vector<std::string> getAttributeNames() { return attributeNames_; }
+
+    protected:
+    Timestamp start_;
+    Timestamp end_;
+    std::vector<std::string> attributeNames_;   
+
+    };
+
+
+    class IntervalQuery : public Query
+    {
+    public:
+    IntervalQuery(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
+        :  Query(start, end, attributeNames) {  } 
+    };
+
+    class FocusedIntervalQuery : public Query
+    {
+    public:
+    FocusedIntervalQuery(VertexId headVertex, Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
+        : Query(start, end, attributeNames), headVertex_(headVertex) {  }
+        VertexId getHeadVertex() { return headVertex_; }
+    private:
+        VertexId headVertex_;
+    };
+
+
+} } /* namespace */
+
+
