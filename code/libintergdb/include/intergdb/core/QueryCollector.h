@@ -31,18 +31,8 @@ namespace intergdb { namespace core
             std::vector<BucketId> bucketIds;
             Timestamp start = q.getStart();
             Timestamp end = q.getEnd();
-
-
             int firstBucket = 0.0 == fmod(start, bucketSize_) ? (start / bucketSize_) :  (start / bucketSize_ + 1);
             int lastBucket = 0.0 == fmod(end, bucketSize_) ? (end / bucketSize_) :  (end / bucketSize_ + 1);
-
-            std::cout << "NaiveBucketer::getBuckets " 
-                      << "start " << start << " " 
-                      << "end " << end << " " 
-                      << "firstBucket " << firstBucket << " " 
-                      << "lastBucket " << lastBucket << " " 
-                      << std:: endl;
-
             for (int i = firstBucket; i <= lastBucket; i += bucketSize_) {
                 bucketIds.push_back(i);
             }
