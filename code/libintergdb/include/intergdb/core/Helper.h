@@ -1,6 +1,7 @@
 #pragma once
 
 #include <intergdb/common/Types.h>
+#include <intergdb/common/Attribute.h>
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Schema.h>
 
@@ -42,18 +43,18 @@ namespace intergdb { namespace core
         int i = 0;
         Schema const & schema = data.getSchema();
         for (auto a : schema.getAttributes()) {
-            switch (a.second) {
-            case Schema::INT64:
+            switch (a.getType()) {
+            case Attribute::INT64:
             {
                 size += getSerializedSizeOf(boost::get<int64_t>(data.getAttribute(i)));
                 break;
             }
-            case Schema::DOUBLE:
+            case Attribute::DOUBLE:
             {
                 size += getSerializedSizeOf(boost::get<double>(data.getAttribute(i)));
                 break;
             }
-            case Schema::STRING:
+            case Attribute::STRING:
             {
                 size += getSerializedSizeOf(boost::get<std::string>(data.getAttribute(i)));
                 break;

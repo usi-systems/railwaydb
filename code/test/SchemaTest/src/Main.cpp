@@ -12,7 +12,7 @@ using namespace intergdb::core;
 
 int main()
 {
-    Conf conf("test", "/tmp/st_igdb", {{"vertex-label",Schema::STRING}}, {{"a", Schema::INT64}, {"b", Schema::INT64}});  
+    Conf conf("test", "/tmp/st_igdb", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::INT64}, {"b", Attribute::INT64}});  
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     if (!newDB) {
         try {

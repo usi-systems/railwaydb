@@ -12,7 +12,7 @@ using namespace intergdb::core;
 
 int main()
 {
-    Conf conf("test", "/tmp/qt_igdb", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}, {"b", Schema::STRING}});
+    Conf conf("test", "/tmp/qt_igdb", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}, {"b", Attribute::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());   
     InteractionGraph graph(conf);

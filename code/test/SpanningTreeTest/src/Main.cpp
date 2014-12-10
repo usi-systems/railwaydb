@@ -1,5 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/Schema.h>
+#include <intergdb/common/Attribute.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -11,6 +11,8 @@
 
 using namespace std;
 using namespace intergdb::core;
+using namespace intergdb::common;
+
 using boost::lexical_cast;
 
 #define MAX_WT std::numeric_limits<double>::max()
@@ -92,7 +94,7 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_st", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}});
+    Conf conf("test", "/tmp/myigdb_st", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());
 

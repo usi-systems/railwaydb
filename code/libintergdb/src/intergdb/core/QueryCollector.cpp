@@ -21,9 +21,9 @@ void QueryCollector::collectIntervalQuery(Query q)
 
             // iter->second.addQuery();
         } else {
-            std::cout << "QueryCollector::collectIntervalQuery workloads empty" << std::endl;
-            QueryWorkload workload; 
-            conf_.getEdgeSchema();
+            std::cout << "QueryCollector::collectIntervalQuery workloads empty" << std::endl;         
+            // Schema schema = conf_.getEdgeSchema();
+            QueryWorkload workload(conf_.getEdgeSchema().getAttributes());
             workload.addQuery(q);
             workloads_[i] = workload;       
         }
