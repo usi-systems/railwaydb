@@ -37,7 +37,7 @@ string QueryWorkload::toString() const
 
 void QueryWorkload::addQuery(Query q) 
 {
-    std::cout << "QueryWorkload::addQuery" << std::endl;
+    // std::cout << "QueryWorkload::addQuery" << std::endl;
 
     // We want to look at the QuerySummaries, and see if 
     // there is one with for this particular query
