@@ -31,7 +31,7 @@ PartitionIndex::PartitionIndex(Conf const & conf)
       unordered_set<string> allAttributes;
       auto const & attributes = schema.getAttributes();
       for (auto const & attribute : attributes)
-        allAttributes.insert(attribute.first);
+          allAttributes.insert(attribute.getName());
       TimeSlicedPartitioning initialPartitioning{};
       initialPartitioning.getPartitioning().push_back(std::move(allAttributes));
       addPartitioning(initialPartitioning);

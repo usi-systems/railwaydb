@@ -2,6 +2,7 @@
 
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/NetworkByteBuffer.h>
+#include <intergdb/common/Attribute.h>
 
 using namespace intergdb::core;
 
@@ -21,18 +22,18 @@ std::string AttributeData::toString() const
     std::stringstream ss;
     int i = 0;
     for (auto a : schema_.getAttributes()) {
-        switch (a.second) {
-        case Schema::INT64:
+        switch (a.getType()) {
+        case Attribute::INT64:
         {
             ss << boost::get<int64_t>(fields_[i]);
             break;
         }
-        case Schema::DOUBLE:
+        case Attribute::DOUBLE:
         {
             ss << boost::get<double>(fields_[i]);
             break;
         }
-        case Schema::STRING:
+        case Attribute::STRING:
         {
             ss << boost::get<std::string>(fields_[i]);
             break;
@@ -63,18 +64,18 @@ namespace intergdb { namespace core
         Schema const & schema = val.getSchema();
         int i = 0;
         for (auto const & a : schema.getAttributes()) {
-            switch (a.second) {
-            case Schema::INT64:
+            switch (a.getType()) {
+            case Attribute::INT64:
             {
                 sbuf << boost::get<int64_t>(val.getAttribute(i));
                 break;
             }
-            case Schema::DOUBLE:
+            case Attribute::DOUBLE:
             {
                 sbuf << boost::get<double>(val.getAttribute(i));
                 break;
             }
-            case Schema::STRING:
+            case Attribute::STRING:
             {
                 sbuf << boost::get<std::string>(val.getAttribute(i));
                 break;
@@ -93,22 +94,22 @@ namespace intergdb { namespace core
         Schema const & schema = data.getSchema();
         int i = 0;
         for (auto const & a : schema.getAttributes()) {
-            switch (a.second) {
-            case Schema::INT64:
+            switch (a.getType()) {
+            case Attribute::INT64:
             {
                 int64_t dataInt64;
                 sbuf >> dataInt64;
                 data.setAttribute(i, dataInt64);
                 break;
             }
-            case Schema::DOUBLE:
+            case Attribute::DOUBLE:
             {
                 double dataDouble;
                 sbuf >> dataDouble;
                 data.setAttribute(i, dataDouble);
                 break;
             }
-            case Schema::STRING:
+            case Attribute::STRING:
             {
                 std::string dataString;
                 sbuf >> dataString;

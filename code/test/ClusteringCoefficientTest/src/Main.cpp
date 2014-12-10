@@ -52,7 +52,7 @@ unordered_map<VertexId, double> findClusteringCoefficients(
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_cc", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}});
+    Conf conf("test", "/tmp/myigdb_cc", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());    
     InteractionGraph graph(conf);

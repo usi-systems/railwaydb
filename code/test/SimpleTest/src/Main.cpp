@@ -1,5 +1,5 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/Schema.h>
+#include <intergdb/common/Attribute.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -9,10 +9,11 @@
 
 using namespace std;
 using namespace intergdb::core;
+using namespace intergdb::common;
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb", {{"vertex-label",Schema::STRING}}, {{"a", Schema::STRING}});
+    Conf conf("test", "/tmp/myigdb", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());   
     InteractionGraph graph(conf);
