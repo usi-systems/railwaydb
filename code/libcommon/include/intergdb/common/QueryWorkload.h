@@ -3,8 +3,11 @@
 #include <intergdb/common/Attribute.h>
 #include <intergdb/common/QuerySummary.h>
 #include <intergdb/common/Query.h>
+// #include <intergdb/common/Schema.h>
+
 
 #include <vector>
+#include <map>
 
 namespace intergdb { namespace common
 {
@@ -14,10 +17,20 @@ namespace intergdb { namespace common
   public:
     QueryWorkload() {}
     QueryWorkload(std::vector<Attribute> const & attributes)
-      : attributes_(attributes) {}
+        : attributes_(attributes),  totalQueries_(0) 
+    {
+        for (auto &attribute : attributes) 
+        {
+            // nameToAttribute_[attribute.getName()] = attribute;
+        }
+    }
+
     QueryWorkload(std::vector<Attribute> const & attributes, 
         std::vector<QuerySummary> const & queries) 
-      : attributes_(attributes), queries_(queries) {} 
+        : attributes_(attributes), queries_(queries), totalQueries_(0) 
+    {
+
+    } 
     void addAttribute(Attribute const & attribute) { attributes_.push_back(attribute); }
     Attribute const & getAttribute(int index) const { return attributes_.at(index); }
     void setAttributes(std::vector<Attribute> const & attributes) { attributes_ = attributes; }
@@ -33,6 +46,11 @@ namespace intergdb { namespace common
   private:
     std::vector<Attribute> attributes_;
     std::vector<QuerySummary> queries_;
+    std::map<Query, QuerySummary> summaries_;
+    std::map<Query, int> counts_;
+    std::map<std::string, Attribute &> nameToAttribute_;
+
+    double totalQueries_;
   };
 
 

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <intergdb/common/Types.h>
-#include <vector>
+#include <intergdb/common/Attribute.h>
 
+#include <vector>
+#include <algorithm>
 
 namespace intergdb { namespace common
 {
@@ -11,17 +13,25 @@ namespace intergdb { namespace common
     public:
     Timestamp getStart() { return start_; }
     Timestamp getEnd() { return end_; }
+
+    bool operator<( const Query& other) const
+    {        
+        return (std::equal(attributeNames_.begin(), attributeNames_.end(), other.attributeNames_.begin()));
+    }
     
     protected:
     Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
-        : start_(start), end_(end), attributeNames_(attributeNames) { } 
+        : start_(start), end_(end), attributeNames_(attributeNames) 
+    { 
+        std::sort(attributeNames.begin(), attributeNames.end());
+    } 
     std::vector<std::string> getAttributeNames() { return attributeNames_; }
+
 
     protected:
     Timestamp start_;
     Timestamp end_;
     std::vector<std::string> attributeNames_;   
-
     };
 
 
