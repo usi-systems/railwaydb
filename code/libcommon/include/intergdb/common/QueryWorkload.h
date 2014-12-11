@@ -21,7 +21,7 @@ namespace intergdb { namespace common
     {
         for (auto &attribute : attributes) 
         {
-            // nameToAttribute_[attribute.getName()] = attribute;
+            nameToAttribute_[attribute.getName()] = attribute;
         }
     }
 
@@ -29,7 +29,10 @@ namespace intergdb { namespace common
         std::vector<QuerySummary> const & queries) 
         : attributes_(attributes), queries_(queries), totalQueries_(0) 
     {
-
+        for (auto &attribute : attributes) 
+        {
+            nameToAttribute_[attribute.getName()] = attribute;
+        }
     } 
     void addAttribute(Attribute const & attribute) { attributes_.push_back(attribute); }
     Attribute const & getAttribute(int index) const { return attributes_.at(index); }
@@ -48,7 +51,7 @@ namespace intergdb { namespace common
     std::vector<QuerySummary> queries_;
     std::map<Query, QuerySummary> summaries_;
     std::map<Query, int> counts_;
-    std::map<std::string, Attribute &> nameToAttribute_;
+    std::map<std::string, Attribute> nameToAttribute_;
 
     double totalQueries_;
   };

@@ -37,7 +37,7 @@ string QueryWorkload::toString() const
 
 void QueryWorkload::addQuery(Query q) 
 {
-    std::cout << "QueryWorkload::addQuery" << std::endl;
+    std::cout << "QueryWorkload::addQuery " << q.toString() << std::endl;
 
     // We want to look at the QuerySummaries, and see if 
     // there is one with for this particular query
@@ -52,15 +52,19 @@ void QueryWorkload::addQuery(Query q)
 
     } else {        
         std::cout << "QueryWorkload::addQuery summary not found" << std::endl;   
-        // TODO: We need to create a QuerySummary of the Query
-        // We therefore need to create a std::vector<Attribute const *>
-        // We have a std::vector<std::string> that contains the attribute names
-        // To map string name to type (for size), we need access to the schema
-        
-        // consult nameToAttribute_
 
-        //QuerySummary summary(, 1.0);
-        // summaries_[q] = summary;
+        std::vector<Attribute const *> attributes;
+        for (auto name : q.getAttributeNames()) {
+            std::cout << "QueryWorkload::addQuery " << name << std::endl;
+            auto it = nameToAttribute_.find(name);
+            if(it == nameToAttribute_.end()) {        
+                // assert(false);
+            }
+            attributes.push_back(&it->second);
+        }
+
+        QuerySummary summary(attributes, 1.0);
+        summaries_[q] = summary;
     }
 
 }

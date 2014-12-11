@@ -9,14 +9,19 @@ namespace intergdb { namespace common
   {
   public:
 
-    enum DataType { INT64, DOUBLE, STRING };
+      enum DataType { INT64, DOUBLE, STRING, UNDEFINED };
     // char const * dataTypesStrings[] = { "INT64", "DOUBLE", "STRING" };
-
+    
+    Attribute() { }
     Attribute(size_t index, double size, std::string name, DataType type)
-        : index_(index), size_(size), name_(name), type_(type) {}
+      : index_(index), size_(size), name_(name), type_(type) {}
 
+    Attribute(size_t index, double size) 
+        : index_(index), size_(size), name_(""), type_(UNDEFINED) {}
+    
+    Attribute( const Attribute& other ) 
+      : index_(other.index_), size_(other.size_), name_(other.name_), type_(other.type_) {}
 
-    Attribute(size_t index, double size) : index_(index), size_(size) {}
     size_t getIndex() const { return index_; }
     void setIndex(size_t index) { index_ = index; }
     std::string getName() const { return name_; }
