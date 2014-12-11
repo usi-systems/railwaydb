@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <sstream> 
 
 namespace intergdb { namespace common
 {
@@ -18,15 +19,25 @@ namespace intergdb { namespace common
     {        
         return (std::equal(attributeNames_.begin(), attributeNames_.end(), other.attributeNames_.begin()));
     }
+    std::vector<std::string> getAttributeNames() { return attributeNames_; }
     
+    std::string toString() 
+    {
+        std::stringstream ss;
+        for (auto a : attributeNames_) {
+            ss << a << " ";
+        }
+        return ss.str();
+    }
+
     protected:
     Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
         : start_(start), end_(end), attributeNames_(attributeNames) 
     { 
         std::sort(attributeNames.begin(), attributeNames.end());
     } 
-    std::vector<std::string> getAttributeNames() { return attributeNames_; }
 
+    
 
     protected:
     Timestamp start_;

@@ -43,6 +43,8 @@ double Schema::typeToSize(common::Attribute::DataType type)
         // TODO: This should be fixed to keep an average
         std::cerr << "Schema::typeToSize warning. String type does not have the proper size." << std::endl;
         return 128;
+    case Attribute::UNDEFINED:
+        assert(false);
     }
     assert(false);
     return(0.0);
