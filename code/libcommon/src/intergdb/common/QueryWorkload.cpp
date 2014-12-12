@@ -2,6 +2,7 @@
 #include <intergdb/common/Query.h>
 
 #include <string>
+#include <assert.h>
 
 using namespace std;
 using namespace intergdb;
@@ -34,37 +35,38 @@ string QueryWorkload::toString() const
   return str;
 }
 
+// TODO (rjs): This is really inneficient. Need to change this so that the 
+// workloads compute the frequencies when they are asked for it. 
+void QueryWorkload::updateFrequencies() 
+{
+    for (auto it = summaries_.begin(); it != summaries_.end(); it++) {
+        auto countIt = counts_.find(it->first);
+        it->second.setFrequency(countIt->second/totalQueries_);
+    }
+}
 
 void QueryWorkload::addQuery(Query q) 
 {
-    std::cout << "QueryWorkload::addQuery " << q.toString() << std::endl;
-
-    // We want to look at the QuerySummaries, and see if 
-    // there is one with for this particular query
-
     totalQueries_++;
-
-    // We want a mapping from Query -> QuerySummary
     auto search = summaries_.find(q);
     if(search != summaries_.end()) {        
-        std::cout << "QueryWorkload::addQuery summary found" << std::endl;   
-
-
+        auto countIt = counts_.find(q);
+        countIt->second++;
+        counts_.emplace(std::pair<Query,int>(q, countIt->second));
+        updateFrequencies();
     } else {        
-        std::cout << "QueryWorkload::addQuery summary not found" << std::endl;   
-
         std::vector<Attribute const *> attributes;
         for (auto name : q.getAttributeNames()) {
-            std::cout << "QueryWorkload::addQuery " << name << std::endl;
             auto it = nameToAttribute_.find(name);
             if(it == nameToAttribute_.end()) {        
-                // assert(false);
+                assert(false);
             }
             attributes.push_back(&it->second);
         }
-
         QuerySummary summary(attributes, 1.0);
-        summaries_[q] = summary;
+        summaries_.emplace(std::pair<Query,QuerySummary>(q, summary));
+        counts_.emplace(std::pair<Query,int>(q, 1));
+        updateFrequencies();    
     }
 
 }
