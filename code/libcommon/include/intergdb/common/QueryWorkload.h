@@ -47,12 +47,13 @@ namespace intergdb { namespace common
     void addQuery(Query q);
 
   private:
+    void updateFrequencies();
+
     std::vector<Attribute> attributes_;
     std::vector<QuerySummary> queries_;
     std::map<Query, QuerySummary> summaries_;
     std::map<Query, int> counts_;
     std::map<std::string, Attribute> nameToAttribute_;
-
     double totalQueries_;
   };
 

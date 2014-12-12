@@ -17,11 +17,22 @@ namespace intergdb { namespace common
 
     bool operator<( const Query& other) const
     {        
-        return (std::equal(attributeNames_.begin(), attributeNames_.end(), other.attributeNames_.begin()));
+        if (attributeNames_.size() < other.attributeNames_.size()) {
+            return true;
+        }
+
+        bool lt = true;
+        int i = 0;
+        for (auto mine : attributeNames_) {
+            lt = lt && (mine < other.attributeNames_[i]);
+            i++;
+        }      
+        return lt;
     }
+   
     std::vector<std::string> getAttributeNames() { return attributeNames_; }
     
-    std::string toString() 
+    std::string toString() const
     {
         std::stringstream ss;
         for (auto a : attributeNames_) {
