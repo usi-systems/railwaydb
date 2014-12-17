@@ -4,44 +4,92 @@
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <intergdb/common/Attribute.h>
 
+using namespace std;
+using namespace intergdb::common;
 using namespace intergdb::core;
 
-intergdb::core::AttributeData& AttributeData::setAttribute(std::string const& attributeName, Type value) 
+
+AttributeData::Type getTypeValue(Attribute::DataType type)
+{
+    switch (type) {
+    case Attribute::INT64:
+        return AttributeData::Type(int64_t{});
+    case Attribute::DOUBLE:
+        return AttributeData::Type(double{});
+    case Attribute::STRING:
+        return AttributeData::Type(string{});
+    default:
+        assert("!cannot happen");
+    } 
+    return AttributeData::Type();
+}
+
+AttributeData::AttributeData(Schema const & schema) 
+    : schema_(schema) 
+{ 
+    for (Attribute const & attrb : schema_.getAttributes()) 
+        fields_.emplace(attrb.getIndex(), getTypeValue(attrb.getType()));
+}
+
+AttributeData::AttributeData(Schema const & schema, unordered_set<string> const & attributes) 
+    : schema_(schema) 
+{ 
+    for(string const & attrb : attributes) {
+        auto idx = schema.getIndex(attrb);
+        auto const & type = schema.getAttributes().at(idx).getType();
+        fields_.emplace(idx, getTypeValue(type));
+    }
+}
+
+AttributeData & AttributeData::setAttribute(string const & attributeName, Type value) 
 {  
     fields_[schema_.getIndex(attributeName)] = value; 
     return *this; 
 }
 
-intergdb::core::AttributeData& AttributeData::setAttribute(int attributeIndex, Type value) { 
+AttributeData & AttributeData::setAttribute(int attributeIndex, Type value) 
+{ 
     fields_[attributeIndex] = value; 
     return *this; 
 }
 
+AttributeData::Type const & AttributeData::getAttribute(string const & attributeName) const 
+{ 
+    return fields_.find(schema_.getIndex(attributeName))->second;
+}
+
+AttributeData::Type const & AttributeData::getAttribute(int attributeIndex) const 
+{ 
+    return fields_.find(attributeIndex)->second; 
+}
+
+
 std::string AttributeData::toString() const 
 { 
     std::stringstream ss;
-    int i = 0;
-    for (auto a : schema_.getAttributes()) {
-        switch (a.getType()) {
+    for (auto const & idxValuePair : fields_) {
+        int idx = idxValuePair.first;
+        AttributeData::Type const & value = idxValuePair.second;
+        Attribute const & attrb = schema_.getAttributes().at(idx);
+        switch (attrb.getType()) {
         case Attribute::INT64:
         {
-            ss << boost::get<int64_t>(fields_[i]);
+            ss << boost::get<int64_t>(value);
             break;
         }
         case Attribute::DOUBLE:
         {
-            ss << boost::get<double>(fields_[i]);
+            ss << boost::get<double>(value);
             break;
         }
         case Attribute::STRING:
         {
-            ss << boost::get<std::string>(fields_[i]);
+            ss << boost::get<std::string>(value);
             break;
         }
         default:
             assert(false);
         } 
-        i++;
     }
     return ss.str(); 
 }
@@ -50,40 +98,47 @@ bool AttributeData::operator==(AttributeData const& other)
 {             
     if (fields_.size() != other.fields_.size()) 
         return false;
-    for (size_t i=0, iu=fields_.size(); i<iu; ++i)
-        if ( !(fields_[i]==other.fields_[i]) )
+    for (auto idxValuePair : fields_) {
+        int idx = idxValuePair.first;
+        AttributeData::Type const & value = idxValuePair.second;
+        auto iter = other.fields_.find(idx);
+        if (iter==other.fields_.end())
             return false;
+        if (!(value==iter->second))
+            return false;
+    }
     return true; 
 }
 
 namespace intergdb { namespace core
 {
 
-    NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, AttributeData const & val)
+    NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, AttributeData const & data)
     {
-        Schema const & schema = val.getSchema();
-        int i = 0;
-        for (auto const & a : schema.getAttributes()) {
-            switch (a.getType()) {
+        Schema const & schema = data.getSchema();
+        for (auto const & idxValuePair : data.getFields()) {
+            int idx = idxValuePair.first;
+            AttributeData::Type const & value = idxValuePair.second;
+            Attribute const & attrb = schema.getAttributes().at(idx);
+            switch (attrb.getType()) {
             case Attribute::INT64:
             {
-                sbuf << boost::get<int64_t>(val.getAttribute(i));
+                sbuf << boost::get<int64_t>(value);
                 break;
             }
             case Attribute::DOUBLE:
             {
-                sbuf << boost::get<double>(val.getAttribute(i));
+                sbuf << boost::get<double>(value);
                 break;
             }
             case Attribute::STRING:
             {
-                sbuf << boost::get<std::string>(val.getAttribute(i));
+                sbuf << boost::get<std::string>(value);
                 break;
             }
             default:
-                assert(false);
+                assert(!"cannot happen");
             }
-            i++; 
         }
         return sbuf;
 
@@ -92,34 +147,34 @@ namespace intergdb { namespace core
     NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, AttributeData & data)
     {      
         Schema const & schema = data.getSchema();
-        int i = 0;
-        for (auto const & a : schema.getAttributes()) {
-            switch (a.getType()) {
+        for (auto const & idxValuePair : data.getFields()) {
+            int idx = idxValuePair.first;
+            Attribute const & attrb = schema.getAttributes().at(idx);
+            switch (attrb.getType()) {
             case Attribute::INT64:
             {
                 int64_t dataInt64;
                 sbuf >> dataInt64;
-                data.setAttribute(i, dataInt64);
+                data.setAttribute(idx, dataInt64);
                 break;
             }
             case Attribute::DOUBLE:
             {
                 double dataDouble;
                 sbuf >> dataDouble;
-                data.setAttribute(i, dataDouble);
+                data.setAttribute(idx, dataDouble);
                 break;
             }
             case Attribute::STRING:
             {
                 std::string dataString;
                 sbuf >> dataString;
-                data.setAttribute(i, dataString);
+                data.setAttribute(idx, dataString);
                 break;
             }
             default:
-                assert(false);
+                assert(!"cannot happen");
             } 
-            i++;
         }
         return sbuf;
     }

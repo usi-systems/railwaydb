@@ -5,10 +5,10 @@
 #include <intergdb/core/Schema.h>
 #include <intergdb/common/Types.h>
 
-#include <unordered_set>
 #include <algorithm>
 #include <cassert>
-
+#include <limits>
+#include <unordered_set>
 
 using namespace std;
 using namespace intergdb::core;
@@ -32,13 +32,6 @@ private:
     Timestamp tm_;
 };
 
-Block::Block() : 
-    id_(0), serializedSize_(sizeof(BlockId)), 
-    edgeSchema_(Schema::empty()) 
-{ 
-    throw std::runtime_error("empty schema"); 
-}
-
 void Block::swap(Block & other)
 {
     std::swap(id_, other.id_);
@@ -52,6 +45,21 @@ void Block::addNeighborList(VertexId id)
         neigs_[id].headVertex() = id;
         serializedSize_ += sizeof(VertexId);
         serializedSize_ += sizeof(uint32_t);
+    }
+}
+
+void Block::findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const
+{
+    minTimestamp = numeric_limits<Timestamp>::max();
+    maxTimestamp = 0;
+    for (auto it=neigs_.cbegin(); it!=neigs_.cend(); ++it) {
+        auto const & nlist = it->second;
+        auto const & oldestEdge = nlist.getOldestEdge();
+        auto const & newestEdge = nlist.getNewestEdge();
+        if (oldestEdge.getTime() < minTimestamp)
+            minTimestamp = oldestEdge.getTime();
+        if (newestEdge.getTime() > maxTimestamp)
+            maxTimestamp = newestEdge.getTime();
     }
 }
 
@@ -116,7 +124,9 @@ void Block::removeNewestEdge(VertexId headVertex)
         serializedSize_ -= sizeof(uint32_t);
         serializedSize_ -= sizeof(VertexId);
     }
+
 }
+
 
 namespace std { 
     template<>
@@ -132,6 +142,37 @@ namespace std {
 }
 
 namespace intergdb { namespace core {
+
+vector<Block> Block::partitionBlock(Partitioning const & part, Schema const & schema)
+{
+    vector<Block> blocks;
+    blocks.reserve(part.size());
+    for (size_t i=0, iu=part.size(); i<iu; ++i) {
+        unordered_set<string> const & attributes = part.at(i);
+        Block block;
+        std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
+        for (auto const & vIdNListPair : getNeighborLists()) {
+            VertexId headVertex = vIdNListPair.first;
+            auto const & neighborList = vIdNListPair.second;
+            for (auto const & edge : neighborList.getEdges()) {
+                VertexId toVertex = edge.getToVertex();
+                Timestamp tm = edge.getTime();
+                std::shared_ptr<AttributeData> sdata;
+                EdgeTriplet etrip(headVertex, toVertex, tm);
+                auto it = read.find(etrip);
+                if (it==read.end()) {
+                    sdata.reset(schema.newAttributeData(attributes));
+                    read[etrip] = sdata;
+                } else {
+                    sdata = it->second;
+                }
+                block.addEdge(headVertex, toVertex, tm, sdata);
+            }
+        }
+        blocks.push_back(std::move(block));
+    }
+    return blocks;
+}
 
 inline std::ostream & operator<<(std::ostream & out, Block const & block)
 {
@@ -152,12 +193,12 @@ inline std::ostream & operator<<(std::ostream & out, Block const & block)
 
 // TODO: variable length encode timestamps after applying a delta
 // TODO: optional compression
-NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, Block const & block)
+NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
 {
     std::unordered_set<EdgeTriplet> written;
-    sbuf << block.id();
-    auto const & neigs = block.getNeighborLists();
-    for (auto it=neigs.begin(); it!=neigs.end(); ++it)  {
+    sbuf << id();
+    auto const & neigs = getNeighborLists();
+    for (auto it=neigs.cbegin(); it!=neigs.cend(); ++it)  {
         VertexId headVertex = it->first;
         sbuf << headVertex;
         auto const & nlist = it->second;
@@ -177,10 +218,10 @@ NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, Block const & block)
     return sbuf;
 }
 
-NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, Block & block)
+NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf, Schema const & schema) 
 {
     std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
-    sbuf >> block.id();
+    sbuf >> id();
     while (sbuf.getNRemainingBytes()>0) {
         VertexId headVertex;
         sbuf >> headVertex;
@@ -195,13 +236,13 @@ NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, Block & block)
             EdgeTriplet etrip(headVertex, toVertex, tm);
             auto it = read.find(etrip);
             if (it==read.end()) {
-                sdata.reset(block.getEdgeSchema().newAttributeData());
+                sdata.reset(schema.newAttributeData());
                 sbuf >> *sdata;
                 read[etrip] = sdata;
             } else {
                 sdata = it->second;
             }
-            block.addEdge(headVertex, toVertex, tm, sdata);
+            addEdge(headVertex, toVertex, tm, sdata);
         }
     }
     return sbuf;

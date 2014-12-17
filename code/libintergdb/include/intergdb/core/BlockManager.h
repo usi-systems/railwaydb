@@ -18,7 +18,6 @@ namespace intergdb { namespace core
         struct BlockAndIdIter
         {
             BlockAndIdIter() {};
-            BlockAndIdIter(Schema const & edgeSchema) : block(edgeSchema) {};
             Block block;
             std::list<BlockId>::iterator iter;
         };

@@ -68,8 +68,8 @@ Block const & BlockManager::getBlock(BlockId id)
         else if (!status.ok())
             throw std::runtime_error(status.ToString());
         NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
-        BlockAndIdIter & blockAndIter = cache_.emplace(id, BlockAndIdIter(edgeSchema_)).first->second;
-        dataBuf >> blockAndIter.block;
+        BlockAndIdIter & blockAndIter = cache_.emplace(id, BlockAndIdIter()).first->second;
+        blockAndIter.block.deserialize(dataBuf, edgeSchema_);
         lruList_.push_front(id);
         blockAndIter.iter = lruList_.begin();
         if (lruList_.size()>blockBufferSize_) {
@@ -90,7 +90,7 @@ void BlockManager::addBlock(Block & block)
     keyBuf << block.id();
     leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
     NetworkByteBuffer dataBuf;
-    dataBuf << block;
+    block.serialize(dataBuf);
     leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()), dataBuf.getSerializedDataSize());
     leveldb::Status status = db_->Put(leveldb::WriteOptions(), key, dataSlice);
     if (!status.ok())

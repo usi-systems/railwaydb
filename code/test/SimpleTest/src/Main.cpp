@@ -40,7 +40,7 @@ int main()
 
     graph.processIntervalQuery(q2);
     graph.processIntervalQuery(q3);
-/*
+
     InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(q4);
     while(fiqIt.isValid()) {
         cout << *fiqIt.getEdgeData() << endl;  
@@ -48,7 +48,7 @@ int main()
         cout << fiqIt.getTime() << endl; 
         fiqIt.next();
     }
-*/
+
     return EXIT_SUCCESS;
 }
 

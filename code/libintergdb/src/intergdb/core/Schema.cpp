@@ -6,30 +6,29 @@
 #include <iostream> 
 #include <sstream> 
 
+using namespace std;
+using namespace intergdb::common;
 using namespace intergdb::core;
  
-Schema::Schema(std::unordered_map<std::string, common::Attribute::DataType> nameAndType) 
+Schema::Schema(std::unordered_map<std::string, Attribute::DataType> const & nameAndType) 
 {
-
     size_t index = 0;
     for (auto p : nameAndType) {
         Attribute attribute(index, typeToSize(p.second), p.first, p.second);
-        attributes_.emplace_back(attribute);
+        attributes_.push_back(std::move(attribute));
+        nameToIndex_.emplace(p.first, attributes_.size()-1);
         index++;
     }
 }
 
 AttributeData * Schema::newAttributeData() const
 { 
-    return new AttributeData(*this, attributes_.size()); 
+    return new AttributeData(*this); 
 }
 
-Schema & Schema::addAttribute(std::string const& name, common::Attribute::DataType type) 
-{    
-    Attribute attribute(attributes_.size(), typeToSize(type), name, type);
-    attributes_.emplace_back(attribute);
-    nameToIndex_.insert({{name, attributes_.size()-1}});
-    return *this; 
+AttributeData * Schema::newAttributeData(unordered_set<string> const & attributes) const
+{ 
+    return new AttributeData(*this, attributes); 
 }
 
 double Schema::typeToSize(common::Attribute::DataType type) 
