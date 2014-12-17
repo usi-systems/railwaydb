@@ -1,8 +1,10 @@
 #pragma once
 
 #include <intergdb/core/BlockManager.h>
+#include <intergdb/core/Conf.h>
 #include <intergdb/core/IntervalQueryIndex.h>
 #include <intergdb/core/FocusedIntervalQueryIndex.h>
+#include <intergdb/core/PartitionIndex.h>
 
 #include <unordered_set>
 
@@ -44,7 +46,7 @@ namespace intergdb { namespace core
             std::shared_ptr<FocusedIntervalQueryIndex::Iterator> it_;
         };
     public:
-        HistoricalGraph(Conf const & conf);
+        HistoricalGraph(Conf const & conf, PartitionIndex & pidx);
         void addBlock(Block & block);
         std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
         void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
@@ -53,7 +55,9 @@ namespace intergdb { namespace core
         size_t getEdgeReadIOCount() const { return bman_.getNumIOReads(); }
         size_t getEdgeWriteIOCount() const { return bman_.getNumIOWrites(); }
     private:
+        Conf conf_;
         BlockManager bman_;
+        PartitionIndex pidx_;
         IntervalQueryIndex iqIndex_;
         FocusedIntervalQueryIndex fiqIndex_;
     };

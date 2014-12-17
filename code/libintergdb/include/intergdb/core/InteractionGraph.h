@@ -1,16 +1,17 @@
 #pragma once
 
-#include <intergdb/common/Types.h>
 #include <intergdb/common/Query.h>
+#include <intergdb/common/Types.h>
 
+#include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/Helper.h>
-#include <intergdb/core/VertexManager.h>
-#include <intergdb/core/InMemoryGraph.h>
 #include <intergdb/core/HistoricalGraph.h>
-#include <intergdb/core/AttributeData.h>
-#include <intergdb/core/Schema.h>
+#include <intergdb/core/InMemoryGraph.h>
+#include <intergdb/core/PartitionIndex.h>
 #include <intergdb/core/QueryCollector.h>
+#include <intergdb/core/Schema.h>
+#include <intergdb/core/VertexManager.h>
 
 #include <memory>
 #include <utility>
@@ -70,6 +71,7 @@ namespace intergdb { namespace core
     private:
         Conf conf_;
         VertexManager vman_;
+        PartitionIndex pidx_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
         QueryCollector qcol_;
@@ -111,7 +113,7 @@ namespace intergdb { namespace core
         getVertexData(u);
         std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());
         // TODO (rjs): Need to check that the edge added has the correct data for the schema
-        assert(sizeof...(EdgeDataAttributes) == getEdgeSchema().numAttributes());        
+        assert(sizeof...(EdgeDataAttributes) == getEdgeSchema().getAttributes().size());        
         AttributeCollector<EdgeDataAttributes...>::add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);
     }

@@ -87,7 +87,7 @@ void ExpirationMap::flush()
 
 void ExpirationMap::writeBlock()
 {
-    Block block(edgeSchema_);
+    Block block;
     switch(conf_.layoutMode()) {
     case Conf::LM_Smart:
         getBlockSmart(block);

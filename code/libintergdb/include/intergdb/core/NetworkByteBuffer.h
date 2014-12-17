@@ -370,6 +370,32 @@ BYTE_BUFFER_ADD_OPERATOR(char *, NTStr)
 BYTE_BUFFER_ADD_OPERATOR(char const *, NTStr)
 BYTE_BUFFER_ADD_OPERATOR(std::string, STLString)
 
+#undef BYTE_BUFFER_ADD_OPERATOR
+
+template <class T>
+inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, std::vector<T> const & val)
+{
+    uint32_t size = val.size();
+    sbuf << size; 
+    for (auto const & item : val)
+        sbuf << item;
+    return sbuf;
+}
+
+template <class T>
+inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::vector<T> & val)
+{
+    uint32_t size;
+    sbuf >> size; 
+    val.reserve(size);
+    for (decltype(size) i=0; i<size; ++i) {
+        T item;
+        sbuf >> item;
+        val.push_back(std::move(item));
+    }
+    return sbuf;
+}
+
 template <class T1, class T2>
 inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, std::pair<T1, T2> const & val)
 {
@@ -379,13 +405,13 @@ inline NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, std::pair<T1, 
 }
 
 template <class T1, class T2>
-inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1, T2> const & val)
+inline NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf,  std::pair<T1, T2> & val)
 {
     sbuf >> val.first;
     sbuf >> val.second;
     return sbuf;
 }
 
-#undef BYTE_BUFFER_ADD_OPERATOR
+
 
 } } /* namespace */

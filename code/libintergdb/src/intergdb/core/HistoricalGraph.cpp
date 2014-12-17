@@ -56,7 +56,7 @@ void HistoricalGraph::EdgeIterator::next()
     assert(isValid());
     currentEdgeIndex_++;
     if (currentEdgeIndex_<currentNumEdges_) {
-        auto const & nlist = bman_->getBlock(it_->getBlock()).getNeighborLists().find(it_->getVertex())->second;
+        auto const & nlist = bman_->getBlock(it_->getBlocks()[0]).getNeighborLists().find(it_->getVertex())->second;
         if(nlist.getNthOldestEdge(currentEdgeIndex_).getTime()>=it_->getRangeEndTime())
             done_ = true;
     } else {
@@ -69,13 +69,14 @@ void HistoricalGraph::EdgeIterator::next()
 NeighborList::Edge const & HistoricalGraph::EdgeIterator::
      getEdge()
 {
-    auto const & nlist = bman_->getBlock(it_->getBlock()).getNeighborLists().find(it_->getVertex())->second;
+    // TODO: update needed for handling partitions
+    auto const & nlist = bman_->getBlock(it_->getBlocks()[0]).getNeighborLists().find(it_->getVertex())->second;
     return nlist.getNthOldestEdge(currentEdgeIndex_);
 }
 
 void HistoricalGraph::EdgeIterator::initFromBlock()
 {
-    auto const & nlist = bman_->getBlock(it_->getBlock()).getNeighborLists().find(it_->getVertex())->second;
+    auto const & nlist = bman_->getBlock(it_->getBlocks()[0]).getNeighborLists().find(it_->getVertex())->second;
     currentNumEdges_ = nlist.getEdges().size();
     for (currentEdgeIndex_=0; currentEdgeIndex_<currentNumEdges_; currentEdgeIndex_++)
         if (nlist.getNthOldestEdge(currentEdgeIndex_).getTime()>=it_->getRangeStartTime())
@@ -85,15 +86,22 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
         done_ = true;
 }
 
-HistoricalGraph::HistoricalGraph(Conf const & conf)
-    : bman_(conf), iqIndex_(conf, &bman_), fiqIndex_(conf)
+HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx)
+    : conf_(conf), bman_(conf), pidx_(pidx), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
 void HistoricalGraph::addBlock(Block & block)
 {
-    bman_.addBlock(block); // sets the block id
-    iqIndex_.indexBlock(block);
-    fiqIndex_.indexBlock(block);
+    Timestamp minTimestamp, maxTimestamp;
+    block.findMinMaxTimestamps(minTimestamp, maxTimestamp);
+    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2;
+    TimeSlicedPartitioning tpart = pidx_.getTimeSlicedPartitioning(blockTimestamp);
+    Partitioning const & part = tpart.getPartitioning();
+    vector<Block> subBlocks = block.partitionBlock(part, conf_.getEdgeSchema());
+    for (Block & subBlock : subBlocks) 
+        bman_.addBlock(subBlock); // sets the block id        
+    iqIndex_.indexBlock(subBlocks[0]);
+    fiqIndex_.indexBlocks(subBlocks);
 }
 
 std::shared_ptr<HistoricalGraph::VertexIterator> HistoricalGraph::

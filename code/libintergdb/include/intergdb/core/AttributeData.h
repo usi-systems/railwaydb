@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <unordered_set>
+#include <unordered_map>
 #include <iostream> 
 #include <sstream>     
 #include <boost/variant.hpp>
@@ -17,16 +18,19 @@ namespace intergdb { namespace core
         friend class Schema;
         typedef boost::variant<int64_t, double, std::string> Type;
     private:
-        AttributeData(Schema const & schema, int size) : schema_(schema) { fields_.resize(size); }
+        AttributeData(Schema const & schema);
+        AttributeData(Schema const & schema, std::unordered_set<std::string> const & attributes);
     public:
-        AttributeData& setAttribute(std::string const& attributeName, Type value);
+        AttributeData& setAttribute(std::string const & attributeName, Type value);
         AttributeData& setAttribute(int attributeIndex, Type value);
-        Type getAttribute(int attributeIndex) const { return fields_[attributeIndex]; };
-        std::string toString() const;
-        bool operator==(AttributeData const& other); 
+        Type const & getAttribute(int attributeIndex) const;
+        Type const & getAttribute(std::string const & attributeName) const;
+        std::unordered_map<int,Type> const & getFields() const { return fields_; }
+        bool operator==(AttributeData const & other); 
         Schema const & getSchema() const { return schema_; }
+        std::string toString() const;
     private:
-        std::vector<Type> fields_;
+        std::unordered_map<int,Type> fields_;
         Schema const & schema_;
     };
    
