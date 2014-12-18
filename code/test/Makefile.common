@@ -31,7 +31,7 @@ LDFLAGS   = -L /opt/local/libcpp-software/lib \
  -lboost_iostreams-mt -lboost_chrono-mt -lboost_date_time-mt \
  -lboost_system-mt -lboost_thread-mt \
  -lleveldb -lspatialindex -lintergdb \
- -lcommon -loptimizer           
+ -lcommon -loptimizer -lgtest 
 
 ## Implicit Section: change the following only when necessary.
 

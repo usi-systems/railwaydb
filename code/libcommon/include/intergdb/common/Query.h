@@ -2,48 +2,48 @@
 
 #include <intergdb/common/Types.h>
 #include <intergdb/common/Attribute.h>
-#include <boost/functional/hash.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <functional>
 #include <sstream> 
+#include <vector>
 
 namespace intergdb { namespace common
 {
     class Query
     {
     public:
-    Timestamp getStart() { return start_; }
-    Timestamp getEnd() { return end_; }
+        Timestamp getStart() { return start_; }
+        Timestamp getEnd() { return end_; }
 
-    bool operator==( const Query& other) const
-    {        
-        if (attributeNames_.size() != other.attributeNames_.size()) {
-            return false;
-        }
-        int i = 0;
-        for (auto mine : attributeNames_) {
-            if (mine != other.attributeNames_[i]) 
+        bool operator==(Query const & other) const
+        {        
+            if (attributeNames_.size() != other.attributeNames_.size()) {
                 return false;
-            i++;
-        }      
-        return true;
-    }
-   
-    std::vector<std::string> getAttributeNames() const { return attributeNames_; }
-    
-    std::string toString() const
-    {
-        std::stringstream ss;
-        for (auto a : attributeNames_) {
-            ss << a << " ";
+            }
+            int i = 0;
+            for (auto mine : attributeNames_) {
+                if (mine != other.attributeNames_[i]) 
+                    return false;
+                i++;
+            }      
+            return true;
         }
-        return ss.str();
-    }
+       
+        std::vector<std::string> getAttributeNames() const { return attributeNames_; }
+        
+        std::string toString() const
+        {
+            std::stringstream ss;
+            for (auto a : attributeNames_) {
+                ss << a << " ";
+            }
+            return ss.str();
+        }
 
-    size_t getHashCode() const {
-        return hash_;
-    }
+        size_t getHashCode() const {
+            return hash_;
+        }
   
     protected:
     Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
