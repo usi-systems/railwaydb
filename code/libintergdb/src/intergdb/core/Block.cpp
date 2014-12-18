@@ -9,6 +9,7 @@
 #include <cassert>
 #include <limits>
 #include <unordered_set>
+#include <iostream>
 
 using namespace std;
 using namespace intergdb::core;
@@ -31,13 +32,6 @@ private:
     VertexId highId_;
     Timestamp tm_;
 };
-
-void Block::swap(Block & other)
-{
-    std::swap(id_, other.id_);
-    std::swap(serializedSize_, other.serializedSize_);
-    neigs_.swap(other.neigs_);
-}
 
 void Block::addNeighborList(VertexId id)
 {
@@ -70,9 +64,8 @@ void Block::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
     if (neigs_.count(to)>0) {
         auto & nlist = neigs_[to];
         bool there = nlist.getEdgeAttributeData(headVertex, tm, sdata);
-        if (!(!there || (sdata.get()==data.get()))) {
-            print(std::cerr) << std::endl;
-        }
+        if (!(!there || (sdata.get()==data.get()))) 
+            std::cerr << *this << std::endl;
         assert(!there || (sdata.get()==data.get()));
     }
     if (sdata.get()==nullptr) {
@@ -85,22 +78,6 @@ void Block::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
     nlist.addEdge(NLEdge(to, tm, sdata));
     serializedSize_ += sizeof(VertexId);
     serializedSize_ += sizeof(Timestamp);
-}
-
-std::ostream & Block::print(std::ostream & out)
-{
-    for (auto it=neigs_.begin(); it!=neigs_.end(); ++it) {
-        VertexId headVertex = it->first;
-        auto const & nlist = it->second;
-        out << "Head vertex: " << headVertex << ", edges: ";
-        size_t count = nlist.getEdges().size();
-        for (size_t i=0; i<count; ++it) {
-            auto const & edge = nlist.getNthOldestEdge(i);
-            out << "(" << edge.getToVertex() << "," << edge.getTime() << "),";
-        }
-        out << "\n";
-    }
-    return out;
 }
 
 void Block::removeNewestEdge(VertexId headVertex)
@@ -174,18 +151,16 @@ vector<Block> Block::partitionBlock(Partitioning const & part, Schema const & sc
     return blocks;
 }
 
-inline std::ostream & operator<<(std::ostream & out, Block const & block)
+std::ostream & operator<<(std::ostream & out, Block const & block)
 {
     out << "Block id: " << block.id() << "\n";
-    for (auto it=block.getNeighborLists().begin(),
-             eit=block.getNeighborLists().end(); it!=eit; ++it) {
-        VertexId headVertex = it->first;
-        auto const & nlist = it->second;
+    for (auto const & headVertexNlistPair : block.getNeighborLists()) {
+        VertexId headVertex = headVertexNlistPair.first;
+        auto const & nlist = headVertexNlistPair.second;
         assert(nlist.headVertex()==headVertex);
         out << "Head vertex: " << headVertex << ", edges: ";
-        for (auto it = nlist.getEdges().begin(), eit=nlist.getEdges().end();
-                it != eit; ++it)
-            out << "(" << it->getToVertex() << ", " << it->getTime() << "),";
+        for (auto const & edge : nlist.getEdges())
+            out << "(" << edge.getToVertex() << ", " << edge.getTime() << "),";
         out << "\n";
     }
     return out;
