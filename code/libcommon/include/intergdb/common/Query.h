@@ -36,7 +36,7 @@ namespace intergdb { namespace common
         std::string toString() const
         {
             std::stringstream ss;
-            for (auto a : attributeNames_) 
+            for (auto const & a : attributeNames_) 
                 ss << a << " ";
             return ss.str();
         }
