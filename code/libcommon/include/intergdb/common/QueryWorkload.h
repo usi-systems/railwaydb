@@ -7,7 +7,7 @@
 
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 namespace intergdb { namespace common
 {
@@ -47,13 +47,12 @@ namespace intergdb { namespace common
     void addQuery(Query q);
 
   private:
-    void updateFrequencies();
-
+    void updateFrequencies(); // TODO (rjs): get rid of this method
     std::vector<Attribute> attributes_;
     std::vector<QuerySummary> queries_;
-    std::map<Query, QuerySummary> summaries_;
-    std::map<Query, int> counts_;
-    std::map<std::string, Attribute> nameToAttribute_;
+    std::unordered_map<Query, QuerySummary, QueryHasher> summaries_;
+    std::unordered_map<Query, int, QueryHasher> counts_;
+    std::unordered_map<std::string, Attribute> nameToAttribute_;
     double totalQueries_;
   };
 
