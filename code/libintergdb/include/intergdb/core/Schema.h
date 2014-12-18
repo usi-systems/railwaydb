@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 #include <iostream>    
-#include <unordered_map>
 #include <unordered_set>
+#include <unordered_map>
 
 #include <intergdb/common/Attribute.h>
 
@@ -17,7 +17,7 @@ namespace intergdb { namespace core
         friend class AttributeData;
     public:
         Schema() {}
-        Schema(std::unordered_map<std::string, common::Attribute::DataType> const & nameAndType);
+        Schema(std::vector<std::pair<std::string, common::Attribute::DataType>> const & namesAndTypes);
         AttributeData * newAttributeData() const;
         AttributeData * newAttributeData(std::unordered_set<std::string> const & attributes) const;
         std::vector<common::Attribute> const & getAttributes() const { return attributes_; }

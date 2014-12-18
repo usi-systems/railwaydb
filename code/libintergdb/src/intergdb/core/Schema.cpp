@@ -10,13 +10,13 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::core;
  
-Schema::Schema(std::unordered_map<std::string, Attribute::DataType> const & nameAndType) 
+Schema::Schema(vector<pair<string, Attribute::DataType>> const & namesAndTypes) 
 {
     size_t index = 0;
-    for (auto p : nameAndType) {
-        Attribute attribute(index, typeToSize(p.second), p.first, p.second);
+    for (auto const & nameAndType : namesAndTypes) {
+        Attribute attribute(index, typeToSize(nameAndType.second), nameAndType.first, nameAndType.second);
         attributes_.push_back(std::move(attribute));
-        nameToIndex_.emplace(p.first, attributes_.size()-1);
+        nameToIndex_.emplace(nameAndType.first, attributes_.size()-1);
         index++;
     }
 }

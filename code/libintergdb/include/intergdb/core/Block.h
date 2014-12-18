@@ -9,7 +9,7 @@
 namespace intergdb { namespace core
 {
     class Schema;
-
+    class PartitionIndex;
     typedef std::vector<std::unordered_set<std::string>> Partitioning;
 
     class Block
@@ -26,13 +26,15 @@ namespace intergdb { namespace core
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
         void findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const;
-        std::vector<Block> partitionBlock(Partitioning const & part, Schema const & schema);
+        std::vector<Block> partitionBlock(Schema const & schema, PartitionIndex & partitionIndex);
         NetworkByteBuffer & serialize(NetworkByteBuffer & sbuf) const;
-        NetworkByteBuffer & deserialize(NetworkByteBuffer & sbuf, Schema const & schema);
+        NetworkByteBuffer & deserialize(NetworkByteBuffer & sbuf, 
+            Schema const & schema, PartitionIndex & partitionIndex);
     private:
         void addNeighborList(VertexId id);
     private:
         BlockId id_;
+        uint32_t partitionIndex_;
         size_t serializedSize_;
         std::unordered_map<VertexId, NeighborList> neigs_;
     };

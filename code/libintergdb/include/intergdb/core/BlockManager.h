@@ -22,7 +22,7 @@ namespace intergdb { namespace core
             std::list<BlockId>::iterator iter;
         };
     public:
-        BlockManager(Conf const & conf);
+        BlockManager(Conf const & conf, PartitionIndex & partitionIndex);
         Block const & getBlock(BlockId id);
         void addBlock(Block & data);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
@@ -40,6 +40,7 @@ namespace intergdb { namespace core
         std::list<BlockId> lruList_;
         Schema const & edgeSchema_;
         std::unordered_map<BlockId, BlockAndIdIter> cache_;
+        PartitionIndex & partitionIndex_;
         std::auto_ptr<leveldb::DB> db_;
     };
 

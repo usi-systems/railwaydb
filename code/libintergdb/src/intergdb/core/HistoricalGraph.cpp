@@ -87,17 +87,12 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
 }
 
 HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx)
-    : conf_(conf), bman_(conf), pidx_(pidx), iqIndex_(conf, &bman_), fiqIndex_(conf)
+    : conf_(conf), pidx_(pidx), bman_(conf, pidx_), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
 void HistoricalGraph::addBlock(Block & block)
 {
-    Timestamp minTimestamp, maxTimestamp;
-    block.findMinMaxTimestamps(minTimestamp, maxTimestamp);
-    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2;
-    TimeSlicedPartitioning tpart = pidx_.getTimeSlicedPartitioning(blockTimestamp);
-    Partitioning const & part = tpart.getPartitioning();
-    vector<Block> subBlocks = block.partitionBlock(part, conf_.getEdgeSchema());
+    vector<Block> subBlocks = block.partitionBlock(conf_.getEdgeSchema(), pidx_);
     for (Block & subBlock : subBlocks) 
         bman_.addBlock(subBlock); // sets the block id        
     iqIndex_.indexBlock(subBlocks[0]);

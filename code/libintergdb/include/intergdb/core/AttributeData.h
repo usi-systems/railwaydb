@@ -25,6 +25,30 @@ namespace intergdb { namespace core
         AttributeData& setAttribute(int attributeIndex, Type value);
         Type const & getAttribute(int attributeIndex) const;
         Type const & getAttribute(std::string const & attributeName) const;
+        std::string const & getStringAttribute(int attributeIndex) const
+        {
+            return boost::get<std::string>(getAttribute(attributeIndex));
+        }
+        std::string const & getStringAttribute(std::string const & attributeName) const
+        {
+            return boost::get<std::string>(getAttribute(attributeName));
+        }
+        double const & getDoubleAttribute(int attributeIndex) const
+        {
+            return boost::get<double>(getAttribute(attributeIndex));
+        }
+        double const & getDoubleAttribute(std::string const & attributeName) const
+        {
+            return boost::get<double>(getAttribute(attributeName));
+        }
+        int64_t const & getIntAttribute(int attributeIndex) const
+        {
+            return boost::get<int64_t>(getAttribute(attributeIndex));
+        }
+        int64_t const & getIntAttribute(std::string const & attributeName) const
+        {
+            return boost::get<int64_t>(getAttribute(attributeName));
+        }        
         std::unordered_map<int,Type> const & getFields() const { return fields_; }
         bool operator==(AttributeData const & other); 
         Schema const & getSchema() const { return schema_; }

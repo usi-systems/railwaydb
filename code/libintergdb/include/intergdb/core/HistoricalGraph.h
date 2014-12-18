@@ -56,8 +56,8 @@ namespace intergdb { namespace core
         size_t getEdgeWriteIOCount() const { return bman_.getNumIOWrites(); }
     private:
         Conf conf_;
-        BlockManager bman_;
         PartitionIndex pidx_;
+        BlockManager bman_;        
         IntervalQueryIndex iqIndex_;
         FocusedIntervalQueryIndex fiqIndex_;
     };
