@@ -241,12 +241,12 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
     for (int q = 0; q < e->Q; ++q) {
 
         for (int p = 0; p < e->P; ++p) {
-            ctx->obj[y(e,p,q)] = val * queries[q].getFrequency();
+            ctx->obj[y(e,p,q)] = val * workload->getFrequency(queries[q]);
         }
     
         for (int a = 0; a < e->A; ++a) {
             for (int p = 0; p < e->P; ++p) {
-                ctx->obj[z(e,a,p,q)] = workload->getAttribute(a).getSize() * c_e() * queries[q].getFrequency();;
+                ctx->obj[z(e,a,p,q)] = workload->getAttribute(a).getSize() * c_e() * workload->getFrequency(queries[q]);
             }
         }
 

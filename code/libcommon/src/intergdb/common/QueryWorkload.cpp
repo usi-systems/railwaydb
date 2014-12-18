@@ -11,8 +11,8 @@ using namespace intergdb::common;
 char const * Attribute::dataTypeStrings_[] = { "INT64", "DOUBLE", "STRING" };
 
 string Attribute::toString() const
-{ 
-  return "(name: " + name_ + ", type: " + getTypeString(type_) +", index: " + to_string(index_) + ", size:" + to_string(size_) + ")";
+{     
+  return "(name: " + name_ + ", index: " + to_string(index_) + ", size:" + to_string(size_) + ")";
 }
 
 string QuerySummary::toString() const
@@ -22,7 +22,7 @@ string QuerySummary::toString() const
   string str = "[attributes: " + to_string(attributes_[0]->getIndex());
   for (size_t i=1, iu=attributes_.size(); i<iu; ++i) 
     str += "," + to_string(attributes_[i]->getIndex());    
-  str += ", frequency: " + to_string(frequency_) + "]";
+  str += "]";
   return str;
 }
 
@@ -32,30 +32,41 @@ string QueryWorkload::toString() const
   for (Attribute const & attribute : attributes_) 
     str += "\t" + attribute.toString() + "\n";
   str += "Queries:\n";
-  for (QuerySummary const & query : queries_) 
-    str += "\t" + query.toString() + "\n";
+  for (QuerySummary const & query : queries_) {  
+      str += "\t" + query.toString() 
+          + ", frequency: " + to_string(getFrequency(query)) + "\n";
+  }
   return str;
 }
 
-// TODO (rjs): This is really inneficient. Need to change this so that the 
-// workloads compute the frequencies when they are asked for it. 
-void QueryWorkload::updateFrequencies() 
+
+double 
+QueryWorkload::getFrequency(QuerySummary s) const
 {
-    for (auto it = summaries_.begin(); it != summaries_.end(); it++) {
-        auto countIt = counts_.find(it->first);
-        it->second.setFrequency(countIt->second/totalQueries_);
+    auto countIt = counts_.find(s);
+    if (countIt == counts_.end()) {
+        assert(false);
     }
+    return countIt->second / totalQueries_;   
 }
+
+void 
+QueryWorkload::setFrequency(QuerySummary s, double f) 
+{
+    totalQueries_ = 1;
+    counts_.emplace(std::pair<QuerySummary,double>(s, f));
+}
+
+ 
 
 void QueryWorkload::addQuery(Query q) 
 {
     totalQueries_++;
     auto search = summaries_.find(q);
     if(search != summaries_.end()) {        
-        auto countIt = counts_.find(q);
+        auto countIt = counts_.find(search->second);
         countIt->second++;
-        counts_.emplace(std::pair<Query,int>(q, countIt->second));
-        updateFrequencies();
+        counts_.emplace(std::pair<QuerySummary,double>(search->second, countIt->second));
     } else {        
         std::vector<Attribute const *> attributes;
         for (auto name : q.getAttributeNames()) {
@@ -65,10 +76,9 @@ void QueryWorkload::addQuery(Query q)
             }
             attributes.push_back(&it->second);
         }
-        QuerySummary summary(attributes, 1.0);
+        QuerySummary summary(attributes);
         summaries_.emplace(std::pair<Query,QuerySummary>(q, summary));
-        counts_.emplace(std::pair<Query,int>(q, 1));
-        updateFrequencies();    
+        counts_.emplace(std::pair<QuerySummary,double>(summary, 1.0));
     }
 
 }
