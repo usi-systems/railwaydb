@@ -10,7 +10,7 @@ namespace intergdb { namespace common
   class QuerySummary
   {
   public:
-    QuerySummary() {}
+     QuerySummary() {}
 
 
     QuerySummary(std::vector<Attribute const *> const & attributes) 
