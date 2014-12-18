@@ -2,6 +2,7 @@
 
 #include <intergdb/common/Types.h>
 #include <intergdb/common/Attribute.h>
+#include <boost/functional/hash.hpp>
 
 #include <vector>
 #include <algorithm>
@@ -15,22 +16,21 @@ namespace intergdb { namespace common
     Timestamp getStart() { return start_; }
     Timestamp getEnd() { return end_; }
 
-    bool operator<( const Query& other) const
+    bool operator==( const Query& other) const
     {        
-        if (attributeNames_.size() < other.attributeNames_.size()) {
-            return true;
+        if (attributeNames_.size() != other.attributeNames_.size()) {
+            return false;
         }
-
-        bool lt = true;
         int i = 0;
         for (auto mine : attributeNames_) {
-            lt = lt && (mine < other.attributeNames_[i]);
+            if (mine != other.attributeNames_[i]) 
+                return false;
             i++;
         }      
-        return lt;
+        return true;
     }
    
-    std::vector<std::string> getAttributeNames() { return attributeNames_; }
+    std::vector<std::string> getAttributeNames() const { return attributeNames_; }
     
     std::string toString() const
     {
@@ -72,6 +72,27 @@ namespace intergdb { namespace common
         VertexId getHeadVertex() { return headVertex_; }
     private:
         VertexId headVertex_;
+    };
+
+    struct QueryHasher 
+    {
+        std::size_t operator()(const Query& q) const
+        {
+            using boost::hash_value;
+            using boost::hash_combine;
+            
+            // Start with a hash value of 0    .
+            std::size_t seed = 0;
+            
+            // Modify 'seed' by XORing and bit-shifting in
+            // one member of 'Key' after the other:
+            for (auto attr : q.getAttributeNames()) {
+                hash_combine(seed,hash_value(attr));
+            }
+            
+            // Return the result.
+            return seed;
+        }        
     };
 
 
