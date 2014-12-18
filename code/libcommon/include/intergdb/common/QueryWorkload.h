@@ -45,13 +45,15 @@ namespace intergdb { namespace common
     std::vector<QuerySummary> & getQuerySummaries() { return queries_; }
     std::string toString() const;
     void addQuery(Query q);
+    double getFrequency(QuerySummary s) const;
+    void setFrequency(QuerySummary s, double f);
 
   private:
     void updateFrequencies(); // TODO (rjs): get rid of this method
     std::vector<Attribute> attributes_;
     std::vector<QuerySummary> queries_;
     std::unordered_map<Query, QuerySummary> summaries_;
-    std::unordered_map<Query, int> counts_;
+    std::unordered_map<QuerySummary, double> counts_;
     std::unordered_map<std::string, Attribute> nameToAttribute_;
     double totalQueries_;
   };

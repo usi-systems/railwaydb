@@ -22,8 +22,8 @@ void nov_ex1(QueryWorkload & workload, double & storageOverheadThreshold)
     for (auto const & attribute : workload.getAttributes()) {
         QuerySummary query;
         query.addAttribute(attribute);
-        query.setFrequency(0.5);
         workload.addQuerySummary(query);
+        workload.setFrequency(query,0.5);
     }
     storageOverheadThreshold = 1.0;
 }
@@ -100,8 +100,8 @@ void nov_ex3(QueryWorkload & workload, double & storageOverheadThreshold)
         QuerySummary query;
         for (auto const & attribute : workload.getAttributes()) 
             query.addAttribute(attribute);        
-        query.setFrequency(0.5);
         workload.addQuerySummary(query);
+        workload.setFrequency(query,0.5);
     }
     storageOverheadThreshold = 1.0;
 }
@@ -141,14 +141,14 @@ void ov_ex1(QueryWorkload & workload, double & storageOverheadThreshold)
         QuerySummary query;
         query.addAttribute(attributes[0]);
         query.addAttribute(attributes[1]);
-        query.setFrequency(0.5);
         workload.addQuerySummary(query);
+        workload.setFrequency(query,0.5);
     }
     {
         QuerySummary query;
-        query.addAttribute(attributes[1]);
-        query.setFrequency(0.5);
+        query.addAttribute(attributes[1]);      
         workload.addQuerySummary(query);
+        workload.setFrequency(query,0.5);
     }
     storageOverheadThreshold = 1.0;
 }

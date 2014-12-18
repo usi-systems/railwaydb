@@ -45,11 +45,11 @@ QueryWorkload SimulationConf::getQueryWorkload()
     }
     double queryFrequency = queryTypeFrequencyGen_.getItemFrequency(
         queryTypeFrequencyGen_.getRandomValue());
-    query.setFrequency(queryFrequency);
+    workload.setFrequency(query, queryFrequency);
     totalFrequency += queryFrequency;
     workload.addQuerySummary(query);
   } 
   for (QuerySummary & query : workload.getQuerySummaries()) 
-    query.setFrequency(query.getFrequency()/totalFrequency);
+      workload.setFrequency(query, workload.getFrequency(query)/totalFrequency);
   return workload;
 }

@@ -73,13 +73,13 @@ double Cost::getIOCost(vector<Partition> const & partitions, QueryWorkload const
       std::unordered_set<Attribute const *> const & attributes)
 {
   double totalIOCost = 0.0;
-  auto const & queries = workload.getQuerySummaries();
-  for (QuerySummary const & query : queries) {
+  auto const & summaries = workload.getQuerySummaries();
+  for (QuerySummary const & summary : summaries) {
     double partitionIOCost = 0.0;
-    vector<Partition const *> usedPartitions = getUsedPartitions(partitions, attributes, query);
+    vector<Partition const *> usedPartitions = getUsedPartitions(partitions, attributes, summary);
     for (Partition const * partition : usedPartitions) 
       partitionIOCost += getPartitionSize(*partition);
-    totalIOCost += query.getFrequency() * partitionIOCost;
+    totalIOCost += workload.getFrequency(summary) * partitionIOCost;
   }
   return totalIOCost;
 }
