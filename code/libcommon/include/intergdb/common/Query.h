@@ -41,19 +41,34 @@ namespace intergdb { namespace common
         return ss.str();
     }
 
+    size_t getHashCode() const {
+        return hash_;
+    }
+  
     protected:
     Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
         : start_(start), end_(end), attributeNames_(attributeNames) 
     { 
         std::sort(attributeNames.begin(), attributeNames.end());
+        hash_ = hash();
     } 
-
-    
-
+   
     protected:
     Timestamp start_;
     Timestamp end_;
     std::vector<std::string> attributeNames_;   
+    size_t hash_;
+    
+    private:
+    std::size_t hash() {
+        using boost::hash_value;
+        using boost::hash_combine;        
+        std::size_t seed = 0;
+        for (auto attr : attributeNames_) {
+            hash_combine(seed,hash_value(attr));
+        }
+        return seed;
+    }
     };
 
 
@@ -74,28 +89,16 @@ namespace intergdb { namespace common
         VertexId headVertex_;
     };
 
-    struct QueryHasher 
-    {
-        std::size_t operator()(const Query& q) const
-        {
-            using boost::hash_value;
-            using boost::hash_combine;
-            
-            // Start with a hash value of 0    .
-            std::size_t seed = 0;
-            
-            // Modify 'seed' by XORing and bit-shifting in
-            // one member of 'Key' after the other:
-            for (auto attr : q.getAttributeNames()) {
-                hash_combine(seed,hash_value(attr));
-            }
-            
-            // Return the result.
-            return seed;
-        }        
-    };
-
-
 } } /* namespace */
 
 
+namespace std { 
+    template<>
+        struct hash<intergdb::common::Query> {
+        inline std::size_t operator()(const intergdb::common::Query& q) const
+        {
+            return q.getHashCode();
+        }        
+
+    };
+}

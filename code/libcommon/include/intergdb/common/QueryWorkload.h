@@ -50,8 +50,8 @@ namespace intergdb { namespace common
     void updateFrequencies(); // TODO (rjs): get rid of this method
     std::vector<Attribute> attributes_;
     std::vector<QuerySummary> queries_;
-    std::unordered_map<Query, QuerySummary, QueryHasher> summaries_;
-    std::unordered_map<Query, int, QueryHasher> counts_;
+    std::unordered_map<Query, QuerySummary> summaries_;
+    std::unordered_map<Query, int> counts_;
     std::unordered_map<std::string, Attribute> nameToAttribute_;
     double totalQueries_;
   };
