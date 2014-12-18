@@ -51,17 +51,23 @@ make install
 cd ..
 </code></pre>
 
-8. Go back to the top level
+8. Build gtest
+<br/><br/><pre><code>cd gtest
+./configure 
+make
+</code></pre>
+
+9. Go back to the top level
 <br/><br/><pre><code>cd ../..
 </code></pre>
 
-9. Third, build libintergdb
+10. Third, build libintergdb
 <br/><br/><pre><code>cd libintergdb
 make -j 4
 cd ..
 </code></pre>
 
-10. Last, run a test application
+11. Last, run a test application
 <br/><br/><pre><code>cd test/SimpleTest
 make
 ./bin/SimpleTest 
