@@ -52,9 +52,11 @@ cd ..
 </code></pre>
 
 8. Build gtest
-<br/><br/><pre><code>cd gtest
-./configure 
+<br/><br/><p.re><code>cd gtest
+CC=clang CXX=clang++ ./configure --prefix $(cd ../..; pwd)
 make
+cp -fr include/gtest ../../include
+cp lib/.libs/libgtest* ../../lib/
 </code></pre>
 
 9. Go back to the top level
