@@ -49,7 +49,7 @@ namespace intergdb { namespace common
     Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
         : start_(start), end_(end), attributeNames_(attributeNames) 
     { 
-        std::sort(attributeNames.begin(), attributeNames.end());
+        std::sort(attributeNames_.begin(), attributeNames_.end());
         hash_ = hash();
     } 
    
