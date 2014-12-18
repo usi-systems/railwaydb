@@ -30,7 +30,7 @@ namespace intergdb { namespace common
         return true;
     }
    
-    std::vector<std::string> getAttributeNames() const { return attributeNames_; }
+    std::vector<std::string> const & getAttributeNames() const { return attributeNames_; }
     
     std::string toString() const
     {
@@ -46,7 +46,7 @@ namespace intergdb { namespace common
     }
   
     protected:
-    Query(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
+    Query(Timestamp start, Timestamp end, std::vector<std::string> const & attributeNames) 
         : start_(start), end_(end), attributeNames_(attributeNames) 
     { 
         std::sort(attributeNames_.begin(), attributeNames_.end());
