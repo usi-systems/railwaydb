@@ -10,6 +10,12 @@ using namespace intergdb::common;
 
 void QueryCollector::collectIntervalQuery(Query q) 
 {
+    // TODO: We don't collect interval queries for now
+    assert(false);
+}
+
+void QueryCollector::collectFocusedIntervalQuery(Query q) 
+{
     std::vector<BucketId> bucketIds = bucketer_.getBuckets(q);
     for (auto i : bucketIds) {    
         auto iter = workloads_.find(i);
@@ -23,7 +29,3 @@ void QueryCollector::collectIntervalQuery(Query q)
     }   
 }
 
-void QueryCollector::collectFocusedIntervalQuery(Query q) 
-{
-    std::cerr << "QueryCollector::collectFocusedIntervalQuery not implemented" << std::endl;
-}

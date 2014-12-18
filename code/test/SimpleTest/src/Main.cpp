@@ -27,9 +27,10 @@ int main()
     }
 
     IntervalQuery q1(5.0, 10.0, {"a"});
-    IntervalQuery q2(5.0, 10.0, {"b"});
-    IntervalQuery q3(5.0, 10.0, {"a"});
+    FocusedIntervalQuery q2(2, 5.0, 10.0, {"a"});
+    FocusedIntervalQuery q3(2, 5.0, 10.0, {"b"});
     FocusedIntervalQuery q4(2, 5.0, 10.0, {"a"});
+
 
     InteractionGraph::VertexIterator iqIt = graph.processIntervalQuery(q1);
     while(iqIt.isValid()) {
@@ -38,16 +39,16 @@ int main()
         iqIt.next();
     }
 
-    graph.processIntervalQuery(q2);
-    graph.processIntervalQuery(q3);
-
-    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(q4);
+    InteractionGraph::EdgeIterator fiqIt = graph.processFocusedIntervalQuery(q2);
     while(fiqIt.isValid()) {
         cout << *fiqIt.getEdgeData() << endl;  
         cout << fiqIt.getToVertex() << endl; 
         cout << fiqIt.getTime() << endl; 
         fiqIt.next();
     }
+
+    graph.processIntervalQuery(q3);
+    graph.processIntervalQuery(q4);
 
     return EXIT_SUCCESS;
 }

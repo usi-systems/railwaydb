@@ -18,7 +18,6 @@ std::shared_ptr<AttributeData> InteractionGraph::getVertexData(VertexId id)
 
 InteractionGraph::VertexIterator InteractionGraph::processIntervalQuery(Query q)
 {
-    qcol_.collectIntervalQuery(q);
     return VertexIterator(&vman_, hisg_.intervalQuery(q.getStart(), q.getEnd()));
 }
 
