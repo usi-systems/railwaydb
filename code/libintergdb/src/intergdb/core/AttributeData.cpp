@@ -63,7 +63,6 @@ AttributeData::Type const & AttributeData::getAttribute(int attributeIndex) cons
     return fields_.find(attributeIndex)->second; 
 }
 
-
 std::string AttributeData::toString() const 
 { 
     std::stringstream ss;
@@ -118,8 +117,8 @@ namespace intergdb { namespace core
         Schema const & schema = data.getSchema();
         for (auto const & idxValuePair : data.getFields()) {
             int idx = idxValuePair.first;
-            AttributeData::Type const & value = idxValuePair.second;
             Attribute const & attrb = schema.getAttributes().at(idx);
+            AttributeData::Type const & value = idxValuePair.second;
             switch (attrb.getType()) {
             case Attribute::INT64:
             {

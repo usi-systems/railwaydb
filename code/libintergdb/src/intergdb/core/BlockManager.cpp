@@ -11,10 +11,12 @@ using namespace intergdb::core;
 
 #define BLOCK_DB_NAME "block_data"
 
-BlockManager::BlockManager(Conf const & conf)
+BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex)
     : nIOReads_(0), nIOWrites_(0),
       reqCount_(0), hitCount_(0),
-    blockBufferSize_(conf.blockBufferSize()), edgeSchema_(conf.getEdgeSchema())
+    blockBufferSize_(conf.blockBufferSize()), 
+    edgeSchema_(conf.getEdgeSchema()), 
+    partitionIndex_(partitionIndex)
 {
     leveldb::Options options;
     options.create_if_missing = true;
@@ -69,7 +71,7 @@ Block const & BlockManager::getBlock(BlockId id)
             throw std::runtime_error(status.ToString());
         NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
         BlockAndIdIter & blockAndIter = cache_.emplace(id, BlockAndIdIter()).first->second;
-        blockAndIter.block.deserialize(dataBuf, edgeSchema_);
+        blockAndIter.block.deserialize(dataBuf, edgeSchema_, partitionIndex_);
         lruList_.push_front(id);
         blockAndIter.iter = lruList_.begin();
         if (lruList_.size()>blockBufferSize_) {

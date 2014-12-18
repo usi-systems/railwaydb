@@ -1,9 +1,10 @@
 #include <intergdb/core/Block.h>
 
-#include <intergdb/core/Helper.h>
-#include <intergdb/core/AttributeData.h>
-#include <intergdb/core/Schema.h>
 #include <intergdb/common/Types.h>
+#include <intergdb/core/AttributeData.h>
+#include <intergdb/core/Helper.h>
+#include <intergdb/core/PartitionIndex.h>
+#include <intergdb/core/Schema.h>
 
 #include <algorithm>
 #include <cassert>
@@ -120,13 +121,20 @@ namespace std {
 
 namespace intergdb { namespace core {
 
-vector<Block> Block::partitionBlock(Partitioning const & part, Schema const & schema)
+vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & partitionIndex)
 {
+    Timestamp minTimestamp, maxTimestamp;
+    findMinMaxTimestamps(minTimestamp, maxTimestamp);
+    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2;
+    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(blockTimestamp);
+    Partitioning const & part = tpart.getPartitioning();
+
     vector<Block> blocks;
     blocks.reserve(part.size());
     for (size_t i=0, iu=part.size(); i<iu; ++i) {
         unordered_set<string> const & attributes = part.at(i);
         Block block;
+        block.partitionIndex_ = i;
         std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
         for (auto const & vIdNListPair : getNeighborLists()) {
             VertexId headVertex = vIdNListPair.first;
@@ -139,6 +147,10 @@ vector<Block> Block::partitionBlock(Partitioning const & part, Schema const & sc
                 auto it = read.find(etrip);
                 if (it==read.end()) {
                     sdata.reset(schema.newAttributeData(attributes));
+                    for (auto const & attrb : attributes) {
+                        auto attrbIdx = schema.getIndex(attrb);
+                        sdata->setAttribute(attrbIdx, edge.getData()->getAttribute(attrbIdx));
+                    }
                     read[etrip] = sdata;
                 } else {
                     sdata = it->second;
@@ -170,8 +182,13 @@ std::ostream & operator<<(std::ostream & out, Block const & block)
 // TODO: optional compression
 NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
 {
+    Timestamp minTimestamp, maxTimestamp;
+    findMinMaxTimestamps(minTimestamp, maxTimestamp);
     std::unordered_set<EdgeTriplet> written;
-    sbuf << id();
+    sbuf << id_;
+    sbuf << minTimestamp;
+    sbuf << maxTimestamp;
+    sbuf << partitionIndex_;
     auto const & neigs = getNeighborLists();
     for (auto it=neigs.cbegin(); it!=neigs.cend(); ++it)  {
         VertexId headVertex = it->first;
@@ -193,10 +210,19 @@ NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
     return sbuf;
 }
 
-NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf, Schema const & schema) 
+NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf, 
+    Schema const & schema, PartitionIndex & partitionIndex) 
 {
+    Timestamp minTimestamp, maxTimestamp;
+    sbuf >> id_;
+    sbuf >> minTimestamp;
+    sbuf >> maxTimestamp;
+    sbuf >> partitionIndex_;    
+    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2;
+    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(blockTimestamp);
+    Partitioning const & part = tpart.getPartitioning();
+    unordered_set<string> const & attributes = part[partitionIndex_];
     std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
-    sbuf >> id();
     while (sbuf.getNRemainingBytes()>0) {
         VertexId headVertex;
         sbuf >> headVertex;
@@ -211,7 +237,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf, Schema const & 
             EdgeTriplet etrip(headVertex, toVertex, tm);
             auto it = read.find(etrip);
             if (it==read.end()) {
-                sdata.reset(schema.newAttributeData());
+                sdata.reset(schema.newAttributeData(attributes));
                 sbuf >> *sdata;
                 read[etrip] = sdata;
             } else {
