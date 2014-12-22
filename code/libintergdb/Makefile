@@ -11,22 +11,22 @@
 
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-OBJDIR  = obj
-BINDIR  = bin
-SRCDIR  = src
-INCDIR  = include
+OBJDIR  = $(realpath .)/obj
+BINDIR  = $(realpath .)/bin
+SRCDIR  = $(realpath src)
+INCDIR  = $(realpath include) 
 
 LIBRARY   = libintergdb.so
 
 CPPFLAGS  = 
 INCLUDES  = -isystem /opt/local/libcpp-software/include \
- -I $(THISDIR)../ext/include \
- -I $(THISDIR)../ext/src/leveldb/include \
- -I $(THISDIR)../libcommon/include 
+ -I $(realpath $(THISDIR)../ext/include) \
+ -I $(realpath $(THISDIR)../ext/src/leveldb/include) \
+ -I $(realpath $(THISDIR)../libcommon/include) 
 LDFLAGS   = -L /opt/local/libcpp-software/lib \
- -L $(THISDIR)../ext/lib \
- -L $(THISDIR)../ext/src/leveldb \
- -L $(THISDIR)../libcommon/bin \
+ -L $(realpath $(THISDIR)../ext/lib) \
+ -L $(realpath $(THISDIR)../ext/src/leveldb) \
+ -L $(realpath $(THISDIR)../libcommon/bin) \
  -lboost_coroutine-mt -lboost_context-mt -lboost_filesystem-mt \
  -lboost_iostreams-mt -lboost_chrono-mt -lboost_date_time-mt \
  -lboost_system-mt -lboost_thread-mt \
@@ -72,7 +72,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(BINDIR)/$(LIBRARY): $(OBJS)
 	@mkdir -p $(dir $@)
-	$(LINK) $(OBJS) -shared -o "$(CURDIR)/$@"
+	$(LINK) $(OBJS) -shared -o "$@"
 
 docs:
 	doxygen doc/doxy.conf

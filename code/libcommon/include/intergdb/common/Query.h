@@ -7,32 +7,36 @@
 #include <sstream> 
 #include <vector>
 
+
 namespace intergdb { namespace common
 {
     class Query
     {
     public:
-        Timestamp getStart() { return start_; }
-        Timestamp getEnd() { return end_; }
-
+        Timestamp getStartTime() const 
+        { 
+            return start_; 
+        }
+        Timestamp getEndTime() const 
+        { 
+            return end_; 
+        }
         bool operator==(Query const & other) const
         {        
             if (attributeNames_.size() != other.attributeNames_.size()) 
                 return false;        
             size_t i = 0;
-            for (auto mine : attributeNames_) {
+            for (auto const & mine : attributeNames_) {
                 if (mine != other.attributeNames_[i]) 
                     return false;
                 i++;
             }      
             return true;
         }
-       
         std::vector<std::string> const & getAttributeNames() const 
         { 
             return attributeNames_; 
         }
-        
         std::string toString() const
         {
             std::stringstream ss;
@@ -40,12 +44,10 @@ namespace intergdb { namespace common
                 ss << a << " ";
             return ss.str();
         }
-
         size_t getHashCode() const 
         {
             return hash_;
         }
-  
     protected:
         Query(Timestamp start, Timestamp end, std::vector<std::string> const & attributeNames) 
             : start_(start), end_(end), attributeNames_(attributeNames) 
@@ -70,30 +72,14 @@ namespace intergdb { namespace common
         }
     };
 
-    class IntervalQuery : public Query
-    {
-    public:
-        IntervalQuery(Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
-            :  Query(start, end, attributeNames) {  } 
-    };
-
-    class FocusedIntervalQuery : public Query
-    {
-    public:
-        FocusedIntervalQuery(VertexId headVertex, Timestamp start, Timestamp end, std::vector<std::string> attributeNames) 
-            : Query(start, end, attributeNames), headVertex_(headVertex) {  }
-            VertexId getHeadVertex() { return headVertex_; }
-    private:
-        VertexId headVertex_;
-    };
-
 } } /* namespace */
 
 
 namespace std { 
     template<>
-    struct hash<intergdb::common::Query> {
-        inline std::size_t operator()(const intergdb::common::Query& q) const
+    struct hash<intergdb::common::Query> 
+    {
+        inline std::size_t operator()(intergdb::common::Query const & q) const
         {
             return q.getHashCode();
         }        

@@ -2,6 +2,7 @@
 
 #include <intergdb/core/BlockManager.h>
 #include <intergdb/core/Conf.h>
+#include <intergdb/core/Query.h>
 #include <intergdb/core/IntervalQueryIndex.h>
 #include <intergdb/core/FocusedIntervalQueryIndex.h>
 #include <intergdb/core/PartitionIndex.h>
@@ -50,7 +51,7 @@ namespace intergdb { namespace core
         void addBlock(Block & block);
         std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
         void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
-        std::shared_ptr<EdgeIterator> focusedIntervalQuery(VertexId vertex, Timestamp start, Timestamp end);
+        std::shared_ptr<EdgeIterator> focusedIntervalQuery(FocusedIntervalQuery const &  query);
         size_t getEdgeIOCount() const { return bman_.getNumIOReads() + bman_.getNumIOWrites(); }
         size_t getEdgeReadIOCount() const { return bman_.getNumIOReads(); }
         size_t getEdgeWriteIOCount() const { return bman_.getNumIOWrites(); }

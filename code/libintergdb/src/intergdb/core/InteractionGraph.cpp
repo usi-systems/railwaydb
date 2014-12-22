@@ -16,18 +16,18 @@ std::shared_ptr<AttributeData> InteractionGraph::getVertexData(VertexId id)
     return vman_.getVertexData(id);
 }
 
-InteractionGraph::VertexIterator InteractionGraph::processIntervalQuery(Query q)
+InteractionGraph::VertexIterator InteractionGraph::processIntervalQuery(IntervalQuery const & q)
 {
-    return VertexIterator(&vman_, hisg_.intervalQuery(q.getStart(), q.getEnd()));
+    return VertexIterator(&vman_, hisg_.intervalQuery(q.getStartTime(), q.getEndTime()));
 }
 
-void InteractionGraph::processIntervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
+void InteractionGraph::processIntervalQueryBatch(IntervalQuery const & q, std::vector<VertexId> & results)
 {
-    return hisg_.intervalQueryBatch(start, end, results);
+    return hisg_.intervalQueryBatch(q.getStartTime(), q.getEndTime(), results);
 }
 
-InteractionGraph::EdgeIterator InteractionGraph::processFocusedIntervalQuery(FocusedIntervalQuery q)
+InteractionGraph::EdgeIterator InteractionGraph::processFocusedIntervalQuery(FocusedIntervalQuery const & q)
 {
     qcol_.collectFocusedIntervalQuery(q);
-    return EdgeIterator(hisg_.focusedIntervalQuery(q.getHeadVertex(), q.getStart(), q.getEnd()));
+    return EdgeIterator(hisg_.focusedIntervalQuery(q));
 }

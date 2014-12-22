@@ -4,7 +4,6 @@
 #include <intergdb/common/Types.h>
 #include <intergdb/core/Schema.h>
 
-
 #include <string>
 #include <cassert>
 
@@ -61,8 +60,8 @@ namespace intergdb { namespace core
         enum LayoutMode { LM_Random=0, LM_Old, LM_Max, LM_Smart };
     public:
     Conf(std::string const & name, std::string const & storageDir, 
-         std::vector<std::pair<std::string, Attribute::DataType>> vertexSchema, 
-         std::vector<std::pair<std::string, Attribute::DataType>> edgeSchema)
+         std::vector<std::pair<std::string, DataType>> vertexSchema, 
+         std::vector<std::pair<std::string, DataType>> edgeSchema)
           : name_(name), storageDir_(storageDir),
             windowSize_(1024*1024), // 1M edges
             blockSize_(16*1024), // in bytes (16K)

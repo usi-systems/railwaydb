@@ -9,7 +9,9 @@
 #include <intergdb/common/Attribute.h>
 
 namespace intergdb { namespace core
-{
+{ 
+    enum class DataType { INT64=0, DOUBLE, STRING, UNDEFINED };
+
     class AttributeData;
     
     class Schema
@@ -17,7 +19,7 @@ namespace intergdb { namespace core
         friend class AttributeData;
     public:
         Schema() {}
-        Schema(std::vector<std::pair<std::string, common::Attribute::DataType>> const & namesAndTypes);
+        Schema(std::vector<std::pair<std::string, DataType>> const & namesAndTypes);
         AttributeData * newAttributeData() const;
         AttributeData * newAttributeData(std::unordered_set<std::string> const & attributes) const;
         std::vector<common::Attribute> const & getAttributes() const { return attributes_; }
@@ -26,7 +28,7 @@ namespace intergdb { namespace core
     private:
         std::vector<common::Attribute> attributes_;            
         std::unordered_map<std::string, int> nameToIndex_; /* map from name to index */
-        double typeToSize(common::Attribute::DataType type);
+        double typeToSize(DataType type);
     };
 } } /* namespace */
 

@@ -11,10 +11,10 @@
 
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-OBJDIR  = obj
-BINDIR  = bin
-SRCDIR  = src
-INCDIR  = include 
+OBJDIR  = $(realpath .)/obj
+BINDIR  = $(realpath .)/bin
+SRCDIR  = $(realpath src)
+INCDIR  = $(realpath include) 
 
 LIBRARY   = libcommon.so
 
@@ -61,7 +61,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(BINDIR)/$(LIBRARY): $(OBJS)
 	@mkdir -p $(dir $@)
-	$(LINK) $(OBJS) -shared -o "$(CURDIR)/$@"
+	$(LINK) $(OBJS) -shared -o "$@"
 
 docs:
 	doxygen doc/doxy.conf
