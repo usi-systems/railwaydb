@@ -40,7 +40,7 @@ namespace intergdb { namespace core
             void next() { it_->next(); }
             VertexId getToVertex() { return it_->getEdge().getToVertex(); }
             Timestamp getTime() { return it_->getEdge().getTime(); }
-            std::shared_ptr<AttributeData> getEdgeData() { return it_->getEdge().getData(); }
+            std::shared_ptr<AttributeData> getEdgeData() { return it_->getEdgeData(); }
         private:
             std::shared_ptr<typename HistoricalGraph::EdgeIterator> it_;
         };

@@ -15,7 +15,7 @@ unordered_map<VertexId, double> findClusteringCoefficients(
     InteractionGraph & graph, double startTime, double endTime, std::vector<std::string> attributes)
 {
     vector<VertexId> vertices;
-    IntervalQuery iq(startTime, endTime, attributes);
+    IntervalQuery iq(startTime, endTime);
     for (auto iqIt = graph.processIntervalQuery(iq); 
             iqIt.isValid(); iqIt.next()) 
         vertices.push_back(iqIt.getVertexId()); 

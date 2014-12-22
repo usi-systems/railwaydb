@@ -42,7 +42,7 @@ void createGraph(InteractionGraph &graph)
 }
 
 int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tree,
-        double startTime, double endTime, std::vector<std::string> attributes)
+        double startTime, double endTime, std::vector<std::string> const & attributes)
 {
     std::set<VertexId> out; // The set of vertices not in the tree
     std::set<VertexId> in;  // The set of vertices in the tree
@@ -50,7 +50,7 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
     VertexId u;
 
     int i = 0;
-    IntervalQuery q1(startTime, endTime, attributes);
+    IntervalQuery q1(startTime, endTime);
     for (auto iqIt = graph.processIntervalQuery(q1); iqIt.isValid(); iqIt.next()) {
         if (i == 0) {
             v = iqIt.getVertexId();

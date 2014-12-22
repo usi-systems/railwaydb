@@ -1,6 +1,7 @@
 #pragma once
 
 #include <intergdb/core/Block.h>
+#include <intergdb/core/PartitionIndex.h>
 #include <leveldb/db.h>
 
 #include <memory>
@@ -24,6 +25,8 @@ namespace intergdb { namespace core
     public:
         BlockManager(Conf const & conf, PartitionIndex & partitionIndex);
         Block const & getBlock(BlockId id);
+        Schema const & getEdgeSchema() const { return edgeSchema_; }
+        TimeSlicedPartitioning getBlockPartitioning(Block const & block);
         void addBlock(Block & data);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
         size_t getNumIOReads() const { return nIOReads_; }

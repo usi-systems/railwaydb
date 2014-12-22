@@ -44,6 +44,14 @@ void BlockManager::findNextBlockId()
     }
 }
 
+TimeSlicedPartitioning BlockManager::getBlockPartitioning(Block const & block)
+{
+    Timestamp minTimestamp, maxTimestamp;
+    block.findMinMaxTimestamps(minTimestamp, maxTimestamp);
+    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
+    return partitionIndex_.getTimeSlicedPartitioning(blockTimestamp);
+}
+
 Block const & BlockManager::getBlock(BlockId id)
 {
     reqCount_++;

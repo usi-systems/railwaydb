@@ -53,6 +53,14 @@ AttributeData & AttributeData::setAttribute(int attributeIndex, Type value)
     return *this; 
 }
 
+AttributeData & AttributeData::setAttributes(AttributeData const & other) 
+{  
+    for (auto const & indexValuePair : other.fields_)
+        fields_[indexValuePair.first] = indexValuePair.second;
+    return *this; 
+}
+
+
 AttributeData::Type const & AttributeData::getAttribute(string const & attributeName) const 
 { 
     return fields_.find(schema_.getIndex(attributeName))->second;

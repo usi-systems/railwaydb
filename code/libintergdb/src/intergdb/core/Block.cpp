@@ -218,7 +218,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
     sbuf >> minTimestamp;
     sbuf >> maxTimestamp;
     sbuf >> partitionIndex_;    
-    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2;
+    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
     TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(blockTimestamp);
     Partitioning const & part = tpart.getPartitioning();
     unordered_set<string> const & attributes = part[partitionIndex_];
