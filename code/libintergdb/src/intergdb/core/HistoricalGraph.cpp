@@ -1,6 +1,7 @@
 #include <intergdb/core/HistoricalGraph.h>
 
 #include <intergdb/core/Conf.h>
+#include <intergdb/common/Query.h>
 
 using namespace std;
 using namespace intergdb::core;
@@ -112,8 +113,7 @@ void HistoricalGraph::intervalQueryBatch(Timestamp start, Timestamp end, std::ve
 
 void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
 
-std::shared_ptr<HistoricalGraph::EdgeIterator> HistoricalGraph::
-    focusedIntervalQuery(VertexId vertex, Timestamp start, Timestamp end)
+std::shared_ptr<HistoricalGraph::EdgeIterator> HistoricalGraph::focusedIntervalQuery(FocusedIntervalQuery const &  query)
 {
-    return std::shared_ptr<EdgeIterator>(new EdgeIterator(fiqIndex_.query(vertex, start, end), &bman_));
+    return std::shared_ptr<EdgeIterator>(new EdgeIterator(fiqIndex_.query(query.getHeadVertex(), query.getStartTime(), query.getEndTime()), &bman_));
 }

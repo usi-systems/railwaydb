@@ -16,10 +16,10 @@ using namespace intergdb::common;
 namespace intergdb { namespace core
 {
 
+  typedef std::vector<std::unordered_set<std::string>> Partitioning;
+
   class Conf;
   class NetworkByteBuffer;
-
-  typedef std::vector<std::unordered_set<std::string>> Partitioning;
   
   class TimeSlicedPartitioning
   {

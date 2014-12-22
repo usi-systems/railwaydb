@@ -1,5 +1,4 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/common/Attribute.h>
 
 #include "gtest/gtest.h"  
 #include <boost/filesystem.hpp>
@@ -9,17 +8,17 @@
 
 using namespace std;
 using namespace intergdb::core;
-using namespace intergdb::common;
 
-class BasicReadWrite_test : public ::testing::Test {
+class BasicReadWrite_test : public ::testing::Test 
+{
 public:
     BasicReadWrite_test() {}
 protected:
     virtual void SetUp() 
     {
         conf.reset(new Conf("test", "/tmp/myigdb", 
-            {{"v",Attribute::STRING}}, 
-            {{"a", Attribute::STRING}, {"b", Attribute::STRING}}));
+            {{"v", DataType::STRING}}, 
+            {{"a", DataType::STRING}, {"b", DataType::STRING}}));
         if (boost::filesystem::exists(conf->getStorageDir()))
             boost::filesystem::remove_all(conf->getStorageDir());
         boost::filesystem::create_directories(conf->getStorageDir());   
@@ -67,8 +66,8 @@ TEST_F(BasicReadWrite_test, WriteReadTest)
     
     FocusedIntervalQuery q3(2, 5.0, 10.0, {"b"});
     FocusedIntervalQuery q4(2, 5.0, 10.0, {"a"});
-    graph->processIntervalQuery(q3);
-    graph->processIntervalQuery(q4);
+    graph->processFocusedIntervalQuery(q3);
+    graph->processFocusedIntervalQuery(q4);
 }
 
 int main(int argc, char *argv[])

@@ -1,5 +1,4 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/common/Attribute.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -11,7 +10,6 @@
 
 using namespace std;
 using namespace intergdb::core;
-using namespace intergdb::common;
 
 using boost::lexical_cast;
 
@@ -94,16 +92,17 @@ int msp(InteractionGraph &graph, VertexId q0, set<pair<VertexId,VertexId> > &tre
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_st", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}});
+    Conf conf("test", "/tmp/myigdb_st", 
+        {{"vertex-label", DataType::STRING}}, 
+        {{"a", DataType::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());
 
     set<pair<VertexId,VertexId> > tree;
     InteractionGraph graph(conf);
 
-    if (newDB) {  
+    if (newDB) 
         createGraph(graph);
-    }
 
     double startTime = 0.0, endTime = 2.0;
     std::vector<std::string> attributes = {"a"};

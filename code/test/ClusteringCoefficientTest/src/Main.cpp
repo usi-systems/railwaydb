@@ -1,5 +1,4 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/Schema.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -52,7 +51,9 @@ unordered_map<VertexId, double> findClusteringCoefficients(
 
 int main()
 {
-    Conf conf("test", "/tmp/myigdb_cc", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}});
+    Conf conf("test", "/tmp/myigdb_cc", 
+        {{"vertex-label",DataType::STRING}}, 
+        {{"a", DataType::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());    
     InteractionGraph graph(conf);

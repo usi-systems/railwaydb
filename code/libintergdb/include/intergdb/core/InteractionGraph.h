@@ -1,22 +1,19 @@
 #pragma once
 
-#include <intergdb/common/Query.h>
 #include <intergdb/common/Types.h>
-
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/Helper.h>
 #include <intergdb/core/HistoricalGraph.h>
 #include <intergdb/core/InMemoryGraph.h>
 #include <intergdb/core/PartitionIndex.h>
+#include <intergdb/core/Query.h>
 #include <intergdb/core/QueryCollector.h>
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/VertexManager.h>
 
 #include <memory>
 #include <utility>
-
-using namespace intergdb::common;
 
 namespace intergdb { namespace core
 {
@@ -59,9 +56,9 @@ namespace intergdb { namespace core
                      Timestamp time /*=Helper::getCurrentTimestamp() */,
                      EdgeDataAttributes&&... edgeData);
         void flush();
-        VertexIterator processIntervalQuery(Query q);
-        EdgeIterator processFocusedIntervalQuery(FocusedIntervalQuery q);
-        void processIntervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
+        VertexIterator processIntervalQuery(IntervalQuery const & q);
+        void processIntervalQueryBatch(IntervalQuery const & q, std::vector<VertexId> & results);
+        EdgeIterator processFocusedIntervalQuery(FocusedIntervalQuery const & q);
         BlockStats const & getBlockStats() const { return memg_.getBlockStats(); }
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }

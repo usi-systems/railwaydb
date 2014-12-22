@@ -1,9 +1,7 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/core/Schema.h>
 
 #include <cstdlib>
 #include <iostream>
-
 
 #include <boost/filesystem.hpp>
 
@@ -12,7 +10,9 @@ using namespace intergdb::core;
 
 int main()
 {
-    Conf conf("test", "/tmp/st_igdb", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::INT64}, {"b", Attribute::INT64}});  
+    Conf conf("test", "/tmp/st_igdb", 
+        {{"vertex-label", DataType::STRING}}, 
+        {{"a", DataType::INT64}, {"b", DataType::INT64}});  
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     if (!newDB) {
         try {

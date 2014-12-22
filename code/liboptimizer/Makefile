@@ -11,21 +11,21 @@
 
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-OBJDIR  = obj
-BINDIR  = bin
-SRCDIR  = src
-INCDIR  = include
+OBJDIR  = $(realpath .)/obj
+BINDIR  = $(realpath .)/bin
+SRCDIR  = $(realpath src)
+INCDIR  = $(realpath include) 
 
 LIBRARY   = liboptimizer.so
 
 CPPFLAGS  = 
 INCLUDES  = \
- -I ../libcommon/include \
- -I ../libintergdb/include \
+ -I $(realpath $(THISDIR)../libcommon/include) \
+ -I $(realpath $(THISDIR)../libintergdb/include) \
  -I $(GUROBI_HOME)/include
 
 LDFLAGS   =  -L $(GUROBI_HOME)/lib \
- -L ../libcommon/bin \
+ -L $(realpath $(THISDIR)../libcommon/bin) \
  -lcommon \
  -lgurobi56 \
  -lpthread \
@@ -71,7 +71,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(BINDIR)/$(LIBRARY): $(OBJS)
 	@mkdir -p $(dir $@)
-	$(LINK) $(OBJS) -shared -o "$(CURDIR)/$@"
+	$(LINK) $(OBJS) -shared -o "$@"
 
 docs:
 	doxygen doc/doxy.conf

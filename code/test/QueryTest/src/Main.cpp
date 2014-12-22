@@ -1,9 +1,7 @@
 #include <intergdb/core/InteractionGraph.h>
-#include <intergdb/common/Query.h>
 
 #include <cstdlib>
 #include <iostream>
-
 
 #include <boost/filesystem.hpp>
 
@@ -12,7 +10,9 @@ using namespace intergdb::core;
 
 int main()
 {
-    Conf conf("test", "/tmp/qt_igdb", {{"vertex-label",Attribute::STRING}}, {{"a", Attribute::STRING}, {"b", Attribute::STRING}});
+    Conf conf("test", "/tmp/qt_igdb", 
+        {{"vertex-label", DataType::STRING}}, 
+        {{"a", DataType::STRING}, {"b", DataType::STRING}});
     bool newDB = !boost::filesystem::exists(conf.getStorageDir());
     boost::filesystem::create_directories(conf.getStorageDir());   
     InteractionGraph graph(conf);
