@@ -25,7 +25,7 @@ int main()
         graph.flush();
     }
 
-    IntervalQuery q1(5.0, 10.0, {"a"});
+    IntervalQuery q1(5.0, 10.0);
     FocusedIntervalQuery q2(2, 5.0, 10.0, {"a"});
     
     InteractionGraph::VertexIterator iqIt = graph.processIntervalQuery(q1);

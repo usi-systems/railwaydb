@@ -23,6 +23,7 @@ namespace intergdb { namespace core
     public:
         AttributeData& setAttribute(std::string const & attributeName, Type value);
         AttributeData& setAttribute(int attributeIndex, Type value);
+        AttributeData & setAttributes(AttributeData const & other);
         Type const & getAttribute(int attributeIndex) const;
         Type const & getAttribute(std::string const & attributeName) const;
         std::string const & getStringAttribute(int attributeIndex) const

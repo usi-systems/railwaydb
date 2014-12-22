@@ -8,8 +8,8 @@ namespace intergdb { namespace core
     class IntervalQuery : public common::Query
     {
     public:
-        IntervalQuery(Timestamp start, Timestamp end, std::vector<std::string> const & attributeNames) 
-            : Query(start, end, attributeNames) {} 
+        IntervalQuery(Timestamp start, Timestamp end) 
+            : Query(start, end, std::vector<std::string>()) {} 
     };
 
     class FocusedIntervalQuery : public common::Query

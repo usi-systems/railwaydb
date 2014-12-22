@@ -7,6 +7,7 @@
 #include <intergdb/core/FocusedIntervalQueryIndex.h>
 #include <intergdb/core/PartitionIndex.h>
 
+#include <memory>
 #include <unordered_set>
 
 namespace intergdb { namespace core
@@ -33,18 +34,25 @@ namespace intergdb { namespace core
         {
         public:
             EdgeIterator(std::shared_ptr<FocusedIntervalQueryIndex::Iterator > it,
-                         BlockManager * bman);
+                         BlockManager * bman, FocusedIntervalQuery const & query);
             bool isValid();
             void next();
-            typename NeighborList::Edge const & getEdge();
+            NeighborList::Edge const & getEdge();
+            std::shared_ptr<AttributeData> getEdgeData();
         private:
             void initFromBlock();
+            void recomputePartitionIndices();
+            size_t getAttributeSize(std::string const & attr) const;
+            size_t getPartitionSize(std::unordered_set<std::string> const & attrs) const;
         private:
             bool done_;
             size_t currentEdgeIndex_;
             size_t currentNumEdges_;
+            TimeSlicedPartitioning partitioning_;
+            std::vector<size_t> partitionIndices_;
             BlockManager * bman_;
             std::shared_ptr<FocusedIntervalQueryIndex::Iterator> it_;
+            std::unordered_set<std::string> queryAttributes_;
         };
     public:
         HistoricalGraph(Conf const & conf, PartitionIndex & pidx);
