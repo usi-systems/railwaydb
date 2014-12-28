@@ -35,6 +35,13 @@ namespace intergdb { namespace core
           : std::runtime_error("block "+boost::lexical_cast<std::string>(id)+" not found") {}
     };
 
+    class attribute_not_found_exception : public std::runtime_error
+    {
+    public:
+        attribute_not_found_exception(std::string const & description)
+          : std::runtime_error("attribute not found: " + description) {}
+    };
+
     class time_sliced_partition_not_found_exception : public std::runtime_error
     {
     public:
@@ -48,5 +55,6 @@ namespace intergdb { namespace core
         time_sliced_partition_replacement_exception(std::string const & description)
           : std::runtime_error("error in replacing time sliced partition(s): " + description) {}
     };
+
 
 } } /* namespace */

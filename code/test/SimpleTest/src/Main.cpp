@@ -16,13 +16,18 @@ public:
 protected:
     virtual void SetUp() 
     {
-        conf.reset(new Conf("test", "/tmp/myigdb", 
+        auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
+        conf.reset(new Conf("test", storageDir.string(), 
             {{"v", DataType::STRING}}, 
             {{"a", DataType::STRING}, {"b", DataType::STRING}}));
         if (boost::filesystem::exists(conf->getStorageDir()))
             boost::filesystem::remove_all(conf->getStorageDir());
         boost::filesystem::create_directories(conf->getStorageDir());   
         graph.reset(new InteractionGraph(*conf));
+    }
+    virtual void TearDown() 
+    { 
+        boost::filesystem::remove_all(graph->getConf().getStorageDir());
     }
 protected:
     std::unique_ptr<Conf> conf;
@@ -42,7 +47,7 @@ TEST_F(BasicReadWrite_test, WriteReadTest)
     graph.reset(new InteractionGraph(*conf));
     
     IntervalQuery q1(5.0, 10.0);
-    FocusedIntervalQuery q2(2, 5.0, 10.0, {"a"});
+    FocusedIntervalQuery q2(2, 5.0, 10.0, {"a", "b"});
 
     InteractionGraph::VertexIterator iqIt = graph->processIntervalQuery(q1);
     EXPECT_EQ(iqIt.isValid(), true);

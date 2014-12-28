@@ -1,5 +1,6 @@
 #include <intergdb/core/AttributeData.h>
 
+#include <intergdb/core/Exceptions.h>
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <intergdb/common/Attribute.h>
@@ -42,8 +43,11 @@ AttributeData::AttributeData(Schema const & schema, unordered_set<string> const 
 }
 
 AttributeData & AttributeData::setAttribute(string const & attributeName, Type value) 
-{  
-    fields_[schema_.getIndex(attributeName)] = value; 
+{
+    auto it = fields_.find(schema_.getIndex(attributeName));
+    if (it==fields_.end())
+        throw attribute_not_found_exception(attributeName);  
+    it->second = value; 
     return *this; 
 }
 
@@ -54,16 +58,21 @@ AttributeData & AttributeData::setAttribute(int attributeIndex, Type value)
 }
 
 AttributeData & AttributeData::setAttributes(AttributeData const & other) 
-{  
-    for (auto const & indexValuePair : other.fields_)
-        fields_[indexValuePair.first] = indexValuePair.second;
+{
+    for (auto const & indexValuePair : other.fields_) {
+        auto iter = fields_.find(indexValuePair.first);
+        if (iter != fields_.end())
+            iter->second = indexValuePair.second;
+    }
     return *this; 
 }
 
-
 AttributeData::Type const & AttributeData::getAttribute(string const & attributeName) const 
 { 
-    return fields_.find(schema_.getIndex(attributeName))->second;
+    auto it = fields_.find(schema_.getIndex(attributeName));
+    if (it==fields_.end())
+        throw attribute_not_found_exception(attributeName);
+    return it->second;
 }
 
 AttributeData::Type const & AttributeData::getAttribute(int attributeIndex) const 
