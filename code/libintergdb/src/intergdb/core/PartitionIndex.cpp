@@ -27,13 +27,8 @@ PartitionIndex::PartitionIndex(Conf const & conf)
         throw std::runtime_error(status.ToString());
     db_.reset(db);
     if (newDB) {
-      Schema const & schema = conf.getEdgeSchema();
-      unordered_set<string> allAttributes;
-      auto const & attributes = schema.getAttributes();
-      for (auto const & attribute : attributes)
-          allAttributes.insert(attribute.getName());
       TimeSlicedPartitioning initialPartitioning{};
-      initialPartitioning.getPartitioning().push_back(std::move(allAttributes));
+      initialPartitioning.getPartitioning() = conf.getPartitioning();
       addPartitioning(initialPartitioning);
     }
 }
