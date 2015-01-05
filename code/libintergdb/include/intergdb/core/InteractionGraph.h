@@ -111,7 +111,10 @@ namespace intergdb { namespace core
         getVertexData(u);
         std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());
         // TODO (rjs): Need to check that the edge added has the correct data for the schema
-        assert(sizeof...(EdgeDataAttributes) == getEdgeSchema().getAttributes().size());        
+        if (sizeof...(EdgeDataAttributes) != getEdgeSchema().getAttributes().size())      
+        {  
+            throw std::runtime_error("Edge does not have the correct data for the schema.");
+        }
         AttributeCollector<EdgeDataAttributes...>::add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);
         memg_.addEdge(v, u, time, data);
     }
