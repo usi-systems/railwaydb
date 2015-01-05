@@ -39,30 +39,28 @@ namespace intergdb { namespace core
 
     inline size_t getSerializedSizeOf(AttributeData const & data)
     {                
-        size_t size = 0;        
-        int i = 0;
-        Schema const & schema = data.getSchema();
-        for (auto a : schema.getAttributes()) {
-            switch (a.getType()) {
+        size_t size = 0;  
+        Schema const & schema = data.getSchema();      
+        for (auto const & indexTypePair : data.getFields()) {
+            switch (schema.getAttributes().at(indexTypePair.first).getType()) {
             case Attribute::INT64:
             {
-                size += getSerializedSizeOf(boost::get<int64_t>(data.getAttribute(i)));
+                size += getSerializedSizeOf(data.getIntAttribute(indexTypePair.first));
                 break;
             }
             case Attribute::DOUBLE:
             {
-                size += getSerializedSizeOf(boost::get<double>(data.getAttribute(i)));
+                size += getSerializedSizeOf(data.getDoubleAttribute(indexTypePair.first));
                 break;
             }
             case Attribute::STRING:
             {
-                size += getSerializedSizeOf(boost::get<std::string>(data.getAttribute(i)));
+                size += getSerializedSizeOf(data.getStringAttribute(indexTypePair.first));
                 break;
             }
             default:
                 assert(false);
             } 
-            i++;
         }
         return size;    
     }
