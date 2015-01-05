@@ -23,13 +23,13 @@ protected:
         if (boost::filesystem::exists(conf->getStorageDir()))
             boost::filesystem::remove_all(conf->getStorageDir());
         boost::filesystem::create_directories(conf->getStorageDir());   
-        graph.reset(new InteractionGraph(*conf));
         Partitioning partitioning;
         partitioning.push_back({"a"});
         partitioning.push_back({"b"});
         conf->setPartitioning(partitioning);
+        graph.reset(new InteractionGraph(*conf));
     }
-    virtual void TearDown() 
+    virtual void TearDown()
     { 
         boost::filesystem::remove_all(graph->getConf().getStorageDir());
     }
