@@ -27,6 +27,7 @@ protected:
         Partitioning partitioning;
         partitioning.push_back({"a"});
         partitioning.push_back({"b"});
+        conf->setPartitioning(partitioning);
     }
     virtual void TearDown() 
     { 
