@@ -9,10 +9,10 @@
 using namespace std;
 using namespace intergdb::core;
 
-class BasicReadWrite_test : public ::testing::Test 
+class PartitionTest : public ::testing::Test 
 {
 public:
-    BasicReadWrite_test() {}
+    PartitionTest() {}
 protected:
     virtual void SetUp() 
     {
@@ -38,7 +38,7 @@ protected:
     std::unique_ptr<InteractionGraph> graph;
 };
 
-TEST_F(BasicReadWrite_test, WriteReadTest) 
+TEST_F(PartitionTest, WriteReadTest) 
 {
     graph->createVertex(2, "v2");
     graph->createVertex(4, "v4");
@@ -101,12 +101,6 @@ TEST_F(BasicReadWrite_test, WriteReadTest)
         fiqIt.next();
         EXPECT_EQ(fiqIt.isValid(), false);     
     } 
-}
-
-int main(int argc, char *argv[])
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }
 
 

@@ -1,11 +1,107 @@
-TESTS   = OptimizerTest
+# Make Target:
+# ------------
+# The Makefile provides the following targets to make:
+#   $ make           compile and link
+#   $ make objs      compile only (no linking)
+#   $ make clean     clean objects and the executable file
+#   $ make help      get the usage of the makefile
 
-all:
-	find . -name "*Test" -type d -exec sh -c "cd {}; pwd; make" \;
+## Customizable Section: adapt those variables to suit your program.
 
-test: $(TESTS)
-	@- $(foreach TEST,$(TESTS), \
-		find . -name $(TEST) -type d -exec sh -c "cd {}; pwd; make test" \; )
+THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
+
+PROGRAM = run_all_tests
+OBJDIR  = $(realpath .)/obj
+BINDIR  = $(realpath .)/bin
+SRCDIR  = $(realpath src)
+
+CPPFLAGS  = 
+INCLUDES  = -isystem /opt/local/libcpp-software/include \
+ -I $(realpath $(THISDIR)../libintergdb/include) \
+ -I $(realpath $(THISDIR)../ext/include) \
+ -I $(realpath $(THISDIR)../ext/src/leveldb/include) \
+ -I $(realpath $(THISDIR)../libcommon/include) \
+ -I $(realpath $(THISDIR)../liboptimizer/include) 
+LDFLAGS   = -L /opt/local/libcpp-software/lib \
+ -L $(realpath $(THISDIR)../libintergdb/bin) \
+ -L $(realpath $(THISDIR)../ext/lib) \
+ -L $(realpath $(THISDIR)../ext/src/leveldb) \
+ -L $(realpath $(THISDIR)../libcommon/bin) \
+ -L $(realpath $(THISDIR)../liboptimizer/bin) \
+ -lboost_coroutine-mt -lboost_context-mt -lboost_filesystem-mt \
+ -lboost_iostreams-mt -lboost_chrono-mt -lboost_date_time-mt \
+ -lboost_system-mt -lboost_thread-mt \
+ -lleveldb -lspatialindex -lintergdb \
+ -lcommon -loptimizer -lgtest 
+
+## Implicit Section: change the following only when necessary.
+
+CXX      = clang++ 
+CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libc++ 
+SRCDIRS  = $(shell find $(SRCDIR) -type d)
+INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(INCLUDES)
+
+## Stable Section: usually no need to be changed. 
+SHELL   = /bin/sh
+SRCS 	= $(wildcard $(addsuffix /*.cpp,$(SRCDIRS)))
+OBJS    = $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRCS:.cpp=.o))
+DEPS    = $(OBJS:.o=.d)
+
+## Define some useful variables.
+DEP_OPT = -MM -MP
+DEPEND  = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) $(DEP_OPT)
+COMPILE = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCFLAGS) 
+LINK    = $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
+
+.PHONY: all objs clean distclean help show
+
+# Delete the default suffixes
+.SUFFIXES:
+
+all: $(BINDIR)/$(PROGRAM)
+
+$(OBJDIR)/%.d: $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@/bin/echo -n $(dir $@) > $@
+	@$(DEPEND) $< >> $@ || rm $@
+
+objs: $(OBJS)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	$(COMPILE) -c $< -o $@
+
+$(BINDIR)/$(PROGRAM): $(OBJS)
+	@mkdir -p $(dir $@)
+	$(LINK) $(OBJS) -o $@ 
+
+ifneq ($(DEPS),)
+  sinclude $(DEPS)
+endif
 
 clean:
-	find . -name "*Test" -type d -exec sh -c "cd {}; make clean" \;
+	$(RM) -r $(OBJDIR) $(BINDIR)
+
+help:
+	@echo 'Usage: make [TARGET]'
+	@echo 'TARGETS:'
+	@echo '  all       (=make) compile and link.'
+	@echo '  objs      compile only (no linking).'
+	@echo '  tags      create tags for Emacs editor.'
+	@echo '  clean     clean objects and the executable file.'
+	@echo '  show      show variables (for debug use only).'
+	@echo '  help      print this message.'
+
+show:
+	@echo 'PROGRAM     :' $(PROGRAM)
+	@echo 'SRCDIRS     :' $(SRCDIRS)
+	@echo 'SRCS  	   :' $(SRCS)
+	@echo 'OBJS        :' $(OBJS)
+	@echo 'DEPS        :' $(DEPS)
+	@echo 'DEPEND      :' $(DEPEND)
+	@echo 'COMPILE     :' $(COMPILE)
+	@echo 'link        :' $(LINK)
+
+
+
+
+

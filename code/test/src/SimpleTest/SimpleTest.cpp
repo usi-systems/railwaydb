@@ -9,10 +9,10 @@
 using namespace std;
 using namespace intergdb::core;
 
-class BasicReadWrite_test : public ::testing::Test 
+class SimpleTest : public ::testing::Test 
 {
 public:
-    BasicReadWrite_test() {}
+    SimpleTest() {}
 protected:
     virtual void SetUp() 
     {
@@ -34,7 +34,7 @@ protected:
     std::unique_ptr<InteractionGraph> graph;
 };
 
-TEST_F(BasicReadWrite_test, WriteReadTest) 
+TEST_F(SimpleTest, WriteReadTest) 
 {
     graph->createVertex(2, "v2");
     graph->createVertex(4, "v4");
@@ -75,11 +75,7 @@ TEST_F(BasicReadWrite_test, WriteReadTest)
     graph->processFocusedIntervalQuery(q4);
 }
 
-int main(int argc, char *argv[])
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+
 
 
 
