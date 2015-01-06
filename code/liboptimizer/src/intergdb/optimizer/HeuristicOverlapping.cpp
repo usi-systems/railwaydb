@@ -12,7 +12,7 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double storageThreshold) 
+Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats) 
 {
   Partitioning partitioning;
   auto const & allAttributes = workload.getAttributes();
@@ -34,7 +34,7 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
       partition.addAttribute(attrb);
     partitioning.addPartition(partition);
   }
-  Cost costModel;
+  Cost costModel(stats);
   while (costModel.getStorageOverhead(partitioning, workload) > storageThreshold) {
     double oldCost = costModel.getIOCost(partitioning, workload);
     auto const & partitions = partitioning.getPartitions();

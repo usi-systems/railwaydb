@@ -5,6 +5,7 @@
 #include <intergdb/util/RunningStat.h>
 #include <intergdb/util/AutoTimer.h>
 #include <intergdb/common/Cost.h>
+#include <intergdb/common/SchemaStats.h>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -56,7 +57,8 @@ void VsStorageOverheadThreshold::process()
     << this->getClassName() << endl;
   
   SimulationConf simConf;
-  Cost cost;
+  SchemaStats stats;
+  Cost cost(stats);
   util::AutoTimer timer;  
   
   ExperimentalData queryIOExp("QueryIOVsStorageOverheadThreshold");
@@ -114,7 +116,7 @@ void VsStorageOverheadThreshold::process()
               timer.start();
               Partitioning partitioning;
               try {
-                  partitioning = solver->solve(workload, sot); 
+                  partitioning = solver->solve(workload, sot, stats); 
               } catch (const runtime_error& error) {
                   cerr << "Unable to find a solution" << endl;
                   errorFlags.at(j) = true;

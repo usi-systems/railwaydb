@@ -13,8 +13,8 @@ public:
     HeuristicNonOverlapping() { }
     ~HeuristicNonOverlapping() { }
     std::string getClassName() { return "HeuristicNonOverlapping"; }
-    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
-    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold, int numPartitions);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold, intergdb::common::SchemaStats const & stats);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold, int numPartitions, intergdb::common::SchemaStats const & stats);
 };
 
 } }

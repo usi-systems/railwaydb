@@ -11,7 +11,7 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning PartitionPerAttribute::solve(QueryWorkload const & workload, double storageThreshold) 
+Partitioning PartitionPerAttribute::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats) 
 {
     Partition partition;
     Partitioning partitioning;
