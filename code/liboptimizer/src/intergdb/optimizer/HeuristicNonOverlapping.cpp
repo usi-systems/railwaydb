@@ -2,6 +2,8 @@
 
 #include <intergdb/common/Cost.h>
 #include <intergdb/common/SystemConstants.h>
+#include <intergdb/common/SchemaStats.h>
+
 #include <intergdb/optimizer/MinCostSolution.h>
 
 #include <iostream>
@@ -12,12 +14,12 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold) 
+Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats) 
 {
-  Cost costModel;
+  Cost costModel(stats);
   MinCostSolution<Partitioning> minCostPart;
   for (int numPartitions=1; numPartitions<=workload.getAttributes().size(); ++numPartitions) {
-    Partitioning partitioning = solve(workload, storageThreshold, numPartitions);
+      Partitioning partitioning = solve(workload, storageThreshold, numPartitions, stats);
     double overhead = costModel.getStorageOverhead(partitioning, workload);
     if (overhead > storageThreshold)
       break;
@@ -28,7 +30,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
   return minCostPart.getBestSolution();
 }
 
-Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions) 
+Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions, SchemaStats const & stats) 
 {
   // Initialize partitions
   vector<Partition> partitions;
@@ -52,7 +54,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
     return attrbFreq[lhs] > attrbFreq[rhs];
   });
   // - In decreasing order of attribute frequency
-  Cost costModel;
+  Cost costModel(stats);
   unordered_set<Attribute const *> usedAttributes;
   for (Attribute const * attrb : attributes) {
     usedAttributes.insert(attrb);

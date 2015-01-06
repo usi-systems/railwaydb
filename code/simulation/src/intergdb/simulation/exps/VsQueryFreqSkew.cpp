@@ -5,6 +5,7 @@
 #include <intergdb/util/RunningStat.h>
 #include <intergdb/util/AutoTimer.h>
 #include <intergdb/common/Cost.h>
+#include <intergdb/common/SchemaStats.h>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -50,7 +51,8 @@ void VsQueryFreqSkew::process()
     << this->getClassName() << endl;
   
   SimulationConf simConf;
-  Cost cost;
+  SchemaStats stats;
+  Cost cost(stats);
   util::AutoTimer timer;  
   
   ExperimentalData queryIOExp("QueryIOVsQueryFreqSkew");
@@ -103,7 +105,7 @@ void VsQueryFreqSkew::process()
           j = 0;
           for (auto solver : solvers) {              
               timer.start();
-              Partitioning partitioning = solver->solve(workload, storageOverheadThreshold); 
+              Partitioning partitioning = solver->solve(workload, storageOverheadThreshold, stats); 
               timer.stop();                            
               io.at(j).push(cost.getIOCost(partitioning, workload));
               storage.at(j).push(cost.getStorageOverhead(partitioning, workload));   

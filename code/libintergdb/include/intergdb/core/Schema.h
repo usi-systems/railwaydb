@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include <intergdb/common/Attribute.h>
-#include <intergdb/core/SchemaStats.h>
+#include <intergdb/common/SchemaStats.h>
 
 namespace intergdb { namespace core
 { 

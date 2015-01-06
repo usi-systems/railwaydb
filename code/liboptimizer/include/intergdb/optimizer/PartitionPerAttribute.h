@@ -13,7 +13,7 @@ public:
     PartitionPerAttribute() { }
     ~PartitionPerAttribute() { }
     std::string getClassName() { return "PartitionPerAttribute"; }
-    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold, common::SchemaStats const & stats);
 };
 
 } }

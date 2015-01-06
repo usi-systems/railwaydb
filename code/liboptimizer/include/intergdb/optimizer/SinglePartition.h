@@ -13,7 +13,7 @@ public:
     SinglePartition() { }
     ~SinglePartition() { } 
     std::string getClassName() { return "SinglePartition"; }
-    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold);
+    intergdb::common::Partitioning solve(intergdb::common::QueryWorkload const & workload, double storageThreshold, common::SchemaStats const & stats);
 };
 
 } }

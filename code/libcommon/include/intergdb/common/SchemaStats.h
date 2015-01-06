@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-namespace intergdb { namespace core
+namespace intergdb { namespace common
 {     
     class SchemaStats
     {        

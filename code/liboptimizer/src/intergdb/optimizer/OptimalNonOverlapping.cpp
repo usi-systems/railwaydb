@@ -21,7 +21,7 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload)
+int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload, common::SchemaStats const & stats)
 {
     int error = 0;
     int j = 0;
@@ -126,7 +126,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
 
     
     auto attributes = workload->getAttributes();
-    Cost cost;
+    Cost cost(stats);
     Partition part; 
     for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
             part.addAttribute(&attr);            

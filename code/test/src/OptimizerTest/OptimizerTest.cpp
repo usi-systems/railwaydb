@@ -8,6 +8,8 @@
 #include <intergdb/common/QueryWorkload.h>
 #include <intergdb/common/Partitioning.h>
 #include <intergdb/common/QuerySummary.h>
+#include <intergdb/common/SchemaStats.h>
+
 
 #include <intergdb/optimizer/Solver.h>
 #include <intergdb/optimizer/SolverFactory.h>
@@ -41,6 +43,7 @@ protected:
 TEST_F(OptimizerTest, nov_ex1) 
 {
     QueryWorkload workload;
+    SchemaStats stats;
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     for (auto const & attribute : workload.getAttributes()) {
@@ -51,7 +54,7 @@ TEST_F(OptimizerTest, nov_ex1)
     }
     double storageOverheadThreshold = 1.0;
     
-    Partitioning partitioning = solverNov->solve(workload, storageOverheadThreshold); 
+    Partitioning partitioning = solverNov->solve(workload, storageOverheadThreshold, stats); 
 
     auto const & partitions = partitioning.getPartitions();
 
@@ -85,6 +88,7 @@ TEST_F(OptimizerTest, nov_ex1)
 TEST_F(OptimizerTest, nov_ex2) 
 {
     QueryWorkload workload;
+    SchemaStats stats;
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     for (auto const & attribute : workload.getAttributes()) {
@@ -95,7 +99,7 @@ TEST_F(OptimizerTest, nov_ex2)
     }
     double storageOverheadThreshold = 0.1;
     
-    Partitioning partitioning = solverNov->solve(workload, storageOverheadThreshold); 
+    Partitioning partitioning = solverNov->solve(workload, storageOverheadThreshold, stats); 
 
     auto const & partitions = partitioning.getPartitions();
     
@@ -125,6 +129,7 @@ TEST_F(OptimizerTest, nov_ex2)
 TEST_F(OptimizerTest, nov_ex3) 
 {
     QueryWorkload workload;    
+    SchemaStats stats;
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     for (size_t j=0, ju=2; j<ju; ++j) {
@@ -135,7 +140,7 @@ TEST_F(OptimizerTest, nov_ex3)
         workload.setFrequency(query,0.5);
     }
     double storageOverheadThreshold = 1.0;
-    Partitioning partitioning = solverNov->solve(workload, storageOverheadThreshold); 
+    Partitioning partitioning = solverNov->solve(workload, storageOverheadThreshold, stats); 
     auto const & partitions = partitioning.getPartitions();
     EXPECT_EQ(partitions.size(), 1);
     Partition const * part = &partitions[0];
@@ -159,6 +164,7 @@ TEST_F(OptimizerTest, nov_ex3)
 TEST_F(OptimizerTest, ov_ex1) 
 {
     QueryWorkload workload;    
+    SchemaStats stats;
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     auto const & attributes = workload.getAttributes();
@@ -176,7 +182,7 @@ TEST_F(OptimizerTest, ov_ex1)
         workload.setFrequency(query,0.5);
     }
     double storageOverheadThreshold = 1.0;
-    Partitioning partitioning = solverOv->solve(workload, storageOverheadThreshold); 
+    Partitioning partitioning = solverOv->solve(workload, storageOverheadThreshold, stats); 
     auto const & partitions = partitioning.getPartitions();
     EXPECT_EQ(partitions.size(), 2);
     Partition const * smallPart, * largePart;
@@ -217,6 +223,7 @@ TEST_F(OptimizerTest, ov_ex2)
 {
 
     QueryWorkload workload;    
+    SchemaStats stats;
     for (size_t i=0, iu=2; i<iu; ++i) 
         workload.addAttribute(Attribute(i, 8));    
     auto const & attributes = workload.getAttributes();
@@ -234,7 +241,7 @@ TEST_F(OptimizerTest, ov_ex2)
         workload.setFrequency(query,0.5);
     }
     double storageOverheadThreshold = 0.1;
-    Partitioning partitioning = solverOv->solve(workload, storageOverheadThreshold); 
+    Partitioning partitioning = solverOv->solve(workload, storageOverheadThreshold, stats); 
         auto const & partitions = partitioning.getPartitions();
     if (partitions.size()!=1)
         throw runtime_error("ov_ex2_verify: number of partitions is not equal to 1");

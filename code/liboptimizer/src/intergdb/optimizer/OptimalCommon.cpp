@@ -311,7 +311,7 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
     GRBfreemodel(ctx->model);
 }
 
-Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storageThreshold)
+Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats)
 {
     int error = 0;
     gurobi_ctx ctx;
@@ -341,7 +341,7 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     error = GRBupdatemodel(ctx.model);
     if (error) goto QUIT; 
 
-    error = constraints(&e, &ctx, &workload);
+    error = constraints(&e, &ctx, &workload, stats);
     if (error) goto QUIT;
 
     error = solve_model(&e, &ctx);
