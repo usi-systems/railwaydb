@@ -27,6 +27,7 @@ namespace intergdb { namespace core
     private:
         EdgeFIFO vfifo_;
         ExpirationMap expm_;
+        Conf const & conf_;
         std::unordered_map<VertexId, NeighborList> neigLists_;
     };
 

@@ -135,6 +135,8 @@ namespace intergdb { namespace core
         Schema const & getEdgeSchema() const { return edgeSchema_; }
         Schema const & getVertexSchema() const { return vertexSchema_; }
 
+        SchemaStats getEdgeSchemaStats() const { return edgeSchemaStats_; }
+
     private:
         std::string name_;
         std::string storageDir_;
@@ -148,6 +150,7 @@ namespace intergdb { namespace core
         SmartLayoutConf layoutConf_;
         Schema vertexSchema_;
         Schema edgeSchema_;
+        SchemaStats edgeSchemaStats_;
         Partitioning partitioning_;
     };
 
