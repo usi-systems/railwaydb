@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include <intergdb/common/Attribute.h>
+#include <intergdb/core/SchemaStats.h>
 
 namespace intergdb { namespace core
 { 
@@ -28,7 +29,6 @@ namespace intergdb { namespace core
     private:
         std::vector<common::Attribute> attributes_;            
         std::unordered_map<std::string, int> nameToIndex_; /* map from name to index */
-        double typeToSize(DataType type);
     };
 } } /* namespace */
 

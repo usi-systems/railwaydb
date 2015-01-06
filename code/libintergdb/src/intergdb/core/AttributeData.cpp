@@ -4,6 +4,7 @@
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <intergdb/common/Attribute.h>
+#include <intergdb/core/Helper.h>
 
 using namespace std;
 using namespace intergdb::common;
@@ -108,6 +109,27 @@ std::string AttributeData::toString() const
         } 
     }
     return ss.str(); 
+}
+
+double AttributeData::getFieldSize(int index) 
+{
+    switch (schema_.getAttributes().at(index).getType()) {
+    case Attribute::INT64:
+    {
+        return getSerializedSizeOf(getIntAttribute(index));
+    }
+    case Attribute::DOUBLE:
+    {
+        return getSerializedSizeOf(getDoubleAttribute(index));
+    }
+    case Attribute::STRING:
+    {
+        return getSerializedSizeOf(getStringAttribute(index));
+    }
+    default:
+        assert(false);
+    }
+    return 0;
 }
 
 bool AttributeData::operator==(AttributeData const& other) 

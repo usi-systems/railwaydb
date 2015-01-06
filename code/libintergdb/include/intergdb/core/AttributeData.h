@@ -54,6 +54,7 @@ namespace intergdb { namespace core
         bool operator==(AttributeData const & other); 
         Schema const & getSchema() const { return schema_; }
         std::string toString() const;
+        double getFieldSize(int index);
     private:
         std::unordered_map<int,Type> fields_;
         Schema const & schema_;
