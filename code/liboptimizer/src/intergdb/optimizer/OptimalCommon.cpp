@@ -83,11 +83,11 @@ double OptimalCommon::alpha()
     return storageThreshold_;
 }
 
-double OptimalCommon::s(std::vector<Attribute> const & attributes)
+double OptimalCommon::s(std::vector<Attribute> const & attributes, common::SchemaStats const & stats)
 {
     double sum = 0;
     for (auto & attribute : attributes) {
-        sum += attribute.getSize();
+        sum += stats.getAvgSize(attribute.getIndex());
     }
     return sum;
 }
@@ -223,7 +223,7 @@ void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
 }
 
 /* objective coefficients for each of the variables */
-void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload) 
+void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload, common::SchemaStats const & stats) 
 {
 
     std::vector<QuerySummary> queries = workload->getQuerySummaries();
@@ -246,7 +246,7 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
     
         for (int a = 0; a < e->A; ++a) {
             for (int p = 0; p < e->P; ++p) {
-                ctx->obj[z(e,a,p,q)] = workload->getAttribute(a).getSize() * c_e() * workload->getFrequency(queries[q]);
+                ctx->obj[z(e,a,p,q)] = stats.getAvgSize(workload->getAttribute(a).getIndex()) * c_e() * workload->getFrequency(queries[q]);
             }
         }
 
@@ -327,7 +327,7 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
 
     variables(&e, &ctx);
 
-    objective(&e, &ctx, &workload);
+    objective(&e, &ctx, &workload, stats);
 
     /* Add variables */
     error = GRBaddvars(ctx.model, e.num_vars, 0, NULL, NULL, NULL, 

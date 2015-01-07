@@ -100,7 +100,9 @@ void VsNumAttributes::process()
   for (double attributeCount : attributeCounts) {
       for (int i = 0; i < numRuns; i++) {
           simConf.setAttributeCount(attributeCount);
-          QueryWorkload workload = simConf.getQueryWorkload();
+          auto workloadAndStats = simConf.getQueryWorkloadAndStats();
+          QueryWorkload workload = workloadAndStats.first;
+          stats = workloadAndStats.second;
           j = 0;
           for (auto solver : solvers) {              
               timer.start();

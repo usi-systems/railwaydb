@@ -7,8 +7,8 @@
 using namespace std;
 using namespace intergdb::core;
 
-InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg)
-    : vfifo_(conf.windowSize()), expm_(conf, hisg), conf_(conf) {}
+InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, SchemaStats & stats)
+    : vfifo_(conf.windowSize()), expm_(conf, hisg), stats_(stats) {}
 
 void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_ptr<AttributeData> data)
 {
@@ -36,16 +36,8 @@ void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_pt
     }
     // hook to keep track of data sizes
     {
-        std::cout << "InMemoryGraph::addEdge printing fields" << std::endl;
-
-
-
         for (auto const & indexTypePair : data->getFields()) {                      
-            std::cout << "InMemoryGraph::addEdge field"  
-                      << " indexTypePair.first " << indexTypePair.first << " " 
-                      << " size " << data->getFieldSize(indexTypePair.first) << " " 
-                /* f.getSerializedSize()*/ << std::endl;
-            conf_.getEdgeSchemaStats().incrCountAndBytes(indexTypePair.first, data->getFieldSize(indexTypePair.first));
+            stats_.incrCountAndBytes(indexTypePair.first, data->getFieldSize(indexTypePair.first));
         }            
     }
 

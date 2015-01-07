@@ -90,8 +90,8 @@ shared_ptr<AttributeData> HistoricalGraph::EdgeIterator::getEdgeData()
 size_t HistoricalGraph::EdgeIterator::getAttributeSize(string const & attr) const
 {
     Schema const & schema = bman_->getEdgeSchema();
-    auto index = schema.getIndex(attr);
-    return schema.getAttributes()[index].getSize();
+    SchemaStats const & stats = bman_->getEdgeSchemaStats();
+    return stats.getAvgSize(schema.getIndex(attr));
 }
 
 size_t HistoricalGraph::EdgeIterator::getPartitionSize(unordered_set<string> const & attrs) const
@@ -165,8 +165,8 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
         done_ = true;    
 }
 
-HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx)
-    : conf_(conf), pidx_(pidx), bman_(conf, pidx_), iqIndex_(conf, &bman_), fiqIndex_(conf)
+HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx, SchemaStats & stats)
+    : conf_(conf), pidx_(pidx), bman_(conf, pidx_, stats), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
 void HistoricalGraph::addBlock(Block & block)

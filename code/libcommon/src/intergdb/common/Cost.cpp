@@ -43,7 +43,7 @@ vector<Partition const *> Cost::getUsedPartitions(vector<Partition> const & part
           continue;
         if (effectiveAttributes.count(attribute)==0)
           continue;
-        partitionScore += (attribute->getSize() * 
+        partitionScore += (stats_.getAvgSize(attribute->getIndex()) * 
           SystemConstants::numberOfEdgesInABlock) / partitionSize;
       }
       if (partitionScore > bestPartitionScore) {
@@ -87,8 +87,9 @@ double Cost::getIOCost(vector<Partition> const & partitions, QueryWorkload const
 double Cost::getPartitionSize(Partition const & partition)
 {
   double attributesSize = 0.0;
-  for (Attribute const * attribute : partition.getAttributes())
-    attributesSize += attribute->getSize();
+  for (Attribute const * attribute : partition.getAttributes())   
+      attributesSize += stats_.getAvgSize(attribute->getIndex()); 
+  
   return 
     SystemConstants::numberOfEdgesInABlock * 
       ((SystemConstants::edgeIdSize + SystemConstants::timestampSize) + attributesSize)

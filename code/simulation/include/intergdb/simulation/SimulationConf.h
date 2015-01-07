@@ -1,6 +1,7 @@
 #pragma once
 
 #include <intergdb/common/QueryWorkload.h>
+#include <intergdb/common/SchemaStats.h>
 #include <intergdb/util/ZipfRand.h>
 #include <intergdb/util/NormalRand.h>
 
@@ -34,7 +35,7 @@ namespace intergdb { namespace simulation
       { queryTypeFrequencyZipfParam_ = queryTypeFrequencyZipfParam; }
     double getQueryTypeFrequencyZipfParam() const
       { return queryTypeFrequencyZipfParam_; }
-    common::QueryWorkload getQueryWorkload();
+    std::pair<common::QueryWorkload, common::SchemaStats> getQueryWorkloadAndStats();
   private:
     size_t attributeCount_ = 10;
     double attributeSizeZipfParam_ = 0.5;

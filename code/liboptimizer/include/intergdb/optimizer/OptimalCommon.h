@@ -54,7 +54,7 @@ protected:
     int u(var_env *e, int p);
     int c_e();
     int c_n();
-    double s(std::vector<intergdb::common::Attribute> const & attributes);
+    double s(std::vector<intergdb::common::Attribute> const & attributes, common::SchemaStats const & stats);
     double K();
     double alpha();
     int accesses(std::vector<intergdb::common::QuerySummary> const & queries, int q, int a);   
@@ -63,7 +63,7 @@ protected:
     void create_env(var_env *e, intergdb::common::QueryWorkload const * workload);
     void init_ctx(var_env *e, gurobi_ctx* ctx);
     void variables(var_env *e, gurobi_ctx *ctx);   
-    void objective(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload);
+    void objective(var_env *e, gurobi_ctx *ctx, intergdb::common::QueryWorkload const * workload, common::SchemaStats const & stats);
     int solve_model(var_env *e, gurobi_ctx *ctx);
     void cleanup(var_env *e, gurobi_ctx *ctx);
     double storageThreshold_;

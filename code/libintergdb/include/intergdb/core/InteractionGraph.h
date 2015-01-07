@@ -73,6 +73,7 @@ namespace intergdb { namespace core
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
         QueryCollector qcol_;
+        SchemaStats stats_;
     };
 
     template<typename T1, typename... TN>

@@ -8,11 +8,11 @@ using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
 
-char const * Attribute::dataTypeStrings_[] = { "INT64", "DOUBLE", "STRING" };
+char const * Attribute::dataTypeStrings_[] = { "INT64", "DOUBLE", "STRING", "UNDEFINED" };
 
 string Attribute::toString() const
 {     
-  return "(name: " + name_ + ", index: " + to_string(index_) + ", size:" + to_string(size_) + ")";
+  return "(name: " + name_ + ", index: " + to_string(index_) + ")";
 }
 
 string QuerySummary::toString() const

@@ -1,4 +1,5 @@
 #include <intergdb/simulation/SimulationConf.h>
+#include <intergdb/common/SchemaStats.h>
 
 #include <iostream>
 #include <algorithm>
@@ -22,12 +23,14 @@ SimulationConf::SimulationConf()
   queryTypeFrequencyGen_.setSeed(seed++);
 }
 
-QueryWorkload SimulationConf::getQueryWorkload()
+std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWorkloadAndStats()
 {
   QueryWorkload workload;
+  SchemaStats stats;
   for (size_t i=0, iu=getAttributeCount(); i<iu; ++i)  { 
     double attributeSize = attributeSizes_[attributeSizeGen_.getRandomValue()];
-    workload.addAttribute(Attribute(i, attributeSize));
+    workload.addAttribute(Attribute(i, std::to_string(i), common::Attribute::UNDEFINED));
+    stats.incrCountAndBytes(i, attributeSize);
   }
   mt19937 rndGen(time(NULL));
   auto const & attributes = workload.getAttributes();
@@ -51,5 +54,5 @@ QueryWorkload SimulationConf::getQueryWorkload()
   } 
   for (QuerySummary & query : workload.getQuerySummaries()) 
       workload.setFrequency(query, workload.getFrequency(query)/totalFrequency);
-  return workload;
+  return std::make_pair(workload, stats);
 }

@@ -102,7 +102,9 @@ void VsAttributeSizeSkew::process()
   for (double attributeSizeSkew : attributeSizeSkews) {
       for (int i = 0; i < numRuns; i++) {
           simConf.setAttributeSizeZipfParam(attributeSizeSkew);
-          QueryWorkload workload = simConf.getQueryWorkload();
+          auto workloadAndStats = simConf.getQueryWorkloadAndStats();
+          QueryWorkload workload = workloadAndStats.first;
+          stats = workloadAndStats.second;
           j = 0;
           for (auto solver : solvers) {              
               timer.start();

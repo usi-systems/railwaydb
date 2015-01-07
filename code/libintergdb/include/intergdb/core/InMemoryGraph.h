@@ -4,6 +4,7 @@
 #include <intergdb/core/NeighborList.h>
 #include <intergdb/core/EdgeFIFO.h>
 #include <intergdb/core/ExpirationMap.h>
+#include <intergdb/common/SchemaStats.h>
 
 #include <deque>
 #include <memory>
@@ -18,7 +19,7 @@ namespace intergdb { namespace core
     class InMemoryGraph
     {
     public:
-        InMemoryGraph(Conf const & conf, HistoricalGraph * hisg);
+        InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, SchemaStats & stats);
         void addEdge(VertexId from, VertexId to, Timestamp ts, std::shared_ptr<AttributeData> data);
         void flush();
         BlockStats const & getBlockStats() const { return expm_.getBlockStats(); }
@@ -27,8 +28,8 @@ namespace intergdb { namespace core
     private:
         EdgeFIFO vfifo_;
         ExpirationMap expm_;
-        Conf const & conf_;
         std::unordered_map<VertexId, NeighborList> neigLists_;
+        SchemaStats & stats_;
     };
 
 } } /* namespace */

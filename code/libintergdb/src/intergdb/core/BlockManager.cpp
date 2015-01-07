@@ -11,12 +11,13 @@ using namespace intergdb::core;
 
 #define BLOCK_DB_NAME "block_data"
 
-BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex)
+BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex, SchemaStats & stats)
     : nIOReads_(0), nIOWrites_(0),
       reqCount_(0), hitCount_(0),
-    blockBufferSize_(conf.blockBufferSize()), 
-    edgeSchema_(conf.getEdgeSchema()), 
-    partitionIndex_(partitionIndex)
+      blockBufferSize_(conf.blockBufferSize()), 
+      edgeSchema_(conf.getEdgeSchema()), 
+      partitionIndex_(partitionIndex),
+      stats_(stats)
 {
     leveldb::Options options;
     options.create_if_missing = true;

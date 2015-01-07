@@ -9,7 +9,7 @@ namespace intergdb { namespace common
     public:
         SchemaStats() {}
 
-        double getAvgSize(int index) 
+        double getAvgSize(int index) const
         {
             auto it = indexToCountAndBytes_.find(index);
             if ( it == indexToCountAndBytes_.end() ) {

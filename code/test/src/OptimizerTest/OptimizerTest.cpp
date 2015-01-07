@@ -44,8 +44,10 @@ TEST_F(OptimizerTest, nov_ex1)
 {
     QueryWorkload workload;
     SchemaStats stats;
-    for (size_t i=0, iu=2; i<iu; ++i) 
-        workload.addAttribute(Attribute(i, 8));    
+    for (size_t i=0, iu=2; i<iu; ++i) {
+        workload.addAttribute(Attribute(i, std::to_string(i), intergdb::common::Attribute::UNDEFINED));
+        stats.incrCountAndBytes(i, 8);
+    }
     for (auto const & attribute : workload.getAttributes()) {
         QuerySummary query;
         query.addAttribute(attribute);
@@ -89,8 +91,10 @@ TEST_F(OptimizerTest, nov_ex2)
 {
     QueryWorkload workload;
     SchemaStats stats;
-    for (size_t i=0, iu=2; i<iu; ++i) 
-        workload.addAttribute(Attribute(i, 8));    
+    for (size_t i=0, iu=2; i<iu; ++i) {
+        workload.addAttribute(Attribute(i, std::to_string(i), intergdb::common::Attribute::UNDEFINED));
+        stats.incrCountAndBytes(i, 8);
+    }
     for (auto const & attribute : workload.getAttributes()) {
         QuerySummary query;
         query.addAttribute(attribute);
@@ -130,8 +134,10 @@ TEST_F(OptimizerTest, nov_ex3)
 {
     QueryWorkload workload;    
     SchemaStats stats;
-    for (size_t i=0, iu=2; i<iu; ++i) 
-        workload.addAttribute(Attribute(i, 8));    
+    for (size_t i=0, iu=2; i<iu; ++i) {
+        workload.addAttribute(Attribute(i, std::to_string(i), intergdb::common::Attribute::UNDEFINED));
+        stats.incrCountAndBytes(i, 8);
+    }
     for (size_t j=0, ju=2; j<ju; ++j) {
         QuerySummary query;
         for (auto const & attribute : workload.getAttributes()) 
@@ -165,8 +171,10 @@ TEST_F(OptimizerTest, ov_ex1)
 {
     QueryWorkload workload;    
     SchemaStats stats;
-    for (size_t i=0, iu=2; i<iu; ++i) 
-        workload.addAttribute(Attribute(i, 8));    
+    for (size_t i=0, iu=2; i<iu; ++i) {
+        workload.addAttribute(Attribute(i, std::to_string(i), intergdb::common::Attribute::UNDEFINED));
+        stats.incrCountAndBytes(i, 8);
+    }
     auto const & attributes = workload.getAttributes();
     {
         QuerySummary query;
@@ -224,8 +232,10 @@ TEST_F(OptimizerTest, ov_ex2)
 
     QueryWorkload workload;    
     SchemaStats stats;
-    for (size_t i=0, iu=2; i<iu; ++i) 
-        workload.addAttribute(Attribute(i, 8));    
+    for (size_t i=0, iu=2; i<iu; ++i) {
+        workload.addAttribute(Attribute(i, std::to_string(i), intergdb::common::Attribute::UNDEFINED));
+        stats.incrCountAndBytes(i, 8);
+    }
     auto const & attributes = workload.getAttributes();
     {
         QuerySummary query;
