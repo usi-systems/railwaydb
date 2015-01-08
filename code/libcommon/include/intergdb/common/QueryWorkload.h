@@ -3,8 +3,6 @@
 #include <intergdb/common/Attribute.h>
 #include <intergdb/common/QuerySummary.h>
 #include <intergdb/common/Query.h>
-// #include <intergdb/common/Schema.h>
-
 
 #include <vector>
 #include <unordered_map>

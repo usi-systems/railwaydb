@@ -1,6 +1,8 @@
 #pragma once
 
 #include <intergdb/common/Types.h>
+#include <intergdb/common/DBMetaDataManager.h>
+
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/Helper.h>
@@ -74,6 +76,7 @@ namespace intergdb { namespace core
         InMemoryGraph memg_;
         QueryCollector qcol_;
         SchemaStats stats_;
+        DBMetaDataManager meta_;
     };
 
     template<typename T1, typename... TN>
