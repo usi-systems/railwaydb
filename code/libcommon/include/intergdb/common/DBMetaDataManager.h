@@ -6,21 +6,21 @@ namespace intergdb { namespace common
 {     
     class DBMetaDataManager
     {        
-    public:
-        DBMetaDataManager(/* Conf const & conf */) /*: conf_(conf)*/ {}
-
+    public:   
+        DBMetaDataManager(std::string const & storageDir) : storageDir_(storageDir) {}
         void store(SchemaStats stats) 
         {
-
+            std::cout << "DBMetaDataManager::store called" << std::endl;
         }
 
         SchemaStats load() 
         {
             SchemaStats stats;
+            std::cout << "DBMetaDataManager::load called" << std::endl;
             return stats;
         }
     private:
-        // Conf conf_;        
+        std::string storageDir_;
     };
 } } /* namespace */
 
