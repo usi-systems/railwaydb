@@ -1,6 +1,8 @@
 #pragma once
 
+#include <string>
 #include <intergdb/common/SchemaStats.h>
+#include <intergdb/core/NetworkByteBuffer.h>
 
 namespace intergdb { namespace core
 {     
@@ -8,20 +10,17 @@ namespace intergdb { namespace core
     {        
     public:   
         DBMetaDataManager(std::string const & storageDir) : storageDir_(storageDir) {}
-        void store(common::SchemaStats const & stats) 
-        {
-            std::cout << "DBMetaDataManager::store called" << std::endl;
-        }
-
-        common::SchemaStats load() 
-        {
-            common::SchemaStats stats;
-            std::cout << "DBMetaDataManager::load called" << std::endl;
-            return stats;
-        }
+        void store(common::SchemaStats const & stats);
+        void load(common::SchemaStats & stats);
     private:
         std::string storageDir_;
     };
+
+
+    NetworkByteBuffer & operator << (NetworkByteBuffer & sbuf, common::SchemaStats const & stats);
+    NetworkByteBuffer & operator >> (NetworkByteBuffer & sbuf, common::SchemaStats & stats);
+    
+
 } } /* namespace */
 
 

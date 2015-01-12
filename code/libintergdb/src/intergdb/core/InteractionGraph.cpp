@@ -4,7 +4,10 @@ using namespace std;
 using namespace intergdb::core;
 
 InteractionGraph::InteractionGraph(Conf const & conf)
-    : conf_(conf), vman_(conf_), pidx_(conf_), hisg_(conf_, pidx_, stats_), memg_(conf_, &hisg_, stats_), qcol_(conf_), meta_(conf_.getStorageDir()) { }
+    : conf_(conf), vman_(conf_), pidx_(conf_), hisg_(conf_, pidx_, stats_), memg_(conf_, &hisg_, stats_), qcol_(conf_), meta_(conf_.getStorageDir()) 
+{ 
+    meta_.load(stats_);
+}
 
 void InteractionGraph::flush()
 {

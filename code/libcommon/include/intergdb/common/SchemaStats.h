@@ -9,17 +9,17 @@ namespace intergdb { namespace common
     public:
         SchemaStats() {}
 
-        double getAvgSize(int index) const
+        double getAvgSize(uint32_t index) const
         {
             auto it = indexToCountAndBytes_.find(index);
             if ( it == indexToCountAndBytes_.end() ) {
-                throw std::runtime_error("SchemaStats index not found.");
+                throw std::runtime_error("SchemaStats index " + std::to_string(index) + " not found.");
             }
             if (it->second.first == 0) return 0.0;
             else return (it->second.second / it->second.first);
         }
 
-        void incrCountAndBytes(int index, double bytes) 
+        void incrCountAndBytes(uint32_t index, double bytes) 
         {
             auto it = indexToCountAndBytes_.find(index);
             if ( it == indexToCountAndBytes_.end() ) {
@@ -30,17 +30,17 @@ namespace intergdb { namespace common
             }            
         }
 
-        std::unordered_map<int, std::pair<int,double> > const & getStats() const { 
+        std::unordered_map<uint32_t, std::pair<uint32_t,double> > const & getStats() const { 
             return indexToCountAndBytes_; 
         }
 
-        std::unordered_map<int, std::pair<int,double> > & getStats() { 
+        std::unordered_map<uint32_t, std::pair<uint32_t,double> > & getStats() { 
             return indexToCountAndBytes_; 
         }
 
 
     private:
-        std::unordered_map<int, std::pair<int,double> > indexToCountAndBytes_; 
+        std::unordered_map<uint32_t, std::pair<uint32_t,double> > indexToCountAndBytes_; 
     };
 } } /* namespace */
 
