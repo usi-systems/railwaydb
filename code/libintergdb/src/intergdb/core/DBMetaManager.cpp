@@ -3,6 +3,7 @@
 
 #include <iostream>
 using namespace std;
+using namespace intergdb::core;
 
 NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, intergdb::common::SchemaStats const & stats)
 {
@@ -13,7 +14,7 @@ NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, intergdb::common::Schem
         sbuf << indexToCountAndBytesPair.second.first;
         sbuf << indexToCountAndBytesPair.second.second;
     }
-    return out;
+    return sbuf;
 }
 
 NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, intergdb::common::SchemaStats & stats)
@@ -22,7 +23,8 @@ NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, intergdb::common::Schem
     int index;
     int count;
     double bytes;
-    std::unordered_map<int, std::pair<int,double> > indexToCountAndBytes;
+    std::unordered_map<int, std::pair<int,double> > & indexToCountAndBytes
+       = stats.getStats();
     sbuf >> numStats;
     while (numStats) {
         sbuf >> index;
@@ -31,6 +33,5 @@ NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, intergdb::common::Schem
         numStats--;
         indexToCountAndBytes.emplace(index, std::make_pair(count, bytes));
     }
-    stats.setStats(indexToCountAndBytes);
     return sbuf;
 }

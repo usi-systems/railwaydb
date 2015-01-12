@@ -30,12 +30,12 @@ namespace intergdb { namespace common
             }            
         }
 
-        std::unordered_map<int, std::pair<int,double> > getStats() const { 
+        std::unordered_map<int, std::pair<int,double> > const & getStats() const { 
             return indexToCountAndBytes_; 
         }
 
-        void setStats(std::unordered_map<int, std::pair<int,double> > indexToCountAndBytes)  { 
-            indexToCountAndBytes_ = indexToCountAndBytes;
+        std::unordered_map<int, std::pair<int,double> > & getStats() { 
+            return indexToCountAndBytes_; 
         }
 
 
