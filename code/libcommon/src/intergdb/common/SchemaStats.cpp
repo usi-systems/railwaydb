@@ -1,35 +1,36 @@
 #include <intergdb/common/SchemaStats.h>
+#include <intergdb/core/NetworkByteBuffer.h>
 
 #include <iostream>
 using namespace std;
 
-std::ostream & operator<<(std::ostream & out, intergdb::common::SchemaStats const & stats)
+NetworkByteBuffer & operator<<(NetworkByteBuffer & sbuf, intergdb::common::SchemaStats const & stats)
 {
     int size = stats.getStats().size();
-    out << size;
+    sbuf << size;
     for (auto indexToCountAndBytesPair : stats.getStats()) {
-        out << indexToCountAndBytesPair.first;
-        out << indexToCountAndBytesPair.second.first;
-        out << indexToCountAndBytesPair.second.second;
+        sbuf << indexToCountAndBytesPair.first;
+        sbuf << indexToCountAndBytesPair.second.first;
+        sbuf << indexToCountAndBytesPair.second.second;
     }
     return out;
 }
 
-std::istream& operator>>(std::istream& is, intergdb::common::SchemaStats & stats)
+NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, intergdb::common::SchemaStats & stats)
 {
     int numStats;
     int index;
     int count;
     double bytes;
     std::unordered_map<int, std::pair<int,double> > indexToCountAndBytes;
-    is >> numStats;
+    sbuf >> numStats;
     while (numStats) {
-        is >> index;
-        is >> count;
-        is >> bytes;
+        sbuf >> index;
+        sbuf >> count;
+        sbuf >> bytes;
         numStats--;
         indexToCountAndBytes.emplace(index, std::make_pair(count, bytes));
     }
     stats.setStats(indexToCountAndBytes);
-    return is;
+    return sbuf;
 }
