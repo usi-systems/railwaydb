@@ -61,7 +61,7 @@ void FocusedIntervalQueryIndex::Iterator::readCurrents()
     NetworkByteBuffer valueBuffer(reinterpret_cast<unsigned char *>(const_cast<char *>(valueStr.data())), valueStr.size());
     keyBuffer >> currentVertex_;
     keyBuffer >> currentEnd_;
-    valueBuffer >> currentBlocks_;
+    valueBuffer >> currentBlock_;
     valueBuffer >> currentStart_;
 }
 
@@ -71,13 +71,8 @@ std::shared_ptr<typename FocusedIntervalQueryIndex::Iterator> FocusedIntervalQue
     return std::shared_ptr<FocusedIntervalQueryIndex::Iterator>(new Iterator(db_.get(), vertex, start, end));
 }
 
-void FocusedIntervalQueryIndex::indexBlocks(vector<Block> const & blocks)
+void FocusedIntervalQueryIndex::indexBlock(Block const & block)
 {
-    vector<BlockId> blockIds;
-    blockIds.reserve(blockIds.size());
-    for (auto const & block : blocks)
-        blockIds.push_back(block.id());
-    Block const & block = *blocks.cbegin();
     auto const & nlists = block.getNeighborLists();
     for (auto  it=nlists.begin(); it!=nlists.end(); ++it) {
         auto & nlist = it->second;
@@ -85,7 +80,7 @@ void FocusedIntervalQueryIndex::indexBlocks(vector<Block> const & blocks)
         Timestamp start = nlist.getOldestEdge().getTime();
         Timestamp end = nlist.getNewestEdge().getTime();
         pair<VertexId, Timestamp> key(head, end);
-        pair<vector<BlockId>, Timestamp> data(blockIds, start);
+        pair<BlockId, Timestamp> data(block.id(), start);
         NetworkByteBuffer keyBuf(sizeof(key));
         keyBuf << key;
         leveldb::Slice keySlice(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
@@ -97,4 +92,5 @@ void FocusedIntervalQueryIndex::indexBlocks(vector<Block> const & blocks)
             throw std::runtime_error(status.ToString());
     }
 }
+
 

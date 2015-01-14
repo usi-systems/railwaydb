@@ -120,6 +120,17 @@ vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(Timest
   return results;
 }
 
+void PartitionIndex::updateBlocks(Timestamp startTime, Timestamp endTime, 
+  Partitioning const & from, Partitioning const & to)
+{
+  // Use IntervalQueryIndex to find block ids that have edge data in this range.
+  // We will get a bunch of head block ids. For each head block id:
+  //   Check if its midpoint is with the time range, if not continue
+  //   Repartition the block using from / to partitionings
+  //   Remove unused blocks
+  // TODO: master block needs to contain the ids of the other blocks :(
+}
+
 // relacement partitionings must be contigious in time
 void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced, 
     std::vector<TimeSlicedPartitioning> const & replacement)
@@ -134,13 +145,22 @@ void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const 
     if (replacement[i].getStartTime()!=replacement[i-1].getEndTime())
       throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
   // all is ok, proceed to replace
+  // update partition index
   removePartitioning(toBeReplaced);
   for (auto const & partitioning : replacement)
     addPartitioning(partitioning);
+  // update blocks
+  for (auto const & partitioning : replacement) {
+    auto startTime = partitioning.getStartTime();
+    auto endTime = partitioning.getEndTime();
+    updateBlocks(startTime, endTime, toBeReplaced.getPartitioning(),
+      partitioning.getPartitioning());
+  }
+  
 }
 
 // to be replaced partitionings must be contigious in time
-void PartitionIndex::replacePartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
+void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
     TimeSlicedPartitioning const & replacement)
 {
   if (toBeReplaced.empty())
@@ -153,9 +173,16 @@ void PartitionIndex::replacePartitionings(std::vector<TimeSlicedPartitioning> co
     if (toBeReplaced[i].getStartTime()!=toBeReplaced[i-1].getEndTime())
       throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
   // all is ok, proceed to replace
+  // update partition index
   for (auto const & partitioning : toBeReplaced)
     removePartitioning(partitioning);
   addPartitioning(replacement);
+  // update blocks
+  for (auto const & partitioning : toBeReplaced) {
+    auto startTime = partitioning.getStartTime();
+    auto endTime = partitioning.getEndTime();
+    updateBlocks(startTime, endTime, partitioning.getPartitioning(), replacement.getPartitioning());
+  }
 }
 
 namespace intergdb { namespace core {

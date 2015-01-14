@@ -52,11 +52,12 @@ namespace intergdb { namespace core
     void replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced, 
         std::vector<TimeSlicedPartitioning> const & replacement);
     // to be replaced partitionings must be contigious in time
-    void replacePartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
+    void replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
         TimeSlicedPartitioning const & replacement);
   private:
     void addPartitioning(TimeSlicedPartitioning const & partitioning);
     void removePartitioning(TimeSlicedPartitioning const & partitioning);
+    void updateBlocks(Timestamp startTime, Timestamp endTime, Partitioning const & from, Partitioning const & to);
   private:
     struct PartitioningAndIter 
     {

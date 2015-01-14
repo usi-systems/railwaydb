@@ -26,7 +26,9 @@ namespace intergdb { namespace core
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
         void findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const;
-        std::vector<Block> partitionBlock(Schema const & schema, PartitionIndex & partitionIndex);
+        std::vector<BlockId> const & getSubBlockIds() const { return subBlocks_; }
+        void addSubBlockId(BlockId id) { subBlocks_.push_back(id); }
+        std::vector<Block> partitionBlock(Schema const & schema, PartitionIndex & partitionIndex) const;
         NetworkByteBuffer & serialize(NetworkByteBuffer & sbuf) const;
         NetworkByteBuffer & deserialize(NetworkByteBuffer & sbuf, 
             Schema const & schema, PartitionIndex & partitionIndex);
@@ -34,8 +36,9 @@ namespace intergdb { namespace core
         void addNeighborList(VertexId id);
     private:
         BlockId id_;
-        uint32_t partitionIndex_;
+        int partitionIndex_;
         size_t serializedSize_;
+        std::vector<BlockId> subBlocks_;
         std::unordered_map<VertexId, NeighborList> neigs_;
     };
 

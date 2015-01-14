@@ -121,7 +121,7 @@ namespace std {
 
 namespace intergdb { namespace core {
 
-vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & partitionIndex)
+vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & partitionIndex) const
 {
     Timestamp minTimestamp, maxTimestamp;
     findMinMaxTimestamps(minTimestamp, maxTimestamp);
@@ -130,7 +130,24 @@ vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & part
     Partitioning const & part = tpart.getPartitioning();
 
     vector<Block> blocks;
-    blocks.reserve(part.size());
+    blocks.reserve(part.size()+1);
+    { // master block (no edge data)
+        Block block;
+        block.partitionIndex_ = -1;
+        std::shared_ptr<AttributeData> sdata(schema.newAttributeData(unordered_set<string>()));
+        for (auto const & vIdNListPair : getNeighborLists()) {
+            VertexId headVertex = vIdNListPair.first;
+            auto const & neighborList = vIdNListPair.second;
+            for (auto const & edge : neighborList.getEdges()) {
+                VertexId toVertex = edge.getToVertex();
+                Timestamp tm = edge.getTime();
+                EdgeTriplet etrip(headVertex, toVertex, tm); 
+                block.addEdge(headVertex, toVertex, tm, sdata);
+            }
+        }
+        blocks.push_back(std::move(block));
+    }
+    // sub blocks
     for (size_t i=0, iu=part.size(); i<iu; ++i) {
         unordered_set<string> const & attributes = part.at(i);
         Block block;
@@ -186,6 +203,7 @@ NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
     findMinMaxTimestamps(minTimestamp, maxTimestamp);
     std::unordered_set<EdgeTriplet> written;
     sbuf << id_;
+    sbuf << subBlocks_;
     sbuf << minTimestamp;
     sbuf << maxTimestamp;
     sbuf << partitionIndex_;
@@ -215,6 +233,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
 {
     Timestamp minTimestamp, maxTimestamp;
     sbuf >> id_;
+    sbuf >> subBlocks_;
     sbuf >> minTimestamp;
     sbuf >> maxTimestamp;
     sbuf >> partitionIndex_;    
@@ -223,6 +242,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
     Partitioning const & part = tpart.getPartitioning();
     unordered_set<string> const & attributes = part[partitionIndex_];
     std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
+    shared_ptr<AttributeData> fsdata(schema.newAttributeData(unordered_set<string>()));
     while (sbuf.getNRemainingBytes()>0) {
         VertexId headVertex;
         sbuf >> headVertex;
@@ -235,13 +255,17 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
             sbuf >> tm;
             std::shared_ptr<AttributeData> sdata;
             EdgeTriplet etrip(headVertex, toVertex, tm);
-            auto it = read.find(etrip);
-            if (it==read.end()) {
-                sdata.reset(schema.newAttributeData(attributes));
-                sbuf >> *sdata;
-                read[etrip] = sdata;
+            if (partitionIndex_ != -1) {
+                auto it = read.find(etrip);
+                if (it==read.end()) {
+                    sdata.reset(schema.newAttributeData(attributes));
+                    sbuf >> *sdata;
+                    read[etrip] = sdata;
+                } else {
+                    sdata = it->second;
+                }
             } else {
-                sdata = it->second;
+                sdata = fsdata;
             }
             addEdge(headVertex, toVertex, tm, sdata);
         }

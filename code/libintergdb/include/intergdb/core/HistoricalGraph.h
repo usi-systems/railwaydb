@@ -56,7 +56,7 @@ namespace intergdb { namespace core
         };
     public:
         HistoricalGraph(Conf const & conf, PartitionIndex & pidx, MetaDataManager & meta);
-        void addBlock(Block & block);
+        void addBlock(Block const & block);
         std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
         void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
         std::shared_ptr<EdgeIterator> focusedIntervalQuery(FocusedIntervalQuery const &  query);

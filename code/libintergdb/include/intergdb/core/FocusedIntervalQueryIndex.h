@@ -26,7 +26,7 @@ namespace intergdb { namespace core
             Timestamp getEndTime() const { return currentEnd_; }
             VertexId getVertex() const { return currentVertex_; }
             Timestamp getStartTime() const { return currentStart_; }
-            std::vector<BlockId> const & getBlocks() const { return currentBlocks_; }
+            BlockId getBlockId() const { return currentBlock_; }
             Timestamp getRangeStartTime() const { return start_; }
             Timestamp getRangeEndTime() const { return end_; }
         private:
@@ -39,11 +39,11 @@ namespace intergdb { namespace core
             Timestamp currentStart_;
             Timestamp currentEnd_;
             VertexId currentVertex_;
-            std::vector<BlockId> currentBlocks_;
+            BlockId currentBlock_;
             std::auto_ptr<leveldb::Iterator> dbIter_;
         };
         FocusedIntervalQueryIndex(Conf const & conf);
-        void indexBlocks(std::vector<Block> const & blocks);
+        void indexBlock(Block const & block);
         std::shared_ptr<Iterator> query(VertexId vertex, Timestamp start, Timestamp end);
     private:
         std::auto_ptr<leveldb::DB> db_;
