@@ -12,6 +12,12 @@ using namespace intergdb::core;
 
 #define STATS_DATA "schemastats_data"
 
+MetaDataManager::MetaDataManager(std::string const & storageDir) 
+  : storageDir_(storageDir), nextBlockId_(0) 
+{
+    load();
+}
+
 void MetaDataManager::store() 
 {
     NetworkByteBuffer buf;

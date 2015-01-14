@@ -10,8 +10,7 @@ namespace intergdb { namespace core
     class MetaDataManager
     {        
     public:   
-        MetaDataManager(std::string const & storageDir) 
-            : storageDir_(storageDir), nextBlockId_(0) {}
+        MetaDataManager(std::string const & storageDir);
         void store();
         void load();
         common::SchemaStats & getSchemaStats() { return schemaStats_; }

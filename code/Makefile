@@ -8,7 +8,7 @@ all:
 	make -C test
 
 test:
-	make -C test $@
+	make -C test
 
 clean:
 	make -C libcommon clean
