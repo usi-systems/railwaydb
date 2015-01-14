@@ -4,15 +4,16 @@ using namespace std;
 using namespace intergdb::core;
 
 InteractionGraph::InteractionGraph(Conf const & conf)
-    : conf_(conf), vman_(conf_), pidx_(conf_), hisg_(conf_, pidx_, stats_), memg_(conf_, &hisg_, stats_), qcol_(conf_), meta_(conf_.getStorageDir()) 
+  : conf_(conf), vman_(conf_), pidx_(conf_), meta_(conf_.getStorageDir()), 
+    hisg_(conf_, pidx_, meta_), memg_(conf_, &hisg_, meta_.getSchemaStats()), qcol_(conf_) 
 { 
-    meta_.load(stats_);
+    meta_.load();
 }
 
 void InteractionGraph::flush()
 {
     memg_.flush();
-    meta_.store(stats_);
+    meta_.store();
 }
 
 std::shared_ptr<AttributeData> InteractionGraph::getVertexData(VertexId id)

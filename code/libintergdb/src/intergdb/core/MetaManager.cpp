@@ -1,4 +1,4 @@
-#include <intergdb/core/DBMetaDataManager.h>
+#include <intergdb/core/MetaDataManager.h>
 #include <intergdb/core/NetworkByteBuffer.h>
 #include <intergdb/common/SchemaStats.h>
 #include <iostream>
@@ -12,33 +12,32 @@ using namespace intergdb::core;
 
 #define STATS_DATA "schemastats_data"
 
-void DBMetaDataManager::store(SchemaStats const & stats) 
+void MetaDataManager::store() 
 {
     NetworkByteBuffer buf;
-    buf << stats;
+    buf << nextBlockId_;
+    buf << schemaStats_;
     std::ofstream file(storageDir_+"/"+STATS_DATA, ios::out|std::ios::binary);
-    if ( !file.is_open() ) {
-        throw runtime_error("Could not open file: " + storageDir_+"/"+STATS_DATA);
-    }   
+    if ( !file.is_open() ) 
+        throw runtime_error("Could not open file: " + storageDir_+"/"+STATS_DATA);   
     file.write(reinterpret_cast<char *>(buf.getPtr()), buf.getSerializedDataSize());
     file.close();
 }
 
-void DBMetaDataManager::load(SchemaStats & stats) 
+void MetaDataManager::load() 
 {            
-    if (!exists(storageDir_+"/"+STATS_DATA)) {
+    if (!exists(storageDir_+"/"+STATS_DATA)) 
         return;
-    }
     std::ifstream file(storageDir_+"/"+STATS_DATA, ios::in|ios::binary|ios::ate);
-    if ( !file.is_open() ) {
-        throw runtime_error("Could not open file: " + storageDir_+"/"+STATS_DATA);
-    }    
+    if (!file.is_open()) 
+        throw runtime_error("Could not open file: " + storageDir_+"/"+STATS_DATA); 
     streampos size = file.tellg();
     NetworkByteBuffer buf(size);
     file.seekg (0, ios::beg);
     file.read (reinterpret_cast<char *>(buf.getPtr()), size);
     file.close();
-    buf >> stats;
+    buf >> nextBlockId_;
+    buf >> schemaStats_;
 }
 
 namespace intergdb { namespace core

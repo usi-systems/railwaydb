@@ -11,13 +11,10 @@ using namespace intergdb::core;
 
 #define BLOCK_DB_NAME "block_data"
 
-BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex, SchemaStats & stats)
-    : nIOReads_(0), nIOWrites_(0),
-      reqCount_(0), hitCount_(0),
-      blockBufferSize_(conf.blockBufferSize()), 
-      edgeSchema_(conf.getEdgeSchema()), 
-      partitionIndex_(partitionIndex),
-      stats_(stats)
+BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex, MetaDataManager & meta)
+    : nIOReads_(0), nIOWrites_(0), reqCount_(0), hitCount_(0), blockBufferSize_(conf.blockBufferSize()), 
+      edgeSchema_(conf.getEdgeSchema()), partitionIndex_(partitionIndex), meta_(meta),
+      nextBlockId_(meta_.getNextBlockId())
 {
     leveldb::Options options;
     options.create_if_missing = true;
@@ -28,21 +25,7 @@ BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex, S
     if (!status.ok())
         throw std::runtime_error(status.ToString());
     db_.reset(db);
-    findNextBlockId();
-}
-
-void BlockManager::findNextBlockId()
-{
-    std::auto_ptr<leveldb::Iterator> it(db_->NewIterator(leveldb::ReadOptions()));
-    it->SeekToLast();
-    if (!it->Valid()) {
-        nextBlockId_ = 0;
-    } else {
-        leveldb::Slice keySlice = it->key();
-        NetworkByteBuffer keyBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(keySlice.data())), keySlice.size());
-        keyBuf >> nextBlockId_;
-        nextBlockId_++;
-    }
+    nextBlockId_ = meta_.getNextBlockId();
 }
 
 TimeSlicedPartitioning BlockManager::getBlockPartitioning(Block const & block)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <intergdb/core/Block.h>
+#include <intergdb/core/MetaDataManager.h>
 #include <intergdb/core/PartitionIndex.h>
 #include <leveldb/db.h>
 #include <intergdb/common/SchemaStats.h>
@@ -24,10 +25,10 @@ namespace intergdb { namespace core
             std::list<BlockId>::iterator iter;
         };
     public:
-        BlockManager(Conf const & conf, PartitionIndex & partitionIndex, SchemaStats & stats);
+        BlockManager(Conf const & conf, PartitionIndex & partitionIndex, MetaDataManager & meta);
         Block const & getBlock(BlockId id);
         Schema const & getEdgeSchema() const { return edgeSchema_; }
-        SchemaStats const & getEdgeSchemaStats() const { return stats_; }
+        SchemaStats const & getEdgeSchemaStats() const { return meta_.getSchemaStats(); }
         TimeSlicedPartitioning getBlockPartitioning(Block const & block);
         void addBlock(Block & data);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
@@ -38,7 +39,6 @@ namespace intergdb { namespace core
     private:
         size_t nIOReads_;
         size_t nIOWrites_;
-        BlockId nextBlockId_;
         size_t reqCount_;
         size_t hitCount_;
         size_t blockBufferSize_;
@@ -47,7 +47,8 @@ namespace intergdb { namespace core
         std::unordered_map<BlockId, BlockAndIdIter> cache_;
         PartitionIndex & partitionIndex_;
         std::auto_ptr<leveldb::DB> db_;
-        SchemaStats & stats_;
+        MetaDataManager & meta_;
+        BlockId & nextBlockId_;
     };
 
 } } /* namespace */

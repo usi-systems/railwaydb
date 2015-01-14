@@ -2,12 +2,13 @@
 
 #include <intergdb/common/Types.h>
 
-#include <intergdb/core/DBMetaDataManager.h>
+
 #include <intergdb/core/AttributeData.h>
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/Helper.h>
 #include <intergdb/core/HistoricalGraph.h>
 #include <intergdb/core/InMemoryGraph.h>
+#include <intergdb/core/MetaDataManager.h>
 #include <intergdb/core/PartitionIndex.h>
 #include <intergdb/core/Query.h>
 #include <intergdb/core/QueryCollector.h>
@@ -72,11 +73,10 @@ namespace intergdb { namespace core
         Conf conf_;
         VertexManager vman_;
         PartitionIndex pidx_;
+        MetaDataManager meta_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
         QueryCollector qcol_;
-        SchemaStats stats_;
-        DBMetaDataManager meta_;
     };
 
     template<typename T1, typename... TN>

@@ -2,6 +2,7 @@
 
 #include <intergdb/core/Conf.h>
 #include <intergdb/common/Query.h>
+#include <intergdb/core/MetaDataManager.h>
 #include <intergdb/common/SystemConstants.h>
 
 using namespace std;
@@ -165,8 +166,8 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
         done_ = true;    
 }
 
-HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx, SchemaStats & stats)
-    : conf_(conf), pidx_(pidx), bman_(conf, pidx_, stats), iqIndex_(conf, &bman_), fiqIndex_(conf)
+HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx, MetaDataManager & meta)
+    : conf_(conf), pidx_(pidx), bman_(conf, pidx_, meta), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {}
 
 void HistoricalGraph::addBlock(Block & block)
