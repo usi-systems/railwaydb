@@ -18,9 +18,13 @@ namespace intergdb { namespace core
 
   typedef std::vector<std::unordered_set<std::string>> Partitioning;
 
+  class Block;
+  class BlockManager;
   class Conf;
+  class IntervalQueryIndex;
   class NetworkByteBuffer;
-  
+  class Schema;
+
   class TimeSlicedPartitioning
   {
   public:
@@ -54,10 +58,13 @@ namespace intergdb { namespace core
     // to be replaced partitionings must be contigious in time
     void replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
         TimeSlicedPartitioning const & replacement);
+    void setIntervalQueryIndex(IntervalQueryIndex * iqIdx) { iqIdx_ = iqIdx; } 
+    void setBlockManager(BlockManager * bman) { bman_ = bman; } 
   private:
     void addPartitioning(TimeSlicedPartitioning const & partitioning);
     void removePartitioning(TimeSlicedPartitioning const & partitioning);
-    void updateBlocks(Timestamp startTime, Timestamp endTime, Partitioning const & from, Partitioning const & to);
+    void updateBlocks(Timestamp startTime, Timestamp endTime);
+    void replaceBlocks(Block const & masterBlock, std::vector<Block> & newBlocks);
   private:
     struct PartitioningAndIter 
     {
@@ -67,6 +74,9 @@ namespace intergdb { namespace core
     size_t partitioningBufferSize_;
     std::list<Timestamp> lruList_;
     std::map<Timestamp, PartitioningAndIter> cache_;
+    Schema const & edgeSchema_;
+    IntervalQueryIndex * iqIdx_;
+    BlockManager * bman_;
     std::auto_ptr<leveldb::DB> db_; // to store the index on disk
   };
 

@@ -25,7 +25,7 @@ namespace intergdb { namespace core
         void removeNewestEdge(VertexId headVertex);
         NeighborListMap const & getNeighborLists() const { return neigs_; }
         size_t getSerializedSize() const { return serializedSize_; }
-        void findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const;
+        Timestamp getPartitioningTimestamp() const;
         std::vector<BlockId> const & getSubBlockIds() const { return subBlocks_; }
         void addSubBlockId(BlockId id) { subBlocks_.push_back(id); }
         std::vector<Block> partitionBlock(Schema const & schema, PartitionIndex & partitionIndex) const;
@@ -34,6 +34,7 @@ namespace intergdb { namespace core
             Schema const & schema, PartitionIndex & partitionIndex);
     private:
         void addNeighborList(VertexId id);
+        void findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const;
     private:
         BlockId id_;
         int partitionIndex_;

@@ -23,6 +23,7 @@ namespace intergdb { namespace core
             Timestamp getEndTime() const { return currentEnd_; }
             VertexId getVertex() const { return currentVertex_; }
             Timestamp getStartTime() { return currentStart_; }
+            BlockId getBlockId() { return currentBlock_; }
         private:
             void findNext();
             void readCurrents();

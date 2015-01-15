@@ -26,14 +26,7 @@ BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex, M
         throw std::runtime_error(status.ToString());
     db_.reset(db);
     nextBlockId_ = meta_.getNextBlockId();
-}
-
-TimeSlicedPartitioning BlockManager::getBlockPartitioning(Block const & block)
-{
-    Timestamp minTimestamp, maxTimestamp;
-    block.findMinMaxTimestamps(minTimestamp, maxTimestamp);
-    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
-    return partitionIndex_.getTimeSlicedPartitioning(blockTimestamp);
+    partitionIndex_.setBlockManager(this);
 }
 
 Block const & BlockManager::getBlock(BlockId id)
@@ -76,10 +69,11 @@ Block const & BlockManager::getBlock(BlockId id)
     }
 }
 
-void BlockManager::addBlock(Block & block)
+void BlockManager::addBlock(Block & block, bool setId/*=true*/)
 {
     nIOWrites_++;
-    block.id() = nextBlockId_++;
+    if (setId)
+        block.id() = nextBlockId_++;
     NetworkByteBuffer keyBuf(sizeof(BlockId));
     keyBuf << block.id();
     leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
@@ -90,5 +84,28 @@ void BlockManager::addBlock(Block & block)
     if (!status.ok())
         throw std::runtime_error(status.ToString());
 }
+
+void BlockManager::updateBlock(Block const & block)
+{
+    Block & existingBlock = const_cast<Block &>(getBlock(block.id()));
+    existingBlock = block;
+    addBlock(existingBlock, false);
+}
+
+void BlockManager::removeBlock(BlockId blockId)
+{
+    NetworkByteBuffer keyBuf(sizeof(BlockId));
+    keyBuf << blockId;
+    leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
+    leveldb::Status status = db_->Delete(leveldb::WriteOptions(), key);
+    if (!status.ok())
+        throw std::runtime_error(status.ToString());
+    if (cache_.count(blockId) > 0) {
+        lruList_.erase(cache_[blockId].iter);
+        cache_.erase(blockId);
+    }  
+}
+
+
 
 

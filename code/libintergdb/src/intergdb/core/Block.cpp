@@ -43,6 +43,14 @@ void Block::addNeighborList(VertexId id)
     }
 }
 
+Timestamp Block::getPartitioningTimestamp() const
+{
+    Timestamp minTimestamp, maxTimestamp;
+    findMinMaxTimestamps(minTimestamp, maxTimestamp);
+    Timestamp partitioningTimestamp = (minTimestamp+maxTimestamp)/2.0;
+    return partitioningTimestamp;
+}
+
 void Block::findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const
 {
     minTimestamp = numeric_limits<Timestamp>::max();

@@ -29,8 +29,10 @@ namespace intergdb { namespace core
         Block const & getBlock(BlockId id);
         Schema const & getEdgeSchema() const { return edgeSchema_; }
         SchemaStats const & getEdgeSchemaStats() const { return meta_.getSchemaStats(); }
-        TimeSlicedPartitioning getBlockPartitioning(Block const & block);
-        void addBlock(Block & data);
+        PartitionIndex & getPartitionIndex() { return partitionIndex_; } 
+        void addBlock(Block & data, bool setId=true);
+        void updateBlock(Block const & block);
+        void removeBlock(BlockId blockId);
         double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
         size_t getNumIOReads() const { return nIOReads_; }
         size_t getNumIOWrites() const { return nIOWrites_; }
@@ -42,8 +44,8 @@ namespace intergdb { namespace core
         size_t reqCount_;
         size_t hitCount_;
         size_t blockBufferSize_;
-        std::list<BlockId> lruList_;
         Schema const & edgeSchema_;
+        std::list<BlockId> lruList_;
         std::unordered_map<BlockId, BlockAndIdIter> cache_;
         PartitionIndex & partitionIndex_;
         std::auto_ptr<leveldb::DB> db_;

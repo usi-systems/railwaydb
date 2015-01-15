@@ -143,18 +143,17 @@ void HistoricalGraph::EdgeIterator::recomputePartitionIndices()
 
 void HistoricalGraph::EdgeIterator::initFromBlock()
 {
-    // TODO: ideally we should pin this block until we are done with it
-    Block const & block = bman_->getBlock(it_->getBlockId()); 
+    Block block = bman_->getBlock(it_->getBlockId()); // a copy 
+    Timestamp partitioningTimestamp = block.getPartitioningTimestamp();
     if (partitionIndices_.empty()) {
-        partitioning_ = bman_->getBlockPartitioning(block);
+        partitioning_ = bman_->getPartitionIndex()
+            .getTimeSlicedPartitioning(partitioningTimestamp);
         recomputePartitionIndices();
-    } else {   
-        Timestamp minTimestamp, maxTimestamp;
-        block.findMinMaxTimestamps(minTimestamp, maxTimestamp);
-        Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
-        if(blockTimestamp < partitioning_.getStartTime() || 
-           blockTimestamp >= partitioning_.getEndTime()) {
-            partitioning_ = bman_->getBlockPartitioning(block.id());
+    } else {
+        if(partitioningTimestamp < partitioning_.getStartTime() || 
+           partitioningTimestamp >= partitioning_.getEndTime()) {
+            partitioning_ = bman_->getPartitionIndex()
+                .getTimeSlicedPartitioning(partitioningTimestamp);
             recomputePartitionIndices();
         }
     }
@@ -170,18 +169,20 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
 
 HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx, MetaDataManager & meta)
     : conf_(conf), pidx_(pidx), bman_(conf, pidx_, meta), iqIndex_(conf, &bman_), fiqIndex_(conf)
-{}
+{
+    pidx_.setIntervalQueryIndex(&iqIndex_);
+}
 
 void HistoricalGraph::addBlock(Block const & block)
 {
-    vector<Block> subBlocks = block.partitionBlock(conf_.getEdgeSchema(), pidx_);
-    for (size_t i=1, iu=subBlocks.size(); i<iu; ++i) {
-        bman_.addBlock(subBlocks[i]); // sets the block id        
-        subBlocks[0].addSubBlockId(subBlocks[i].id());
+    vector<Block> newBlocks = block.partitionBlock(conf_.getEdgeSchema(), pidx_);
+    for (size_t i=1, iu=newBlocks.size(); i<iu; ++i) {
+        bman_.addBlock(newBlocks[i]); // sets the block id        
+        newBlocks[0].addSubBlockId(newBlocks[i].id());
     } 
-    bman_.addBlock(subBlocks[0]);
-    iqIndex_.indexBlock(subBlocks[0]);
-    fiqIndex_.indexBlock(subBlocks[0]);
+    bman_.addBlock(newBlocks[0]);
+    iqIndex_.indexBlock(newBlocks[0]);
+    fiqIndex_.indexBlock(newBlocks[0]);
 }
 
 std::shared_ptr<HistoricalGraph::VertexIterator> HistoricalGraph::

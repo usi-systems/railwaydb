@@ -1,12 +1,16 @@
 #include <intergdb/core/PartitionIndex.h>
 
+#include <intergdb/core/BlockManager.h>
 #include <intergdb/core/Conf.h>
+#include <intergdb/core/IntervalQueryIndex.h>
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/Exceptions.h>
 #include <intergdb/core/NetworkByteBuffer.h>
 
 #include <boost/filesystem.hpp>
+
 #include <memory>
+#include <unordered_set>
 
 using namespace std;
 using namespace intergdb::core;
@@ -14,7 +18,8 @@ using namespace intergdb::core;
 #define PARTITION_DB_NAME "partition_data"
 
 PartitionIndex::PartitionIndex(Conf const & conf)
-  : partitioningBufferSize_(conf.partitioningBufferSize())
+  : partitioningBufferSize_(conf.partitioningBufferSize()), 
+    edgeSchema_(conf.getEdgeSchema())
 {
     leveldb::Options options;
     options.create_if_missing = true;
@@ -120,15 +125,50 @@ vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(Timest
   return results;
 }
 
-void PartitionIndex::updateBlocks(Timestamp startTime, Timestamp endTime, 
-  Partitioning const & from, Partitioning const & to)
+void PartitionIndex::updateBlocks(Timestamp startTime, Timestamp endTime)
 {
   // Use IntervalQueryIndex to find block ids that have edge data in this range.
   // We will get a bunch of head block ids. For each head block id:
   //   Check if its midpoint is with the time range, if not continue
-  //   Repartition the block using from / to partitionings
+  //   Repartition the block using the new partitioning
   //   Remove unused blocks
-  // TODO: master block needs to contain the ids of the other blocks :(
+  auto it = iqIdx_->query(startTime, endTime);
+  unordered_set<BlockId> seenIds;
+  while (it->isValid()) {
+    BlockId id = it->getBlockId();
+    if (seenIds.count(id)>0)
+      continue;
+    else
+      seenIds.insert(id);
+    Block masterBlock = bman_->getBlock(id); // make a copy
+    Timestamp partitioningTimestamp = masterBlock.getPartitioningTimestamp();
+    if (partitioningTimestamp < startTime || partitioningTimestamp >= endTime)
+      continue;
+    vector<Block> newBlocks = masterBlock.partitionBlock(edgeSchema_, *this);
+    replaceBlocks(masterBlock, newBlocks);
+    it->next();
+  }
+}
+
+void PartitionIndex::replaceBlocks(Block const & masterBlock, vector<Block> & newBlocks)
+{
+  assert(newBlocks.size() > 0);
+  auto const & subBlocks = masterBlock.getSubBlockIds();
+  int numReplace = min(subBlocks.size(), newBlocks.size()-1);
+  int numAdd = max(0, (int)newBlocks.size()-1-(int)subBlocks.size());
+  int numRemove = max(0, 1+(int)subBlocks.size()-(int)newBlocks.size());
+  for (int i=0; i<numReplace; ++i) {
+      newBlocks[i+1].id() = subBlocks[i];
+      bman_->updateBlock(newBlocks[i+1]);
+  }
+  for (int i=0; i<numAdd; i++) 
+      bman_->addBlock(newBlocks[i+subBlocks.size()+1]);
+  for (int i=0; i<numRemove; i++) 
+      bman_->removeBlock(subBlocks[i+newBlocks.size()]);
+  newBlocks[0].id() = masterBlock.id();
+  for (size_t i=1, iu=newBlocks.size(); i<iu; ++i)
+    newBlocks[0].addSubBlockId(newBlocks[i].id());
+  bman_->updateBlock(newBlocks[0]);  
 }
 
 // relacement partitionings must be contigious in time
@@ -150,13 +190,8 @@ void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const 
   for (auto const & partitioning : replacement)
     addPartitioning(partitioning);
   // update blocks
-  for (auto const & partitioning : replacement) {
-    auto startTime = partitioning.getStartTime();
-    auto endTime = partitioning.getEndTime();
-    updateBlocks(startTime, endTime, toBeReplaced.getPartitioning(),
-      partitioning.getPartitioning());
-  }
-  
+  for (auto const & partitioning : replacement)
+    updateBlocks(partitioning.getStartTime(), partitioning.getEndTime());
 }
 
 // to be replaced partitionings must be contigious in time
@@ -178,11 +213,8 @@ void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartit
     removePartitioning(partitioning);
   addPartitioning(replacement);
   // update blocks
-  for (auto const & partitioning : toBeReplaced) {
-    auto startTime = partitioning.getStartTime();
-    auto endTime = partitioning.getEndTime();
-    updateBlocks(startTime, endTime, partitioning.getPartitioning(), replacement.getPartitioning());
-  }
+  for (auto const & partitioning : toBeReplaced) 
+    updateBlocks(partitioning.getStartTime(), partitioning.getEndTime());
 }
 
 namespace intergdb { namespace core {
