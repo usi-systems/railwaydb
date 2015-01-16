@@ -32,11 +32,11 @@ PartitionIndex::PartitionIndex(Conf const & conf)
         throw std::runtime_error(status.ToString());
     db_.reset(db);
     if (newDB) {
-      TimeSlicedPartitioning initialPartitioning;
+      TimeSlicedPartitioning initialPartitioning{};
       std::unordered_set<std::string> allAttributes;
       auto const & attributes = edgeSchema_.getAttributes();
-      for (auto const & attribute : attributes)
-        allAttributes.insert(attribute.getName());    
+      for (auto const & attribute : attributes) 
+        allAttributes.insert(attribute.getName());
       initialPartitioning.getPartitioning().push_back(std::move(allAttributes));
       addPartitioning(initialPartitioning);
     }
@@ -74,7 +74,7 @@ void  PartitionIndex::removePartitioning(TimeSlicedPartitioning const & partitio
 TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time) 
 {
   auto cit = cache_.lower_bound(time);
-  if (cit!=cache_.end()) {    
+  if (cit != cache_.end()) {
     PartitioningAndIter & partingAndIter = cit->second;
     auto const & partitioning = partingAndIter.partitioning;
     if (time>=partitioning.getStartTime() && time<partitioning.getEndTime()) {

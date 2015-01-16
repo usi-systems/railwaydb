@@ -25,10 +25,9 @@ protected:
     virtual void SetUp() 
         {
             auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
-            conf.reset(new Conf("test", "/tmp/myigdb_st", 
-                       {{"vertex-label", DataType::STRING}}, 
-                                {{"a", DataType::STRING}}));
-
+            conf.reset(new Conf("test", storageDir.string(), 
+                {{"vertex-label", DataType::STRING}}, 
+                {{"a", DataType::STRING}}));
             if (boost::filesystem::exists(conf->getStorageDir()))
                 boost::filesystem::remove_all(conf->getStorageDir());
             boost::filesystem::create_directories(conf->getStorageDir());   

@@ -167,8 +167,8 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
         done_ = true;    
 }
 
-HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx, MetaDataManager & meta)
-    : conf_(conf), partIndex_(pidx), bman_(conf, pidx, meta), iqIndex_(conf, &bman_), fiqIndex_(conf)
+HistoricalGraph::HistoricalGraph(Conf const & conf, MetaDataManager & meta)
+    : conf_(conf), partIndex_(conf), bman_(conf, partIndex_, meta), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {
     partIndex_.setIntervalQueryIndex(&iqIndex_);
 }

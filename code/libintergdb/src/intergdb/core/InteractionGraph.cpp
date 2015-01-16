@@ -4,9 +4,8 @@ using namespace std;
 using namespace intergdb::core;
 
 InteractionGraph::InteractionGraph(Conf const & conf)
-  : conf_(conf), vman_(conf_), pidx_(conf_), meta_(conf_.getStorageDir()), 
-    hisg_(conf_, pidx_, meta_), memg_(conf_, &hisg_, meta_.getSchemaStats()), 
-    qcol_(conf_) {}
+  : conf_(conf), vman_(conf_),  meta_(conf_.getStorageDir()), hisg_(conf_, meta_), 
+    memg_(conf_, &hisg_, meta_.getSchemaStats()), qcol_(conf_) {}
 
 void InteractionGraph::flush()
 {

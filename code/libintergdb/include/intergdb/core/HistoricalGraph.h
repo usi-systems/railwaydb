@@ -55,7 +55,7 @@ namespace intergdb { namespace core
             std::unordered_set<std::string> queryAttributes_;
         };
     public:
-        HistoricalGraph(Conf const & conf, PartitionIndex & pidx, MetaDataManager & meta);
+        HistoricalGraph(Conf const & conf, MetaDataManager & meta);
         void addBlock(Block const & block);
         std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
         void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);

@@ -48,6 +48,9 @@ namespace intergdb { namespace core
 
   class PartitionIndex
   {
+  private:
+    PartitionIndex(PartitionIndex const & other) = delete;
+    PartitionIndex const & operator=(PartitionIndex const & other) = delete; 
   public:
     PartitionIndex(Conf const & conf);
     TimeSlicedPartitioning getTimeSlicedPartitioning(Timestamp time);

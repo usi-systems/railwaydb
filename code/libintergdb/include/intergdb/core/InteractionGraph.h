@@ -73,7 +73,6 @@ namespace intergdb { namespace core
     private:
         Conf conf_;
         VertexManager vman_;
-        PartitionIndex pidx_;
         MetaDataManager meta_;
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
