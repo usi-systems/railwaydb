@@ -1,9 +1,5 @@
 THISDIR := $(realpath .)
 
-EXECUTABLE = simulation
-
-CPPFLAGS = 
-
 EXECUTABLE = run_all_tests
 
 CPPFLAGS =

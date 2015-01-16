@@ -1,14 +1,11 @@
-.PHONY: test 
+.PHONY: all clean
 
 all:
-	make -C libcommon
-	make -C liboptimizer
-	make -C simulation
-	make -C libintergdb
-	make -C test
-
-test:
-	make -C test
+	make -C libcommon all
+	make -C liboptimizer all
+	make -C simulation all
+	make -C libintergdb all
+	make -C test all
 
 clean:
 	make -C libcommon clean
