@@ -46,6 +46,8 @@ $(OBJDIR)/%.d: $(SRCDIR)/%.cpp
 	@/bin/echo -n $(dir $@) > $@
 	@$(DEPEND) $< >> $@ || rm $@
 
+all:
+
 objs: $(OBJS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp

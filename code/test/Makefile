@@ -14,11 +14,11 @@ INCLUDES = \
 
 LDFLAGS = \
 	-L /opt/local/libcpp-software/lib \
-	-L $(THISDIR)/libintergdb/bin \
-	-L $(THISDIR)/ext/lib \
-	-L $(THISDIR)/ext/src/leveldb \
-	-L $(THISDIR)/libcommon/bin \
-	-L $(THISDIR)/liboptimizer/bin \
+	-L $(THISDIR)/../libintergdb/bin \
+	-L $(THISDIR)/../ext/lib \
+	-L $(THISDIR)/../ext/src/leveldb \
+	-L $(THISDIR)/../libcommon/bin \
+	-L $(THISDIR)/../liboptimizer/bin \
 	-lboost_coroutine-mt \
 	-lboost_context-mt \
 	-lboost_filesystem-mt \
