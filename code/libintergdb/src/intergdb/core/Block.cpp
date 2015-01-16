@@ -141,7 +141,7 @@ vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & part
     blocks.reserve(part.size()+1);
     { // master block (no edge data)
         Block block;
-        block.partitionIndex_ = -1;
+        block.partition_ = -1;
         std::shared_ptr<AttributeData> sdata(schema.newAttributeData(unordered_set<string>()));
         for (auto const & vIdNListPair : getNeighborLists()) {
             VertexId headVertex = vIdNListPair.first;
@@ -159,7 +159,7 @@ vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & part
     for (size_t i=0, iu=part.size(); i<iu; ++i) {
         unordered_set<string> const & attributes = part.at(i);
         Block block;
-        block.partitionIndex_ = i;
+        block.partition_ = i;
         std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
         for (auto const & vIdNListPair : getNeighborLists()) {
             VertexId headVertex = vIdNListPair.first;
@@ -214,7 +214,7 @@ NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
     sbuf << subBlocks_;
     sbuf << minTimestamp;
     sbuf << maxTimestamp;
-    sbuf << partitionIndex_;
+    sbuf << partition_;
     auto const & neigs = getNeighborLists();
     for (auto it=neigs.cbegin(); it!=neigs.cend(); ++it)  {
         VertexId headVertex = it->first;
@@ -244,11 +244,11 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
     sbuf >> subBlocks_;
     sbuf >> minTimestamp;
     sbuf >> maxTimestamp;
-    sbuf >> partitionIndex_;    
+    sbuf >> partition_;    
     Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
     TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(blockTimestamp);
     Partitioning const & part = tpart.getPartitioning();
-    unordered_set<string> const & attributes = part[partitionIndex_];
+    unordered_set<string> const & attributes = part[partition_];
     std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
     shared_ptr<AttributeData> fsdata(schema.newAttributeData(unordered_set<string>()));
     while (sbuf.getNRemainingBytes()>0) {
@@ -263,7 +263,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
             sbuf >> tm;
             std::shared_ptr<AttributeData> sdata;
             EdgeTriplet etrip(headVertex, toVertex, tm);
-            if (partitionIndex_ != -1) {
+            if (partition_ != -1) {
                 auto it = read.find(etrip);
                 if (it==read.end()) {
                     sdata.reset(schema.newAttributeData(attributes));

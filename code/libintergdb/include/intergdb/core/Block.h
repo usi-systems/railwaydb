@@ -37,7 +37,7 @@ namespace intergdb { namespace core
         void findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const;
     private:
         BlockId id_;
-        int partitionIndex_;
+        int partition_;
         size_t serializedSize_;
         std::vector<BlockId> subBlocks_;
         std::unordered_map<VertexId, NeighborList> neigs_;
