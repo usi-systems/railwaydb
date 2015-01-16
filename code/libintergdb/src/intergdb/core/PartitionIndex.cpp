@@ -164,7 +164,7 @@ void PartitionIndex::replaceBlocks(Block const & masterBlock, vector<Block> & ne
   for (int i=0; i<numAdd; i++) 
       bman_->addBlock(newBlocks[i+subBlocks.size()+1]);
   for (int i=0; i<numRemove; i++) 
-      bman_->removeBlock(subBlocks[i+newBlocks.size()]);
+      bman_->removeBlock(subBlocks[i+newBlocks.size()-1]);
   newBlocks[0].id() = masterBlock.id();
   for (size_t i=1, iu=newBlocks.size(); i<iu; ++i)
     newBlocks[0].addSubBlockId(newBlocks[i].id());
