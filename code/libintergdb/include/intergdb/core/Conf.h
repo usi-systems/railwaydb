@@ -75,16 +75,7 @@ namespace intergdb { namespace core
             layoutMode_(LM_Smart),
             vertexSchema_(vertexSchema),
             edgeSchema_(edgeSchema)
-        {
-            std::unordered_set<std::string> allAttributes;
-            auto const & attributes = edgeSchema_.getAttributes();
-            for (auto const & attribute : attributes)
-                allAttributes.insert(attribute.getName());
-            partitioning_.push_back(std::move(allAttributes));
-        }
-
-        void setPartitioning(Partitioning const & partitioning) { partitioning_ = partitioning; }
-        Partitioning const & getPartitioning() const { return partitioning_; }
+        {}
 
         static std::string getLayoutModeName(LayoutMode layout)
         {

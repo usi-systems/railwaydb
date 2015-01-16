@@ -60,12 +60,13 @@ namespace intergdb { namespace core
         std::shared_ptr<VertexIterator> intervalQuery(Timestamp start, Timestamp end);
         void intervalQueryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results);
         std::shared_ptr<EdgeIterator> focusedIntervalQuery(FocusedIntervalQuery const &  query);
+        PartitionIndex & getPartitionIndex() { return partIndex_; }
         size_t getEdgeIOCount() const { return bman_.getNumIOReads() + bman_.getNumIOWrites(); }
         size_t getEdgeReadIOCount() const { return bman_.getNumIOReads(); }
         size_t getEdgeWriteIOCount() const { return bman_.getNumIOWrites(); }
     private:
         Conf conf_;
-        PartitionIndex pidx_;
+        PartitionIndex partIndex_;
         BlockManager bman_;        
         IntervalQueryIndex iqIndex_;
         FocusedIntervalQueryIndex fiqIndex_;

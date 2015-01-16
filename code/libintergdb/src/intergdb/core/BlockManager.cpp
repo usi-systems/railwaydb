@@ -44,7 +44,6 @@ Block const & BlockManager::getBlock(BlockId id)
         assert(blockAndIter.block.id()==id);
         return blockAndIter.block;
     } else {
-        nIOReads_++;
         NetworkByteBuffer keyBuf(sizeof(id));
         keyBuf << id;
         leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
@@ -55,6 +54,7 @@ Block const & BlockManager::getBlock(BlockId id)
         else if (!status.ok())
             throw std::runtime_error(status.ToString());
         NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
+        nIOReads_ += keyBuf.getSerializedDataSize() + dataBuf.getSerializedDataSize();
         BlockAndIdIter & blockAndIter = cache_.emplace(id, BlockAndIdIter()).first->second;
         blockAndIter.block.deserialize(dataBuf, edgeSchema_, partitionIndex_);
         lruList_.push_front(id);
@@ -71,7 +71,6 @@ Block const & BlockManager::getBlock(BlockId id)
 
 void BlockManager::addBlock(Block & block, bool setId/*=true*/)
 {
-    nIOWrites_++;
     if (setId)
         block.id() = nextBlockId_++;
     NetworkByteBuffer keyBuf(sizeof(BlockId));
@@ -83,6 +82,7 @@ void BlockManager::addBlock(Block & block, bool setId/*=true*/)
     leveldb::Status status = db_->Put(leveldb::WriteOptions(), key, dataSlice);
     if (!status.ok())
         throw std::runtime_error(status.ToString());
+    nIOWrites_ += keyBuf.getSerializedDataSize() + dataBuf.getSerializedDataSize();
 }
 
 void BlockManager::updateBlock(Block const & block)
@@ -100,6 +100,7 @@ void BlockManager::removeBlock(BlockId blockId)
     leveldb::Status status = db_->Delete(leveldb::WriteOptions(), key);
     if (!status.ok())
         throw std::runtime_error(status.ToString());
+    nIOWrites_ += keyBuf.getSerializedDataSize();
     if (cache_.count(blockId) > 0) {
         lruList_.erase(cache_[blockId].iter);
         cache_.erase(blockId);

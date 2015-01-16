@@ -17,17 +17,16 @@ protected:
     virtual void SetUp() 
     {
         auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
-        conf.reset(new Conf("test", storageDir.string(), 
-            {{"v", DataType::STRING}}, 
-            {{"a", DataType::STRING}, {"b", DataType::STRING}}));
+        conf.reset(new Conf("testDB", storageDir.string(), 
+            {{"v", DataType::STRING}}, // vertex schema
+            {{"a", DataType::STRING}, {"b", DataType::STRING}})); // edge schema
         if (boost::filesystem::exists(conf->getStorageDir()))
             boost::filesystem::remove_all(conf->getStorageDir());
         boost::filesystem::create_directories(conf->getStorageDir());   
-        Partitioning partitioning;
-        partitioning.push_back({"a"});
-        partitioning.push_back({"b"});
-        conf->setPartitioning(partitioning);
         graph.reset(new InteractionGraph(*conf));
+        auto & partIndex = graph->getPartitionIndex();
+        auto timeSlicedParting = partIndex.getTimeSlicedPartitioning(0);
+        timeSlicedParting.getPartitioning() = { {"a"}, {"b"} };
     }
     virtual void TearDown()
     { 

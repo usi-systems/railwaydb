@@ -168,14 +168,14 @@ void HistoricalGraph::EdgeIterator::initFromBlock()
 }
 
 HistoricalGraph::HistoricalGraph(Conf const & conf, PartitionIndex & pidx, MetaDataManager & meta)
-    : conf_(conf), pidx_(pidx), bman_(conf, pidx_, meta), iqIndex_(conf, &bman_), fiqIndex_(conf)
+    : conf_(conf), partIndex_(pidx), bman_(conf, pidx, meta), iqIndex_(conf, &bman_), fiqIndex_(conf)
 {
-    pidx_.setIntervalQueryIndex(&iqIndex_);
+    partIndex_.setIntervalQueryIndex(&iqIndex_);
 }
 
 void HistoricalGraph::addBlock(Block const & block)
 {
-    vector<Block> newBlocks = block.partitionBlock(conf_.getEdgeSchema(), pidx_);
+    vector<Block> newBlocks = block.partitionBlock(conf_.getEdgeSchema(), partIndex_);
     for (size_t i=1, iu=newBlocks.size(); i<iu; ++i) {
         bman_.addBlock(newBlocks[i]); // sets the block id        
         newBlocks[0].addSubBlockId(newBlocks[i].id());

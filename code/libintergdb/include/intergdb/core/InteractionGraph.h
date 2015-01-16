@@ -63,6 +63,7 @@ namespace intergdb { namespace core
         void processIntervalQueryBatch(IntervalQuery const & q, std::vector<VertexId> & results);
         EdgeIterator processFocusedIntervalQuery(FocusedIntervalQuery const & q);
         BlockStats const & getBlockStats() const { return memg_.getBlockStats(); }
+        PartitionIndex & getPartitionIndex() { return hisg_.getPartitionIndex(); }
         size_t getEdgeIOCount() const { return hisg_.getEdgeIOCount(); }
         size_t getEdgeReadIOCount() const { return hisg_.getEdgeReadIOCount(); }
         size_t getEdgeWriteIOCount() const { return hisg_.getEdgeWriteIOCount(); }
