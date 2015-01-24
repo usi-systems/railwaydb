@@ -43,8 +43,8 @@ protected:
         {
             std::set<VertexId> out; // The set of vertices not in the tree
             std::set<VertexId> in;  // The set of vertices in the tree
-            VertexId v;
-            VertexId u;
+            VertexId v{};
+            VertexId u{};
 
             int i = 0;
             IntervalQuery q1(startTime, endTime);

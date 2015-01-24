@@ -1,6 +1,8 @@
 #include <intergdb/common/Cost.h>
+
 #include <intergdb/common/SystemConstants.h>
 
+#include <cassert>
 #include <iostream>
 
 using namespace std;
@@ -51,6 +53,7 @@ vector<Partition const *> Cost::getUsedPartitions(vector<Partition> const & part
         bestPartition = partition;
       }
     }
+    assert(bestPartition);
     for(Attribute const * attribute : bestPartition->getAttributes()) {
       selectedAttributes.insert(attribute); 
       remainingAttributes.erase(attribute);

@@ -285,6 +285,7 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
         cerr << "Optimization was stopped early. Status is " << ctx->optimstatus << endl;
         error = 1;
     }
+    if (error) return error;
 
     error = GRBgetdblattr(ctx->model, GRB_DBL_ATTR_OBJVAL, &ctx->objval);
     if (error) return error;

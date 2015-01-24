@@ -2,6 +2,7 @@
 
 #include <intergdb/common/Types.h>
 #include <intergdb/core/AttributeData.h>
+#include <intergdb/core/BlockManager.h>
 #include <intergdb/core/Helper.h>
 #include <intergdb/core/PartitionIndex.h>
 #include <intergdb/core/Schema.h>
@@ -129,12 +130,46 @@ namespace std {
 
 namespace intergdb { namespace core {
 
+
+Block Block::recombineBlock(Schema const & schema, BlockManager & bman) const
+{
+    assert(getSubBlockIds().size()>0);
+    Block block;
+    block.partition_ = -1;
+    std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
+    for (auto const & vIdNListPair : getNeighborLists()) {
+        VertexId headVertex = vIdNListPair.first;
+        auto const & neighborList = vIdNListPair.second;
+        int k = 0;
+        for (auto const & edge : neighborList.getEdges()) {
+            VertexId toVertex = edge.getToVertex();
+            Timestamp tm = edge.getTime();
+            std::shared_ptr<AttributeData> sdata;
+            EdgeTriplet etrip(headVertex, toVertex, tm); 
+            auto it = read.find(etrip);
+            if (it==read.end()) {
+                sdata.reset(schema.newAttributeData());
+                for (BlockId id : getSubBlockIds()) {
+                    shared_ptr<AttributeData> others = bman.getBlock(id)
+                        .getNeighborLists().find(headVertex)->second
+                        .getEdges()[k].getData(); 
+                    sdata->setAttributes(*others);
+                }
+                read[etrip] = sdata;
+            } else {
+                sdata = it->second;
+            }
+            block.addEdge(headVertex, toVertex, tm, sdata);
+            k++;
+        }
+    }
+    return block;
+}
+
 vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & partitionIndex) const
 {
-    Timestamp minTimestamp, maxTimestamp;
-    findMinMaxTimestamps(minTimestamp, maxTimestamp);
-    Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2;
-    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(blockTimestamp);
+    Timestamp partitioningTimestamp = getPartitioningTimestamp();
+    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(partitioningTimestamp);
     Partitioning const & part = tpart.getPartitioning();
 
     vector<Block> blocks;

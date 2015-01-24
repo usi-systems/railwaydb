@@ -107,8 +107,8 @@ TEST_F(RepartitionTest, WriteReadTest)
     {
         auto & partIndex = graph->getPartitionIndex();
         auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
-        TimeSlicedPartitioning newParting{};
-        origParting.getPartitioning() = { {"a"}, {"b"} };
+        TimeSlicedPartitioning newParting{}; // -inf to inf
+        newParting.getPartitioning() = { {"a"}, {"b"} };
         partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
         // with {"a"}, {"b"}
         test_graph(graph.get());
@@ -117,8 +117,8 @@ TEST_F(RepartitionTest, WriteReadTest)
     {
         auto & partIndex = graph->getPartitionIndex();
         auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
-        TimeSlicedPartitioning newParting{};
-        origParting.getPartitioning() = { {"a", "b"} };
+        TimeSlicedPartitioning newParting{}; // -inf to inf
+        newParting.getPartitioning() = { {"a", "b"} };
         partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
         // with {"a", "b"} again
         test_graph(graph.get());

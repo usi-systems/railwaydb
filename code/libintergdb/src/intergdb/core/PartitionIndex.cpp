@@ -140,6 +140,7 @@ void PartitionIndex::updateBlocks(Timestamp startTime, Timestamp endTime)
   unordered_set<BlockId> seenIds;
   while (it->isValid()) {
     BlockId id = it->getBlockId();
+    it->next();
     if (seenIds.count(id)>0)
       continue;
     else
@@ -148,9 +149,9 @@ void PartitionIndex::updateBlocks(Timestamp startTime, Timestamp endTime)
     Timestamp partitioningTimestamp = masterBlock.getPartitioningTimestamp();
     if (partitioningTimestamp < startTime || partitioningTimestamp >= endTime)
       continue;
-    vector<Block> newBlocks = masterBlock.partitionBlock(edgeSchema_, *this);
+    Block recombMaster = masterBlock.recombineBlock(edgeSchema_, *bman_);
+    vector<Block> newBlocks = recombMaster.partitionBlock(edgeSchema_, *this);
     replaceBlocks(masterBlock, newBlocks);
-    it->next();
   }
 }
 
@@ -175,6 +176,15 @@ void PartitionIndex::replaceBlocks(Block const & masterBlock, vector<Block> & ne
   bman_->updateBlock(newBlocks[0]);  
 }
 
+static size_t getPartitioningAttributeCount(Partitioning const & parting)
+{
+  unordered_set<string> attributes;
+  for (auto const & part : parting)
+    for (auto const & attr : part)
+      attributes.insert(attr);
+  return attributes.size();
+}
+
 // relacement partitionings must be contigious in time
 void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced, 
     std::vector<TimeSlicedPartitioning> const & replacement)
@@ -188,6 +198,9 @@ void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const 
   for (size_t i=1, iu=replacement.size(); i<iu; ++i) 
     if (replacement[i].getStartTime()!=replacement[i-1].getEndTime())
       throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
+  for(auto const & parting : replacement) 
+    if (getPartitioningAttributeCount(parting.getPartitioning()) != edgeSchema_.getAttributes().size()) 
+      throw time_sliced_partition_replacement_exception("replacement partitioning has missing attributes");
   // all is ok, proceed to replace
   // update partition index
   removePartitioning(toBeReplaced);
@@ -211,6 +224,8 @@ void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartit
   for (size_t i=1, iu=toBeReplaced.size(); i<iu; ++i) 
     if (toBeReplaced[i].getStartTime()!=toBeReplaced[i-1].getEndTime())
       throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
+  if (getPartitioningAttributeCount(replacement.getPartitioning()) != edgeSchema_.getAttributes().size()) 
+    throw time_sliced_partition_replacement_exception("replacement partitioning has missing attributes");
   // all is ok, proceed to replace
   // update partition index
   for (auto const & partitioning : toBeReplaced)

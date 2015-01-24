@@ -8,6 +8,7 @@
 
 namespace intergdb { namespace core
 {
+    class BlockManager;
     class Schema;
     class PartitionIndex;
     typedef std::vector<std::unordered_set<std::string>> Partitioning;
@@ -29,6 +30,7 @@ namespace intergdb { namespace core
         std::vector<BlockId> const & getSubBlockIds() const { return subBlocks_; }
         void addSubBlockId(BlockId id) { subBlocks_.push_back(id); }
         std::vector<Block> partitionBlock(Schema const & schema, PartitionIndex & partitionIndex) const;
+        Block recombineBlock(Schema const & schema, BlockManager & bman) const;
         NetworkByteBuffer & serialize(NetworkByteBuffer & sbuf) const;
         NetworkByteBuffer & deserialize(NetworkByteBuffer & sbuf, 
             Schema const & schema, PartitionIndex & partitionIndex);

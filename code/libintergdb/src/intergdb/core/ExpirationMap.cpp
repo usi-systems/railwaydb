@@ -130,7 +130,7 @@ void ExpirationMap::getBlock(Block & block)
 {
     std::unordered_map<VertexId, size_t> nTaken;
     size_t maxBlockSize = conf_.blockSize();
-    VertexId headVertex;
+    VertexId headVertex{};
     while (!scoreQueue_.empty() && block.getSerializedSize()<maxBlockSize) {
         auto const & item = scoreQueue_.getTopItem();
         headVertex = item.id();
@@ -320,9 +320,9 @@ bool ExpirationMap::extendCandidate(Candidate & candidate)
         size_t size = candidate.getSerializedSize();
         if (size<=maxBlockSize) {
             found = true;
-            double locality = candidate.getLocality(locMetric_);
-            double score = (locality-initLocality) / (size-orgSize);
-            bestScore = score;
+            // double locality = candidate.getLocality(locMetric_);
+            // double score = (locality-initLocality) / (size-orgSize);
+            // bestScore = score;
             bestHeadVertex = headVertex;
             bestEdgeCount = edgeCount;
         }
