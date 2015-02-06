@@ -11,6 +11,7 @@ INCLUDES = \
 	-I $(THISDIR)/../libcommon/include \
 	-I $(THISDIR)/../liboptimizer/include \
 	-I $(THISDIR)/../libintergdb/include \
+	-I $(THISDIR)/../simulation/include \
 
 LDFLAGS = \
 	-L /opt/local/libcpp-software/lib \
