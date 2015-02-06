@@ -21,9 +21,9 @@ comparing our approach to a few baseline alternatives.
 3. We expect this libc++ boost to be installed at '/opt/local/libcpp-software'
 <br/><br/><pre><code>mkdir tmp
 cd tmp
-http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz
-tar -zxvf boost_1_55_0.tar.gz
-cd boost_1_55_0
+http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.gz
+tar -zxvf boost_1_57_0.tar.gz
+cd boost_1_57_0
 ./bootstrap.sh --prefix=/opt/local/libcpp-software
 sudo ./b2 toolset=clang cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++" --layout=tagged  install
 cd ../../
