@@ -45,12 +45,15 @@ namespace intergdb { namespace core
         class Iterator
         {
         private:
-            typedef boost::coroutines::coroutine<void()> coro_t;
-            typedef coro_t::caller_type caller_t;
+            typedef boost::coroutines::symmetric_coroutine<void>::call_type coro_t;
+            typedef boost::coroutines::symmetric_coroutine<void>::yield_type caller_t;
         public:
             Iterator(SpatialIndex::ISpatialIndex & rtidx, Timestamp from, Timestamp to)
                 : valid_(true), from_(from), to_(to), rtidx_(rtidx),
-                  coro_(boost::bind(&Iterator::visitCoro, this, _1)) {}
+                  coro_(boost::bind(&Iterator::visitCoro, this, _1))
+            {
+                coro_();
+            }
             bool isValid() { return valid_; }
             void moveToNext() { if(valid_) coro_(); }
             IntervalData const & getData() { return visitor_.getData(); }
@@ -71,7 +74,7 @@ namespace intergdb { namespace core
                 IntervalData data_;
                 caller_t * caller_;
             };
-            void visitCoro(coro_t::caller_type & caller)
+            void visitCoro(caller_t & caller)
             {
                 visitor_.setCaller(caller);
                 std::auto_ptr<SpatialIndex::Region> region =  IntervalData::getRegion(from_, to_, 0.0, 10.0);

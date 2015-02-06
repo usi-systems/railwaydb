@@ -13,7 +13,7 @@ LDFLAGS = \
  -L $(GUROBI_HOME)/lib \
  -L $(THISDIR)/../libcommon/bin \
  -lcommon \
- -lgurobi56 \
+ -lgurobi60 \
  -lpthread \
  -lm 
 
