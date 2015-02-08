@@ -1,65 +1,64 @@
 #pragma once
 
-#include <intergdb/simulation/ExperimentalRun.h>
+#include <intergdb/expcommon/ExperimentalRun.h>
+#include <intergdb/expcommon/ExperimentalData.h>
 
 namespace intergdb { namespace simulation
 {
 
-  class ExperimentalData;
-
-  class VsNumAttributes : public ExperimentalRun 
+  class VsNumAttributes : public expcommon::ExperimentalRun 
   {
       void process() override;
   private:     
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
 
- class VsNumQueryKinds : public ExperimentalRun 
+ class VsNumQueryKinds : public expcommon::ExperimentalRun 
   {
       void process() override;
   private:     
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
- class VsStorageOverheadThreshold : public ExperimentalRun 
+ class VsStorageOverheadThreshold : public expcommon::ExperimentalRun 
   {
       void process() override;
   private:     
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
- class VsQueryLength : public ExperimentalRun 
+ class VsQueryLength : public expcommon::ExperimentalRun 
   {
       void process() override;
   private:     
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
- class VsAttributeSizeSkew : public ExperimentalRun 
+ class VsAttributeSizeSkew : public expcommon::ExperimentalRun 
   {
       void process() override;
   private:     
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
- class VsQueryFreqSkew : public ExperimentalRun 
+ class VsQueryFreqSkew : public expcommon::ExperimentalRun 
   {
       void process() override;
   private:     
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
 
