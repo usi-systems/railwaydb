@@ -2,6 +2,7 @@
 
 all:
 	make -C libcommon all
+	make -C libexpcommon all
 	make -C liboptimizer all
 	make -C simulation all
 	make -C libintergdb all
@@ -10,6 +11,7 @@ all:
 
 clean:
 	make -C libcommon clean
+	make -C libexpcommon clean
 	make -C liboptimizer clean
 	make -C simulation clean
 	make -C libintergdb clean
