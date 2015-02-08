@@ -1,21 +1,18 @@
 #pragma once
 
-//#include <intergdb/simulation/ExperimentalRun.h>
+#include <intergdb/expcommon/ExperimentalRun.h>
+#include <intergdb/expcommon/ExperimentalData.h>
 
 namespace intergdb { namespace experiments
 {
 
-    //class ExperimentalData;
-
-    class VsBlockSize //: public ExperimentalRun 
+  class VsBlockSize : public expcommon::ExperimentalRun 
   {
       void process(); //override;
   private:     
-      /*
-      void makeQueryIOExp(ExperimentalData * exp);      
-      void makeStorageExp(ExperimentalData * exp);
-      void makeRunningTimeExp(ExperimentalData * exp);
-      */
+      void makeQueryIOExp(expcommon::ExperimentalData * exp);      
+      void makeStorageExp(expcommon::ExperimentalData * exp);
+      void makeRunningTimeExp(expcommon::ExperimentalData * exp);
   };
 
 

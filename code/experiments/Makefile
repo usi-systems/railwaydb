@@ -11,7 +11,7 @@ INCLUDES = \
 	-I $(THISDIR)/../libcommon/include \
 	-I $(THISDIR)/../liboptimizer/include \
 	-I $(THISDIR)/../libintergdb/include \
-	-I $(THISDIR)/../simulation/include \
+	-I $(THISDIR)/../libexpcommon/include \
 
 LDFLAGS = \
 	-L /opt/local/libcpp-software/lib \
@@ -20,6 +20,7 @@ LDFLAGS = \
 	-L $(THISDIR)/../libcommon/bin  \
 	-L $(THISDIR)/../liboptimizer/bin \
 	-L $(THISDIR)/../libintergdb/bin \
+	-L $(THISDIR)/../libexpcommon/bin  \
     -lboost_coroutine-mt \
     -lboost_context-mt \
     -lboost_filesystem-mt \
@@ -32,6 +33,7 @@ LDFLAGS = \
     -lspatialindex \
     -lcommon \
     -loptimizer \
-    -lintergdb 
+    -lintergdb \
+    -lexpcommon 
 
 include ../Makefile.exe

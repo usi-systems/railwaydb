@@ -1,6 +1,6 @@
 #include <intergdb/exp/Experiments.h>
-#include <intergdb/simulation/ExperimentalData.h>
-#include <intergdb/simulation/Constants.h>
+#include <intergdb/expcommon/ExperimentalData.h>
+//#include <intergdb/expcommon/Constants.h>
 #include <intergdb/util/RunningStat.h>
 #include <intergdb/util/AutoTimer.h>
 #include <intergdb/common/Cost.h>
@@ -14,11 +14,11 @@
 using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
-using namespace intergdb::simulation;
+using namespace intergdb::expcommon;
 using namespace intergdb::experiments;
 using namespace intergdb::optimizer;
 
-/*
+
 void VsBlockSize::makeQueryIOExp(ExperimentalData * exp) {
   exp->setDescription("Query IO Vs. BlockSize");
   exp->addField("solver");
@@ -45,7 +45,7 @@ void VsBlockSize::makeRunningTimeExp(ExperimentalData * exp) {
     exp->addField("deviation");
     exp->setKeepValues(false);
 }
-*/
+
 
 void VsBlockSize::process() 
 {
