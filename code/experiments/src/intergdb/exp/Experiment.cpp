@@ -1,4 +1,5 @@
 #include <intergdb/exp/ExpSetupHelper.h>
+#include <intergdb/exp/Experiments.h>
 
 using namespace std;
 using namespace intergdb::core;
@@ -25,6 +26,9 @@ void createTweetDB()
 int main()
 {
     // printTweets();
-    createTweetDB();
+    //createTweetDB();
+    VsBlockSize vbs;
+    vbs.setUp();
+    vbs.run();
     return EXIT_SUCCESS;
 }
