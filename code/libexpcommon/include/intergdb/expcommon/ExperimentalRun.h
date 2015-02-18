@@ -10,6 +10,8 @@ namespace intergdb { namespace expcommon
         virtual void process() = 0;
         void run();
     protected:
+        virtual void setUp() {}
+        virtual void tearDown() {}
         std::string getClassName();
         std::string getFullyQualifiedClassName();
     };

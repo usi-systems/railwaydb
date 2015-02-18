@@ -68,11 +68,29 @@ void VsBlockSize::makeRunningTimeExp(ExperimentalData * exp) {
     exp->setKeepValues(false);
 }
 
-void VsBlockSize::test_graph(InteractionGraph * graph)
+void VsBlockSize::runWorkload(InteractionGraph * graph)
 {
     FocusedIntervalQuery fiq(2, 5.0, 10.0, {"a", "b"});
     InteractionGraph::EdgeIterator fiqIt = graph->processFocusedIntervalQuery(fiq);
     fiqIt.next();
+}
+
+void VsBlockSize::createGraph()
+{
+    // Create a graph...
+    graph->createVertex(2, "v2");
+    graph->createVertex(4, "v4");
+    Timestamp ts = 7.0;
+    graph->addEdge(2, 4, ts, "a-data", "b-data");
+    graph->flush();
+    graph.reset(NULL); // why does this work?
+    sleep(1); // wait for file locks to be released
+}
+
+TimeSlicedPartitioning VsBlockSize::convertPartitioning(intergdb::common::Partitioning p) {
+    TimeSlicedPartitioning newParting{}; // -inf to inf
+    newParting.getPartitioning() = { {"a"}, {"b"} };
+    return newParting;
 }
 
 void VsBlockSize::process() 
@@ -80,20 +98,14 @@ void VsBlockSize::process()
 
     util::AutoTimer timer;  
 
-    // Create a graph...
-    // graph->createVertex(2, "v2");
-    // graph->createVertex(4, "v4");
-    // Timestamp ts = 7.0;
-    // graph->addEdge(2, 4, ts, "a-data", "b-data");
-    // graph->flush();
-    // graph.reset(NULL);
+    createGraph();
 
-    // sleep(1); // wait for file locks to be released
+    // Conf * conf = graph->getConf()
 
-    // graph.reset(new InteractionGraph(*conf));
+    graph.reset(new InteractionGraph(*conf));
 
     QueryWorkload workload;    
-    //double storageOverheadThreshold = 1.0;
+    double storageOverheadThreshold = 1.0;
     SchemaStats stats;
 
     int numRuns = 1;
@@ -141,16 +153,18 @@ void VsBlockSize::process()
             for (auto solver : solvers) {     
                 auto & partIndex = graph->getPartitionIndex();
                 auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
-                //auto newParting = solver->solve(workload, storageOverheadThreshold, stats); 
-                //partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
+                TimeSlicedPartitioning newParting = 
+                    convertPartitioning(solver->solve(workload, storageOverheadThreshold, stats)); 
+                partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
                 timer.start();
                 // run workload
+                runWorkload(graph.get());                    
                 // io.at(j).push(cost.getIOCost(partitioning, workload));
                 // storage.at(j).push(cost.getStorageOverhead(partitioning, workload));   
-                // times.at(j).push(timer.getRealTimeInSeconds());           
-                
+                // times.at(j).push(timer.getRealTimeInSeconds());                           
                 j++;
                 timer.stop();
+                std::cout << "Workload took: " << timer.getRealTimeInSeconds() << std::endl;
             }
         }
         j = 0;

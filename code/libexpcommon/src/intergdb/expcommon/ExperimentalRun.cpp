@@ -32,6 +32,8 @@ string ExperimentalRun::getClassName()
 
 void ExperimentalRun::run()
 {
+  cout << "Experiment '" + getClassName() + "' set up..." << endl;
+  setUp();
   cout << "Experiment '" + getClassName() + "' started..." << endl;
   AutoTimer timer;
   timer.start();
@@ -45,4 +47,7 @@ void ExperimentalRun::run()
   timer.stop();
   cout << "Experiment '" + getClassName() + "' ended (took " + 
     boost::lexical_cast<string>(timer.getRealTimeInSeconds()) + " seconds)." << endl;
+  cout << "Experiment '" + getClassName() + "' tear down..." << endl;
+  tearDown();
+
 }

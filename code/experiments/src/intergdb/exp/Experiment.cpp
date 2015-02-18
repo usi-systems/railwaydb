@@ -27,8 +27,6 @@ int main()
 {
     // printTweets();
     //createTweetDB();
-    VsBlockSize vbs;
-    vbs.setUp();
-    vbs.run();
+    (VsBlockSize()).run();
     return EXIT_SUCCESS;
 }
