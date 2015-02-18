@@ -281,7 +281,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
     sbuf >> maxTimestamp;
     sbuf >> partition_;
     Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
-    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioningForDeserialization(blockTimestamp);
+    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioningForBlockDeserialization(blockTimestamp);
     Partitioning const & part = tpart.getPartitioning();
     unordered_set<string> const & attributes = part[partition_];
     std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;

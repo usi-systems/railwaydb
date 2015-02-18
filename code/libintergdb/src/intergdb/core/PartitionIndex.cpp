@@ -21,7 +21,6 @@ PartitionIndex::PartitionIndex(Conf const & conf)
   : partitioningBufferSize_(conf.partitioningBufferSize()),
     edgeSchema_(conf.getEdgeSchema())
 {
-  removedPartitioning_ = nullptr;
   leveldb::Options options;
   options.create_if_missing = true;
   options.max_open_files = 100;
@@ -56,9 +55,9 @@ void PartitionIndex::addPartitioning(TimeSlicedPartitioning const & partitioning
     throw std::runtime_error(status.ToString());
 }
 
-void  PartitionIndex::initiatePartitioningRemoval(
-  TimeSlicedPartitioning const & partitioning)
+void  PartitionIndex::initiatePartitioningRemoval(TimeSlicedPartitioning const & partitioning)
 {
+  removedPartitionings_.push_back(partitioning);
   NetworkByteBuffer keyBuf(sizeof(Timestamp));
   keyBuf << partitioning.getEndTime();
   leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
@@ -71,23 +70,19 @@ void  PartitionIndex::initiatePartitioningRemoval(
     lruList_.erase(partingAndIter.iter);
     cache_.erase(it);
   }
-  removedPartitioning_ = new TimeSlicedPartitioning();
-  *removedPartitioning_ = partitioning;
 }
 
-void  PartitionIndex::completePartitioningRemoval()
+void  PartitionIndex::completePartitioningRemovals()
 {
-  delete removedPartitioning_;
+  removedPartitionings_.clear();
 }
 
-TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioningForDeserialization(Timestamp time)
+TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioningForBlockDeserialization(Timestamp time)
 {
-  if (removedPartitioning_ &&
-      removedPartitioning_->getStartTime()<=time &&
-      removedPartitioning_->getEndTime()>time)
-    return *removedPartitioning_;
-  else
-    return getTimeSlicedPartitioning(time);
+  for (auto const& partitioning : removedPartitionings_)
+      if (partitioning.getStartTime() <= time && partitioning.getEndTime() > time)
+        return partitioning;
+  return getTimeSlicedPartitioning(time);
 }
 
 TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time)
@@ -227,10 +222,9 @@ void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const 
     addPartitioning(partitioning);
   for (auto const & partitioning : replacement)
     updateBlocks(partitioning.getStartTime(), partitioning.getEndTime());
-  completePartitioningRemoval();
+  completePartitioningRemovals();
 }
 
-/* TODO: buggy, fix this
 // to be replaced partitionings must be contigious in time
 void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced,
     TimeSlicedPartitioning const & replacement)
@@ -249,13 +243,13 @@ void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartit
   // all is ok, proceed to replace
   // update partition index
   for (auto const & partitioning : toBeReplaced)
-    removePartitioning(partitioning);
+    initiatePartitioningRemoval(partitioning);
   addPartitioning(replacement);
   // update blocks
   for (auto const & partitioning : toBeReplaced)
     updateBlocks(partitioning.getStartTime(), partitioning.getEndTime());
+  completePartitioningRemovals();
 }
-*/
 
 namespace intergdb { namespace core {
 

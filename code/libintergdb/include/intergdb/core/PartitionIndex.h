@@ -53,23 +53,21 @@ namespace intergdb { namespace core
     PartitionIndex const & operator=(PartitionIndex const & other) = delete;
   public:
     PartitionIndex(Conf const & conf);
-    TimeSlicedPartitioning getTimeSlicedPartitioningForDeserialization(Timestamp time);
+    TimeSlicedPartitioning getTimeSlicedPartitioningForBlockDeserialization(Timestamp time);
     TimeSlicedPartitioning getTimeSlicedPartitioning(Timestamp time);
     std::vector<TimeSlicedPartitioning> getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime);
     // relacement partitionings must be contigious in time
     void replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced,
-        std::vector<TimeSlicedPartitioning> const & replacement);
-    /* TODO: buggy, needs fixing
+      std::vector<TimeSlicedPartitioning> const & replacement);
     // to be replaced partitionings must be contigious in time
     void replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced,
-        TimeSlicedPartitioning const & replacement);
-    */
+      TimeSlicedPartitioning const & replacement);
     void setIntervalQueryIndex(IntervalQueryIndex * iqIdx) { iqIdx_ = iqIdx; }
     void setBlockManager(BlockManager * bman) { bman_ = bman; }
   private:
     void addPartitioning(TimeSlicedPartitioning const & partitioning);
     void initiatePartitioningRemoval(TimeSlicedPartitioning const & partitioning);
-    void completePartitioningRemoval();
+    void completePartitioningRemovals();
     void updateBlocks(Timestamp startTime, Timestamp endTime);
     void replaceBlocks(Block const & masterBlock, std::vector<Block> & newBlocks);
   private:
@@ -84,7 +82,7 @@ namespace intergdb { namespace core
     Schema const & edgeSchema_;
     IntervalQueryIndex * iqIdx_;
     BlockManager * bman_;
-    TimeSlicedPartitioning * removedPartitioning_;
+    std::vector<TimeSlicedPartitioning> removedPartitionings_;
     std::auto_ptr<leveldb::DB> db_; // to store the index on disk
   };
 
