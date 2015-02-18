@@ -93,10 +93,10 @@ TimeSlicedPartitioning VsBlockSize::convertPartitioning(intergdb::common::Partit
     return newParting;
 }
 
-void VsBlockSize::process() 
+void VsBlockSize::process()
 {
 
-    util::AutoTimer timer;  
+    util::AutoTimer timer;
 
     createGraph();
 
@@ -104,7 +104,7 @@ void VsBlockSize::process()
 
     graph.reset(new InteractionGraph(*conf));
 
-    QueryWorkload workload;    
+    QueryWorkload workload;
     double storageOverheadThreshold = 1.0;
     SchemaStats stats;
 
@@ -113,82 +113,82 @@ void VsBlockSize::process()
     ExperimentalData queryIOExp("QueryIOVsBlockSize");
     ExperimentalData runningTimeExp("RunningTimeVsBlockSize");
     ExperimentalData storageExp("StorageOverheadVsBlockSize");
-    
+
     auto expData = { &queryIOExp, &runningTimeExp, &storageExp };
 
     makeQueryIOExp(&queryIOExp);
     makeRunningTimeExp(&runningTimeExp);
     makeStorageExp(&storageExp);
-    
+
     for (auto exp : expData) {
         exp->open();
     }
-    
-    auto solvers = {       
-        SolverFactory::instance().makeSinglePartition(), 
-        SolverFactory::instance().makeOptimalOverlapping() 
+
+    auto solvers = {
+        SolverFactory::instance().makeSinglePartition(),
+        SolverFactory::instance().makeOptimalOverlapping()
     };
 
-    auto blockSizes = {2, 4, 6, 8, 10, 12, 14, 16 }; 
+    auto blockSizes = {2, 4, 6, 8, 10, 12, 14, 16 };
     vector<util::RunningStat> io;
     vector<util::RunningStat> storage;
     vector<util::RunningStat> times;
     vector<std::string> names;
 
-    
+
     for (auto solver : solvers) {
         io.push_back(util::RunningStat());
         storage.push_back(util::RunningStat());
         times.push_back(util::RunningStat());
         names.push_back(solver->getClassName());
-        vector<std::string> names;  
+        vector<std::string> names;
     }
 
 
     int j;
     for (double blockSize : blockSizes) {
         for (int i = 0; i < numRuns; i++) {
-            // set the block size       
+            // set the block size
             j = 0;
-            for (auto solver : solvers) {     
+            for (auto solver : solvers) {
                 auto & partIndex = graph->getPartitionIndex();
                 auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
-                TimeSlicedPartitioning newParting = 
-                    convertPartitioning(solver->solve(workload, storageOverheadThreshold, stats)); 
+                TimeSlicedPartitioning newParting =
+                    convertPartitioning(solver->solve(workload, storageOverheadThreshold, stats));
                 partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
                 timer.start();
                 // run workload
-                runWorkload(graph.get());                    
+                runWorkload(graph.get());
                 // io.at(j).push(cost.getIOCost(partitioning, workload));
-                // storage.at(j).push(cost.getStorageOverhead(partitioning, workload));   
-                // times.at(j).push(timer.getRealTimeInSeconds());                           
+                // storage.at(j).push(cost.getStorageOverhead(partitioning, workload));
+                // times.at(j).push(timer.getRealTimeInSeconds());
                 j++;
                 timer.stop();
                 std::cout << "Workload took: " << timer.getRealTimeInSeconds() << std::endl;
             }
         }
         j = 0;
-        for (auto solver : solvers) {  
-   
+        for (auto solver : solvers) {
+
           runningTimeExp.addRecord();
           runningTimeExp.setFieldValue("solver", solver->getClassName());
           runningTimeExp.setFieldValue("blockSize", blockSize);
           runningTimeExp.setFieldValue("time", times.at(j).getMean());
           runningTimeExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
           times.at(j).clear();
-          
+
           queryIOExp.addRecord();
           queryIOExp.setFieldValue("solver", solver->getClassName());
-          queryIOExp.setFieldValue("blockSize", blockSize);        
+          queryIOExp.setFieldValue("blockSize", blockSize);
           queryIOExp.setFieldValue("io", io.at(j).getMean());
           queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
           io.at(j).clear();
-          
+
           storageExp.addRecord();
           storageExp.setFieldValue("solver", solver->getClassName());
           storageExp.setFieldValue("blockSize",blockSize);
-          storageExp.setFieldValue("storage", storage.at(j).getMean());    
-          storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());               
+          storageExp.setFieldValue("storage", storage.at(j).getMean());
+          storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());
           storage.at(j).clear();
 
           j++;
@@ -201,14 +201,14 @@ void VsBlockSize::process()
 
 
 /*
-  cerr << "This is an experiment with name: " 
+  cerr << "This is an experiment with name: "
     << this->getClassName() << endl;
-  
+
 
   SimulationConf simConf;
   SchemaStats stats;
   Cost cost(stats);
-  util::AutoTimer timer;  
+  util::AutoTimer timer;
 */
 
 };

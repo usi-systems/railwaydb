@@ -18,28 +18,29 @@ using namespace intergdb::core;
 #define PARTITION_DB_NAME "partition_data"
 
 PartitionIndex::PartitionIndex(Conf const & conf)
-  : partitioningBufferSize_(conf.partitioningBufferSize()), 
+  : partitioningBufferSize_(conf.partitioningBufferSize()),
     edgeSchema_(conf.getEdgeSchema())
 {
-    leveldb::Options options;
-    options.create_if_missing = true;
-    options.max_open_files = 100;
-    leveldb::DB * db;
-    string dbPath = conf.getStorageDir()+ "/" + PARTITION_DB_NAME;
-    bool newDB = !boost::filesystem::exists(dbPath);
-    leveldb::Status status = leveldb::DB::Open(options, dbPath, &db);
-    if (!status.ok())
-        throw std::runtime_error(status.ToString());
-    db_.reset(db);
-    if (newDB) {
-      TimeSlicedPartitioning initialPartitioning{};
-      std::unordered_set<std::string> allAttributes;
-      auto const & attributes = edgeSchema_.getAttributes();
-      for (auto const & attribute : attributes) 
-        allAttributes.insert(attribute.getName());
-      initialPartitioning.getPartitioning().push_back(std::move(allAttributes));
-      addPartitioning(initialPartitioning);
-    }
+  removedPartitioning_ = nullptr;
+  leveldb::Options options;
+  options.create_if_missing = true;
+  options.max_open_files = 100;
+  leveldb::DB * db;
+  string dbPath = conf.getStorageDir()+ "/" + PARTITION_DB_NAME;
+  bool newDB = !boost::filesystem::exists(dbPath);
+  leveldb::Status status = leveldb::DB::Open(options, dbPath, &db);
+  if (!status.ok())
+      throw std::runtime_error(status.ToString());
+  db_.reset(db);
+  if (newDB) {
+    TimeSlicedPartitioning initialPartitioning{};
+    std::unordered_set<std::string> allAttributes;
+    auto const & attributes = edgeSchema_.getAttributes();
+    for (auto const & attribute : attributes)
+      allAttributes.insert(attribute.getName());
+    initialPartitioning.getPartitioning().push_back(std::move(allAttributes));
+    addPartitioning(initialPartitioning);
+  }
 }
 
 void PartitionIndex::addPartitioning(TimeSlicedPartitioning const & partitioning)
@@ -53,9 +54,10 @@ void PartitionIndex::addPartitioning(TimeSlicedPartitioning const & partitioning
   leveldb::Status status = db_->Put(leveldb::WriteOptions(), key, dataSlice);
   if (!status.ok())
     throw std::runtime_error(status.ToString());
-} 
+}
 
-void  PartitionIndex::removePartitioning(TimeSlicedPartitioning const & partitioning)
+void  PartitionIndex::initiatePartitioningRemoval(
+  TimeSlicedPartitioning const & partitioning)
 {
   NetworkByteBuffer keyBuf(sizeof(Timestamp));
   keyBuf << partitioning.getEndTime();
@@ -64,14 +66,31 @@ void  PartitionIndex::removePartitioning(TimeSlicedPartitioning const & partitio
   if (!status.ok())
     throw std::runtime_error(status.ToString());
   auto it = cache_.find(partitioning.getEndTime());
-  if (it!=cache_.end()) {  
+  if (it!=cache_.end()) {
     PartitioningAndIter & partingAndIter = it->second;
     lruList_.erase(partingAndIter.iter);
     cache_.erase(it);
   }
+  removedPartitioning_ = new TimeSlicedPartitioning();
+  *removedPartitioning_ = partitioning;
 }
 
-TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time) 
+void  PartitionIndex::completePartitioningRemoval()
+{
+  delete removedPartitioning_;
+}
+
+TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioningForDeserialization(Timestamp time)
+{
+  if (removedPartitioning_ &&
+      removedPartitioning_->getStartTime()<=time &&
+      removedPartitioning_->getEndTime()>time)
+    return *removedPartitioning_;
+  else
+    return getTimeSlicedPartitioning(time);
+}
+
+TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time)
 {
   auto cit = cache_.lower_bound(time);
   if (cit != cache_.end()) {
@@ -91,16 +110,16 @@ TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time)
   searchKeyBuf << time;
   leveldb::Slice searchKey(reinterpret_cast<char *>(searchKeyBuf.getPtr()), searchKeyBuf.getSerializedDataSize());
   unique_ptr<leveldb::Iterator> it(db_->NewIterator(leveldb::ReadOptions()));
-  it->Seek(searchKey); 
-  if (!it->Valid()) 
+  it->Seek(searchKey);
+  if (!it->Valid())
     throw time_sliced_partition_not_found_exception(time);
   leveldb::Slice foundKey = it->key();
   NetworkByteBuffer foundKeyBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(foundKey.data())), foundKey.size());
   Timestamp endTime;
-  foundKeyBuf >> endTime;   
+  foundKeyBuf >> endTime;
   if (endTime == time) {
     it->Next();
-    if (!it->Valid()) 
+    if (!it->Valid())
       throw time_sliced_partition_not_found_exception(time);
   }
   leveldb::Slice value = it->value();
@@ -112,19 +131,19 @@ TimeSlicedPartitioning PartitionIndex::getTimeSlicedPartitioning(Timestamp time)
   if (lruList_.size()>partitioningBufferSize_) {
       Timestamp t = lruList_.back();
       lruList_.pop_back();
-      cache_.erase(t); 
+      cache_.erase(t);
   }
   return partingAndIter.partitioning;
 }
 
-vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime) 
+vector<TimeSlicedPartitioning> PartitionIndex::getTimeSlicedPartitionings(Timestamp startTime, Timestamp endTime)
 {
   vector<TimeSlicedPartitioning> results;
   Timestamp time = startTime;
   do {
     TimeSlicedPartitioning partitioning = getTimeSlicedPartitioning(time);
     time = partitioning.getEndTime();
-    results.push_back(std::move(partitioning));  
+    results.push_back(std::move(partitioning));
   } while (time < endTime);
   return results;
 }
@@ -166,14 +185,14 @@ void PartitionIndex::replaceBlocks(Block const & masterBlock, vector<Block> & ne
       newBlocks[i+1].id() = subBlocks[i];
       bman_->updateBlock(newBlocks[i+1]);
   }
-  for (int i=0; i<numAdd; i++) 
+  for (int i=0; i<numAdd; i++)
       bman_->addBlock(newBlocks[i+subBlocks.size()+1]);
-  for (int i=0; i<numRemove; i++) 
+  for (int i=0; i<numRemove; i++)
       bman_->removeBlock(subBlocks[i+newBlocks.size()-1]);
   newBlocks[0].id() = masterBlock.id();
   for (size_t i=1, iu=newBlocks.size(); i<iu; ++i)
     newBlocks[0].addSubBlockId(newBlocks[i].id());
-  bman_->updateBlock(newBlocks[0]);  
+  bman_->updateBlock(newBlocks[0]);
 }
 
 static size_t getPartitioningAttributeCount(Partitioning const & parting)
@@ -186,7 +205,7 @@ static size_t getPartitioningAttributeCount(Partitioning const & parting)
 }
 
 // relacement partitionings must be contigious in time
-void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced, 
+void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const & toBeReplaced,
     std::vector<TimeSlicedPartitioning> const & replacement)
 {
   if (replacement.empty())
@@ -195,24 +214,25 @@ void PartitionIndex::replaceTimeSlicedPartitioning(TimeSlicedPartitioning const 
     throw time_sliced_partition_replacement_exception("start time of the time slice to be replaced does not match that of the replacement time slice sequence");
   if (toBeReplaced.getEndTime() != replacement.rbegin()->getEndTime())
     throw time_sliced_partition_replacement_exception("end time of the time slice to be replaced does not match that of the replacement time slice sequence");
-  for (size_t i=1, iu=replacement.size(); i<iu; ++i) 
+  for (size_t i=1, iu=replacement.size(); i<iu; ++i)
     if (replacement[i].getStartTime()!=replacement[i-1].getEndTime())
       throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
-  for(auto const & parting : replacement) 
-    if (getPartitioningAttributeCount(parting.getPartitioning()) != edgeSchema_.getAttributes().size()) 
+  for(auto const & parting : replacement)
+    if (getPartitioningAttributeCount(parting.getPartitioning()) != edgeSchema_.getAttributes().size())
       throw time_sliced_partition_replacement_exception("replacement partitioning has missing attributes");
   // all is ok, proceed to replace
   // update partition index
-  removePartitioning(toBeReplaced);
+  initiatePartitioningRemoval(toBeReplaced);
   for (auto const & partitioning : replacement)
     addPartitioning(partitioning);
-  // update blocks
   for (auto const & partitioning : replacement)
     updateBlocks(partitioning.getStartTime(), partitioning.getEndTime());
+  completePartitioningRemoval();
 }
 
+/* TODO: buggy, fix this
 // to be replaced partitionings must be contigious in time
-void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced, 
+void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartitioning> const & toBeReplaced,
     TimeSlicedPartitioning const & replacement)
 {
   if (toBeReplaced.empty())
@@ -221,10 +241,10 @@ void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartit
     throw time_sliced_partition_replacement_exception("start time of the time slice sequence to be replaced does not match that of the replacement time slice");
   if (toBeReplaced.rbegin()->getEndTime() != replacement.getEndTime())
     throw time_sliced_partition_replacement_exception("end time of the time slice sequence to be replaced does not match that of the replacement time slice");
-  for (size_t i=1, iu=toBeReplaced.size(); i<iu; ++i) 
+  for (size_t i=1, iu=toBeReplaced.size(); i<iu; ++i)
     if (toBeReplaced[i].getStartTime()!=toBeReplaced[i-1].getEndTime())
       throw time_sliced_partition_replacement_exception("replacement time slice sequence is not contigious in time");
-  if (getPartitioningAttributeCount(replacement.getPartitioning()) != edgeSchema_.getAttributes().size()) 
+  if (getPartitioningAttributeCount(replacement.getPartitioning()) != edgeSchema_.getAttributes().size())
     throw time_sliced_partition_replacement_exception("replacement partitioning has missing attributes");
   // all is ok, proceed to replace
   // update partition index
@@ -232,9 +252,10 @@ void PartitionIndex::replaceTimeSlicedPartitionings(std::vector<TimeSlicedPartit
     removePartitioning(partitioning);
   addPartitioning(replacement);
   // update blocks
-  for (auto const & partitioning : toBeReplaced) 
+  for (auto const & partitioning : toBeReplaced)
     updateBlocks(partitioning.getStartTime(), partitioning.getEndTime());
 }
+*/
 
 namespace intergdb { namespace core {
 
