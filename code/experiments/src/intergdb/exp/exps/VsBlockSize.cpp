@@ -83,8 +83,7 @@ void VsBlockSize::createGraph()
     Timestamp ts = 7.0;
     graph->addEdge(2, 4, ts, "a-data", "b-data");
     graph->flush();
-    graph.reset(NULL); // why does this work?
-    sleep(1); // wait for file locks to be released
+    graph.reset(nullptr);
 }
 
 TimeSlicedPartitioning VsBlockSize::convertPartitioning(intergdb::common::Partitioning p) {

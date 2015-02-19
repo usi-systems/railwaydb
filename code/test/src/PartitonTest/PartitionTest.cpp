@@ -1,6 +1,6 @@
 #include <intergdb/core/InteractionGraph.h>
 
-#include "gtest/gtest.h"  
+#include "gtest/gtest.h"
 #include <boost/filesystem.hpp>
 
 #include <iostream>
@@ -9,27 +9,27 @@
 using namespace std;
 using namespace intergdb::core;
 
-class PartitionTest : public ::testing::Test 
+class PartitionTest : public ::testing::Test
 {
 public:
     PartitionTest() {}
 protected:
-    virtual void SetUp() 
+    virtual void SetUp()
     {
         auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
-        conf.reset(new Conf("testDB", storageDir.string(), 
+        conf.reset(new Conf("testDB", storageDir.string(),
             {{"v", DataType::STRING}}, // vertex schema
             {{"a", DataType::STRING}, {"b", DataType::STRING}})); // edge schema
         if (boost::filesystem::exists(conf->getStorageDir()))
             boost::filesystem::remove_all(conf->getStorageDir());
-        boost::filesystem::create_directories(conf->getStorageDir());   
+        boost::filesystem::create_directories(conf->getStorageDir());
         graph.reset(new InteractionGraph(*conf));
         auto & partIndex = graph->getPartitionIndex();
         auto timeSlicedParting = partIndex.getTimeSlicedPartitioning(0);
         timeSlicedParting.getPartitioning() = { {"a"}, {"b"} };
     }
     virtual void TearDown()
-    { 
+    {
         boost::filesystem::remove_all(graph->getConf().getStorageDir());
     }
 protected:
@@ -37,7 +37,7 @@ protected:
     std::unique_ptr<InteractionGraph> graph;
 };
 
-TEST_F(PartitionTest, WriteReadTest) 
+TEST_F(PartitionTest, WriteReadTest)
 {
     graph->createVertex(2, "v2");
     graph->createVertex(4, "v4");
@@ -45,12 +45,10 @@ TEST_F(PartitionTest, WriteReadTest)
     graph->addEdge(2, 4, ts, "a-data", "b-data");
     graph->flush();
 
-    graph.reset(NULL);
-    sleep(1);
+    graph.reset(nullptr);
     graph.reset(new InteractionGraph(*conf));
-    
-    
-    {   
+
+    {
         IntervalQuery iq(5.0, 10.0);
         InteractionGraph::VertexIterator iqIt = graph->processIntervalQuery(iq);
         EXPECT_EQ(iqIt.isValid(), true);
@@ -85,7 +83,7 @@ TEST_F(PartitionTest, WriteReadTest)
         EXPECT_EQ(fiqIt.getToVertex(), 4);
         EXPECT_EQ(fiqIt.getTime(), 7);
         fiqIt.next();
-        EXPECT_EQ(fiqIt.isValid(), false); 
+        EXPECT_EQ(fiqIt.isValid(), false);
     }
 
     {
@@ -98,8 +96,8 @@ TEST_F(PartitionTest, WriteReadTest)
         EXPECT_EQ(fiqIt.getToVertex(), 4);
         EXPECT_EQ(fiqIt.getTime(), 7);
         fiqIt.next();
-        EXPECT_EQ(fiqIt.isValid(), false);     
-    } 
+        EXPECT_EQ(fiqIt.isValid(), false);
+    }
 }
 
 

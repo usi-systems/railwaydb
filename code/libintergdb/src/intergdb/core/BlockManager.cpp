@@ -12,7 +12,7 @@ using namespace intergdb::core;
 #define BLOCK_DB_NAME "block_data"
 
 BlockManager::BlockManager(Conf const & conf, PartitionIndex & partitionIndex, MetaDataManager & meta)
-    : nIOReads_(0), nIOWrites_(0), reqCount_(0), hitCount_(0), blockBufferSize_(conf.blockBufferSize()), 
+    : nIOReads_(0), nIOWrites_(0), reqCount_(0), hitCount_(0), blockBufferSize_(conf.blockBufferSize()),
       edgeSchema_(conf.getEdgeSchema()), partitionIndex_(partitionIndex), meta_(meta),
       nextBlockId_(meta_.getNextBlockId())
 {
@@ -104,7 +104,7 @@ void BlockManager::removeBlock(BlockId blockId)
     if (cache_.count(blockId) > 0) {
         lruList_.erase(cache_[blockId].iter);
         cache_.erase(blockId);
-    }  
+    }
 }
 
 

@@ -55,7 +55,7 @@ namespace intergdb { namespace core
         // TODO: The same vertex cannot be involved in more than one edge with the same timestamp
         // This limitation can be removed with some additional work
         template <typename... EdgeDataAttributes>
-        void addEdge(VertexId v, VertexId u, 
+        void addEdge(VertexId v, VertexId u,
                      Timestamp time /*=Helper::getCurrentTimestamp() */,
                      EdgeDataAttributes&&... edgeData);
         void flush();
@@ -82,7 +82,7 @@ namespace intergdb { namespace core
     template<typename T1, typename... TN>
     struct AttributeCollector
     {
-      static void add(AttributeData * data, int index, T1&& t1, TN&&... tn) 
+      static void add(AttributeData * data, int index, T1&& t1, TN&&... tn)
       {
         data->setAttribute(index, t1);
         AttributeCollector<TN...>::add(data, index+1, std::forward<TN>(tn)...);
@@ -92,7 +92,7 @@ namespace intergdb { namespace core
     template<typename T>
     struct AttributeCollector<T>
     {
-      static void add(AttributeData * data, int index, T&& t) 
+      static void add(AttributeData * data, int index, T&& t)
       {
         data->setAttribute(index, t);
       }
@@ -115,8 +115,8 @@ namespace intergdb { namespace core
         getVertexData(u);
         std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());
         // TODO (rjs): Need to check that the edge added has the correct data for the schema
-        if (sizeof...(EdgeDataAttributes) != getEdgeSchema().getAttributes().size())      
-        {  
+        if (sizeof...(EdgeDataAttributes) != getEdgeSchema().getAttributes().size())
+        {
             throw std::runtime_error("Edge does not have the correct data for the schema.");
         }
         AttributeCollector<EdgeDataAttributes...>::add(data.get(), 0, std::forward<EdgeDataAttributes>(edgeData)...);

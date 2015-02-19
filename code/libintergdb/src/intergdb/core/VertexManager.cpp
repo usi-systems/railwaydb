@@ -17,8 +17,8 @@ VertexManager::VertexManager(Conf const & conf)
     leveldb::Options options;
     options.create_if_missing = true;
     leveldb::DB * db;
-    leveldb::Status status = leveldb::DB::Open(options,
-            conf.getStorageDir()+"/"+VERTEX_DB_NAME, &db);
+    auto const dbDir = conf.getStorageDir() + "/" + VERTEX_DB_NAME;
+    leveldb::Status status = leveldb::DB::Open(options, dbDir, &db);
     if (!status.ok())
         throw std::runtime_error(status.ToString());
     db_.reset(db);
@@ -49,7 +49,7 @@ std::shared_ptr<AttributeData> VertexManager::getVertexData(VertexId id)
             throw std::runtime_error(status.ToString());
         NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
         VertexDataAndIdIter & dataAndIter = cache_[id];
-        dataAndIter.data.reset(vertexSchema_.newAttributeData());            
+        dataAndIter.data.reset(vertexSchema_.newAttributeData());
         dataBuf >> *dataAndIter.data;
         lruList_.push_front(id);
         dataAndIter.iter = lruList_.begin();
@@ -60,7 +60,7 @@ std::shared_ptr<AttributeData> VertexManager::getVertexData(VertexId id)
         }
         return dataAndIter.data;
     }
-} 
+}
 
 void VertexManager::addVertex(VertexId id, AttributeData const & data)
 {

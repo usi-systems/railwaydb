@@ -29,7 +29,7 @@ namespace intergdb { namespace core
         Block const & getBlock(BlockId id);
         Schema const & getEdgeSchema() const { return edgeSchema_; }
         SchemaStats const & getEdgeSchemaStats() const { return meta_.getSchemaStats(); }
-        PartitionIndex & getPartitionIndex() { return partitionIndex_; } 
+        PartitionIndex & getPartitionIndex() { return partitionIndex_; }
         void addBlock(Block & data, bool setId=true);
         void updateBlock(Block const & block);
         void removeBlock(BlockId blockId);
