@@ -99,7 +99,7 @@ void VsBlockSize::process()
 
     QueryWorkload workload;
     double storageOverheadThreshold = 1.0;
-    SchemaStats stats;
+    SchemaStats stats;w
     Cost cost(stats);
 
 /*
