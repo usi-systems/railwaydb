@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace intergdb { namespace expcommon
+namespace intergdb { namespace simulation
 {
     class ExperimentalRun {
     public:

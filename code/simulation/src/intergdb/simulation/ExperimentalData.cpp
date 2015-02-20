@@ -1,11 +1,11 @@
-#include <intergdb/expcommon/ExperimentalData.h>
+#include <intergdb/simulation/ExperimentalData.h>
 
 #include <boost/filesystem.hpp>
 #include <stdexcept>
 
 using namespace std;
 using namespace intergdb;
-using namespace intergdb::expcommon;
+using namespace intergdb::simulation;
 
 ExperimentalData::ExperimentalData(string const & expName, 
   string const & dirName /*="."*/)

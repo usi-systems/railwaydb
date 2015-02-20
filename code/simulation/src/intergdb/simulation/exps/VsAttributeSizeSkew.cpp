@@ -1,5 +1,5 @@
 #include <intergdb/simulation/Experiments.h>
-#include <intergdb/expcommon/ExperimentalData.h>
+#include <intergdb/simulation/ExperimentalData.h>
 #include <intergdb/simulation/SimulationConf.h>
 #include <intergdb/simulation/Constants.h>
 #include <intergdb/util/RunningStat.h>
@@ -16,7 +16,6 @@
 using namespace std;
 using namespace intergdb;
 using namespace intergdb::common;
-using namespace intergdb::expcommon;
 using namespace intergdb::simulation;
 using namespace intergdb::optimizer;
 

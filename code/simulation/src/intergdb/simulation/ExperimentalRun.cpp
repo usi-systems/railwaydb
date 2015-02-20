@@ -1,4 +1,4 @@
-#include <intergdb/expcommon/ExperimentalRun.h>
+#include <intergdb/simulation/ExperimentalRun.h>
 
 #include <intergdb/util/AutoTimer.h>
 
@@ -10,7 +10,7 @@
 
 using namespace std;
 using namespace intergdb::util;
-using namespace intergdb::expcommon;
+using namespace intergdb::simulation;
 
 string ExperimentalRun::getFullyQualifiedClassName() 
 {

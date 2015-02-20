@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <boost/variant.hpp>
 
-namespace intergdb { namespace expcommon {
+namespace intergdb { namespace simulation {
 
 class ExperimentalData 
 {
