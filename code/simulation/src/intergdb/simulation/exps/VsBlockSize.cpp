@@ -1,4 +1,4 @@
-#include <intergdb/exp/Experiments.h>
+#include <intergdb/simulation/Experiments.h>
 #include <intergdb/expcommon/ExperimentalData.h>
 #include <intergdb/util/RunningStat.h>
 #include <intergdb/util/AutoTimer.h>
@@ -18,8 +18,8 @@ using namespace intergdb;
 using namespace intergdb::core;
 using namespace intergdb::common;
 using namespace intergdb::expcommon;
-using namespace intergdb::exp;
 using namespace intergdb::optimizer;
+using namespace intergdb::simulation;
 
 
 void VsBlockSize::setUp()
@@ -99,7 +99,7 @@ void VsBlockSize::process()
 
     QueryWorkload workload;
     double storageOverheadThreshold = 1.0;
-    SchemaStats stats;w
+    SchemaStats stats;
     Cost cost(stats);
 
 /*

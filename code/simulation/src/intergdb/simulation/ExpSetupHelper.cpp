@@ -1,4 +1,4 @@
-#include <intergdb/exp/ExpSetupHelper.h>
+#include <intergdb/simulation/ExpSetupHelper.h>
 
 #include <intergdb/core/InteractionGraph.h>
 
@@ -12,9 +12,9 @@
 
 using namespace std;
 using namespace intergdb::core;
-using namespace intergdb::exp;
+using namespace intergdb::simulation;
 
-namespace intergdb { namespace exp {
+namespace intergdb { namespace simulation {
 ostream& operator<<(ostream& ostr, Tweet const& tweet)
 {
     ostr << "<";

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace intergdb { namespace exp {
+namespace intergdb { namespace simulation {
 
 struct Tweet
 {
