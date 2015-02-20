@@ -1,5 +1,8 @@
 #include <intergdb/simulation/Experiments.h>
 #include <intergdb/simulation/ExperimentalData.h>
+#include <intergdb/simulation/ExpSetupHelper.h>
+#include <intergdb/simulation/SimulationConf.h>
+
 #include <intergdb/util/RunningStat.h>
 #include <intergdb/util/AutoTimer.h>
 #include <intergdb/common/Cost.h>
@@ -20,10 +23,28 @@ using namespace intergdb::common;
 using namespace intergdb::optimizer;
 using namespace intergdb::simulation;
 
+void VsBlockSize::printTweets()
+{
+    ExpSetupHelper::scanTweets("data/tweets", [&] (uint64_t time,
+        int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
+    {
+        for (auto const& to : tos)
+            cerr << time << ", " << from << " -> " << to
+                 << ", tweet: " << tweet << endl;
+    });
+}
+
+void VsBlockSize::createTweetDB()
+{
+    Conf conf = ExpSetupHelper::createGraphConf("data", "tweetDB");
+    InteractionGraph tweetDB(conf);
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", tweetDB);
+}
 
 void VsBlockSize::setUp()
 {
     cout << " VsBlockSize::setUp()" << endl;
+/*
     auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
     conf.reset(new Conf("testDB", storageDir.string(),
                         {{"v", DataType::STRING}}, // vertex schema
@@ -31,7 +52,13 @@ void VsBlockSize::setUp()
     if (boost::filesystem::exists(conf->getStorageDir()))
         boost::filesystem::remove_all(conf->getStorageDir());
     boost::filesystem::create_directories(conf->getStorageDir());
+*/
+    Conf tweetConf = ExpSetupHelper::createGraphConf("data", "tweetDB");
+
+    conf.reset(&tweetConf);
     graph.reset(new InteractionGraph(*conf));
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph);
+
 }
 
 void VsBlockSize::tearDown()
@@ -69,7 +96,7 @@ void VsBlockSize::makeRunningTimeExp(ExperimentalData * exp) {
 
 void VsBlockSize::runWorkload(InteractionGraph * graph)
 {
-    FocusedIntervalQuery fiq(2, 5.0, 10.0, {"a", "b"});
+    FocusedIntervalQuery fiq(2, 5.0, 10.0, {"time", "tweetId"});
     InteractionGraph::EdgeIterator fiqIt = graph->processFocusedIntervalQuery(fiq);
     fiqIt.next();
 }
@@ -88,28 +115,15 @@ void VsBlockSize::createGraph()
 void VsBlockSize::process()
 {
 
+    SimulationConf simConf;
+    graph.reset(new InteractionGraph(*conf));
+    auto workloadAndStats = simConf.getQueryWorkloadAndStats(*conf);
+    QueryWorkload workload = workloadAndStats.first;
+    SchemaStats stats = workloadAndStats.second;   
+    double storageOverheadThreshold = 1.0;
+    Cost cost(stats);
     util::AutoTimer timer;
 
-    createGraph();
-
-    // Conf * conf = graph->getConf()
-
-    graph.reset(new InteractionGraph(*conf));
-
-    QueryWorkload workload;
-    double storageOverheadThreshold = 1.0;
-    SchemaStats stats;
-    Cost cost(stats);
-
-/*
-  QueryWorkload workload;
-  SchemaStats stats;
-  for (size_t i=0, iu=getAttributeCount(); i<iu; ++i)  { 
-    double attributeSize = attributeSizes_[attributeSizeGen_.getRandomValue()];
-    workload.addAttribute(Attribute(i, std::to_string(i), common::Attribute::UNDEFINED));
-    stats.incrCountAndBytes(i, attributeSize);
-  }
-*/
     int numRuns = 1;
 
     ExperimentalData queryIOExp("QueryIOVsBlockSize");

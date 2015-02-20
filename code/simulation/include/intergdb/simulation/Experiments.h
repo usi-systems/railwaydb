@@ -22,6 +22,8 @@ namespace intergdb { namespace simulation
         protected:
             void setUp();    //override;
             void tearDown(); //override;
+            void printTweets();
+            void createTweetDB();
             std::unique_ptr<core::Conf> conf;
             std::unique_ptr<core::InteractionGraph> graph;
         };

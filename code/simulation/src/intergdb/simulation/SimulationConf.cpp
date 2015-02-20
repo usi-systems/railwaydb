@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace intergdb;
+using namespace intergdb::core;
 using namespace intergdb::common;
 using namespace intergdb::simulation;
 using namespace intergdb::util;
@@ -22,6 +23,14 @@ SimulationConf::SimulationConf()
   queryLengthGen_.setSeed(seed++);
   queryTypeFrequencyGen_.setSeed(seed++);
 }
+
+std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWorkloadAndStats(const Conf & conf) 
+{
+    QueryWorkload workload;
+    SchemaStats stats;
+    return std::make_pair(workload, stats);
+}
+
 
 std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWorkloadAndStats()
 {
