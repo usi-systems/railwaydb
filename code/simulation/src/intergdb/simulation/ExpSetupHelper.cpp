@@ -195,11 +195,13 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
             int i = 0;
             for (int64_t to : tos) {
                 string dir = (from>to) ? "l" : "s";
-                graph.addEdge(from, to, time+(i++),
-                    dir, tweet.time, tweet.tweetId, tweet.userId,
-                    tweet.retweetId, tweet.inReplyToStatusId,
-                    tweet.isTruncated, tweet.mentionedUsers,
-                    tweet.hashTags, tweet.text);
+                if (from != to) {
+                    graph.addEdge(from, to, time+(i++),
+                                  dir, tweet.time, tweet.tweetId, tweet.userId,
+                                  tweet.retweetId, tweet.inReplyToStatusId,
+                                  tweet.isTruncated, tweet.mentionedUsers,
+                                  tweet.hashTags, tweet.text);
+                }
             }
         });
     }

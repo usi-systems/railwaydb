@@ -44,26 +44,21 @@ void VsBlockSize::createTweetDB()
 void VsBlockSize::setUp()
 {
     cout << " VsBlockSize::setUp()" << endl;
-/*
-    auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
-    conf.reset(new Conf("testDB", storageDir.string(),
-                        {{"v", DataType::STRING}}, // vertex schema
-                        {{"a", DataType::STRING}, {"b", DataType::STRING}})); // edge schema
-    if (boost::filesystem::exists(conf->getStorageDir()))
-        boost::filesystem::remove_all(conf->getStorageDir());
-    boost::filesystem::create_directories(conf->getStorageDir());
-*/
+
     Conf tweetConf = ExpSetupHelper::createGraphConf("data", "tweetDB");
 
     conf.reset(&tweetConf);
     graph.reset(new InteractionGraph(*conf));
+
+    //printTweets();
+
     ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph);
 
 }
 
 void VsBlockSize::tearDown()
 {
-    boost::filesystem::remove_all(graph->getConf().getStorageDir());
+    // boost::filesystem::remove_all(graph->getConf().getStorageDir());
 }
 
 
@@ -116,15 +111,21 @@ void VsBlockSize::process()
 {
 
     SimulationConf simConf;
+
     graph.reset(new InteractionGraph(*conf));
+
     auto workloadAndStats = simConf.getQueryWorkloadAndStats(*conf);
     QueryWorkload workload = workloadAndStats.first;
     SchemaStats stats = workloadAndStats.second;   
+
+
     double storageOverheadThreshold = 1.0;
     Cost cost(stats);
     util::AutoTimer timer;
 
     int numRuns = 1;
+
+    // int meanQueryIntervalSize;
 
     ExperimentalData queryIOExp("QueryIOVsBlockSize");
     ExperimentalData runningTimeExp("RunningTimeVsBlockSize");
@@ -145,7 +146,7 @@ void VsBlockSize::process()
         SolverFactory::instance().makeOptimalOverlapping()
     };
 
-    auto blockSizes = {2, 4, 6, 8, 10, 12, 14, 16 };
+    auto blockSizes = {1, 2, 4, 6, 8, 16, 32, 64 };
     vector<util::RunningStat> io;
     vector<util::RunningStat> storage;
     vector<util::RunningStat> times;
