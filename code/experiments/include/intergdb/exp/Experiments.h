@@ -17,8 +17,6 @@ namespace intergdb { namespace exp
       void makeRunningTimeExp(expcommon::ExperimentalData * exp);
       void runWorkload(core::InteractionGraph * graph);
       void createGraph();
-      core::TimeSlicedPartitioning convertPartitioning(intergdb::common::Partitioning p);
-
   protected:
       void setUp();    //override;
       void tearDown(); //override;

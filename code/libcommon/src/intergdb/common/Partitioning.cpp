@@ -30,6 +30,21 @@ string Partition::toString() const
   return str;
 }
 
+std::vector<std::unordered_set<std::string>> Partitioning::toStringSet() const
+{
+    std::vector<std::unordered_set<std::string>> part;
+
+    for (Partition p : partitions_) {
+        std::unordered_set<std::string> attrSet;
+        for (Attribute const * a : p.getAttributes()) {
+            attrSet.emplace(a->getName());
+        }
+        part.push_back(attrSet);              
+    }
+    return part;
+    
+}
+
 void Partitioning::mergePartitions(int i, int j)
 {
   if (j<i) 

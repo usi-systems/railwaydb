@@ -20,6 +20,7 @@ public:
   void mergePartitions(int i, int j);
   void splitPartition(int i, int j, Partition const & lhs, Partition const & rhs);
   std::string toString() const;
+  std::vector<std::unordered_set<std::string>> toStringSet() const;    
 private:
   std::vector<Partition> partitions_;
 };

@@ -44,7 +44,7 @@ void VsBlockSize::tearDown()
 void VsBlockSize::makeQueryIOExp(ExperimentalData * exp) {
   exp->setDescription("Query IO Vs. BlockSize");
   exp->addField("solver");
-  exp->addField("attributes");
+  exp->addField("blockSize");
   exp->addField("io");
   exp->addField("deviation");
   exp->setKeepValues(false);
@@ -53,7 +53,7 @@ void VsBlockSize::makeQueryIOExp(ExperimentalData * exp) {
 void VsBlockSize::makeStorageExp(ExperimentalData * exp) {
   exp->setDescription("Storage Overhead Vs. BlockSize");
   exp->addField("solver");
-  exp->addField("attributes");
+  exp->addField("blockSize");
   exp->addField("storage");
   exp->addField("deviation");
   exp->setKeepValues(false);
@@ -86,12 +86,6 @@ void VsBlockSize::createGraph()
     graph.reset(nullptr);
 }
 
-TimeSlicedPartitioning VsBlockSize::convertPartitioning(intergdb::common::Partitioning p) {
-    TimeSlicedPartitioning newParting{}; // -inf to inf
-    newParting.getPartitioning() = { {"a"}, {"b"} };
-    return newParting;
-}
-
 void VsBlockSize::process()
 {
 
@@ -106,7 +100,17 @@ void VsBlockSize::process()
     QueryWorkload workload;
     double storageOverheadThreshold = 1.0;
     SchemaStats stats;
+    Cost cost(stats);
 
+/*
+  QueryWorkload workload;
+  SchemaStats stats;
+  for (size_t i=0, iu=getAttributeCount(); i<iu; ++i)  { 
+    double attributeSize = attributeSizes_[attributeSizeGen_.getRandomValue()];
+    workload.addAttribute(Attribute(i, std::to_string(i), common::Attribute::UNDEFINED));
+    stats.incrCountAndBytes(i, attributeSize);
+  }
+*/
     int numRuns = 1;
 
     ExperimentalData queryIOExp("QueryIOVsBlockSize");
@@ -152,15 +156,23 @@ void VsBlockSize::process()
             for (auto solver : solvers) {
                 auto & partIndex = graph->getPartitionIndex();
                 auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
-                TimeSlicedPartitioning newParting =
-                    convertPartitioning(solver->solve(workload, storageOverheadThreshold, stats));
+
+                intergdb::common::Partitioning solverSolution = 
+                    solver->solve(workload, storageOverheadThreshold, stats);
+
+                std::cout << solverSolution.toString() << std::endl;
+
+                TimeSlicedPartitioning newParting{}; // -inf to inf
+
+                newParting.getPartitioning() = solverSolution.toStringSet();
+
                 partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
                 timer.start();
                 // run workload
                 runWorkload(graph.get());
-                // io.at(j).push(cost.getIOCost(partitioning, workload));
-                // storage.at(j).push(cost.getStorageOverhead(partitioning, workload));
-                // times.at(j).push(timer.getRealTimeInSeconds());
+                io.at(j).push(cost.getIOCost(solverSolution, workload));
+                storage.at(j).push(cost.getStorageOverhead(solverSolution, workload));
+                times.at(j).push(timer.getRealTimeInSeconds());
                 j++;
                 timer.stop();
                 std::cout << "Workload took: " << timer.getRealTimeInSeconds() << std::endl;
