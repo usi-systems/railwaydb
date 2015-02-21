@@ -2,8 +2,6 @@
 #include <cstdlib>
 
 using namespace std;
-//using namespace intergdb;
-//using namespace intergdb::core;
 using namespace intergdb::simulation;
 
 
@@ -22,8 +20,6 @@ int simulation()
 
 int experiment()
 {
-    // printTweets();
-    //createTweetDB();
     (VsBlockSize()).run();
     return EXIT_SUCCESS;
 }

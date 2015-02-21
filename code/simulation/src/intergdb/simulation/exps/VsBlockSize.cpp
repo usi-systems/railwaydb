@@ -45,12 +45,20 @@ void VsBlockSize::setUp()
 {
     cout << " VsBlockSize::setUp()" << endl;
 
+    // Create tweetDB if its not there
+    if( !(boost::filesystem::exists("data/tweetDB"))) {
+        boost::filesystem::create_directory("data/tweetDB");
+    }
+
+    // Clean up anything that is in the directory
+    boost::filesystem::path path_to_remove("data/tweetDB");
+    for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it) {
+        remove_all(it->path());
+    }
+
     Conf tweetConf = ExpSetupHelper::createGraphConf("data", "tweetDB");
-
-    conf.reset(&tweetConf);
+    conf = &tweetConf;
     graph.reset(new InteractionGraph(*conf));
-
-    //printTweets();
 
     ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph);
 
@@ -94,17 +102,6 @@ void VsBlockSize::runWorkload(InteractionGraph * graph)
     FocusedIntervalQuery fiq(2, 5.0, 10.0, {"time", "tweetId"});
     InteractionGraph::EdgeIterator fiqIt = graph->processFocusedIntervalQuery(fiq);
     fiqIt.next();
-}
-
-void VsBlockSize::createGraph()
-{
-    // Create a graph...
-    graph->createVertex(2, "v2");
-    graph->createVertex(4, "v4");
-    Timestamp ts = 7.0;
-    graph->addEdge(2, 4, ts, "a-data", "b-data");
-    graph->flush();
-    graph.reset(nullptr);
 }
 
 void VsBlockSize::process()
