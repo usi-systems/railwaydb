@@ -16,21 +16,14 @@ constexpr double const SimulationConf::attributeSizes_[numAttributeSizes_];
 SimulationConf::SimulationConf() 
  : attributeSizeGen_(getAttributeSizeZipfParam(), numAttributeSizes_),
    queryLengthGen_(getQueryLengthMean(), getQueryLengthStdDev(), 1.0, getAttributeCount()),
-   queryTypeFrequencyGen_(getQueryTypeFrequencyZipfParam(), getQueryTypeCount())
+   queryTypeFrequencyGen_(getQueryTypeFrequencyZipfParam(), getQueryTypeCount()),
+   queryTimeGen_(getQueryTimeZipfParam(), getQueryTypeCount()) // TODO(rjs) : should we have a numQueries?
 {
   unsigned seed = time(NULL);
   attributeSizeGen_.setSeed(seed++);
   queryLengthGen_.setSeed(seed++);
   queryTypeFrequencyGen_.setSeed(seed++);
 }
-
-std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWorkloadAndStats(const Conf & conf) 
-{
-    QueryWorkload workload;
-    SchemaStats stats;
-    return std::make_pair(workload, stats);
-}
-
 
 std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWorkloadAndStats()
 {
@@ -64,4 +57,31 @@ std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWo
   for (QuerySummary & query : workload.getQuerySummaries()) 
       workload.setFrequency(query, workload.getFrequency(query)/totalFrequency);
   return std::make_pair(workload, stats);
+}
+
+std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGraph * graph)
+{
+    mt19937 rndGen(time(NULL));
+    auto const & attributes = graph->getConf().getEdgeSchema().getAttributes();
+    vector<size_t> attributeIndices(attributes.size());
+    iota(attributeIndices.begin(), attributeIndices.end(), 0);
+    double totalFrequency = 0.0;
+    vector<std::vector<std::string> > queryAttributeNames;
+    for (size_t i=0, iu=getQueryTypeCount(); i<iu; ++i) {        
+        std::vector<std::string> attributeNames;
+        size_t queryLength = std::min(static_cast<size_t>(queryLengthGen_.getRandomValue()), attributes.size());
+        for (size_t j=0; j<queryLength; ++j) {
+            uniform_int_distribution<> udis(0, attributes.size()-j-1);
+            size_t k = udis(rndGen);
+            std::cout << attributes[attributeIndices[k]].getName() << std::endl;
+            attributeNames.push_back( attributes[attributeIndices[k]].getName());          
+            swap(attributeIndices[k], attributeIndices[attributes.size()-j-1]);
+        }
+        queryAttributeNames.push_back(attributeNames);
+        std::cout << "---" << std::endl;
+    }
+    // TODO(rjs): generate the times
+    
+    std::vector<core::FocusedIntervalQuery> queries;
+    return queries;
 }

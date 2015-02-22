@@ -25,20 +25,16 @@ using namespace intergdb::simulation;
 
 void VsBlockSize::printTweets()
 {
+    uint64_t tsStart;
+    uint64_t tsEnd;
+
     ExpSetupHelper::scanTweets("data/tweets", [&] (uint64_t time,
-        int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
+                                                   int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
     {
         for (auto const& to : tos)
             cerr << time << ", " << from << " -> " << to
                  << ", tweet: " << tweet << endl;
-    });
-}
-
-void VsBlockSize::createTweetDB()
-{
-    Conf conf = ExpSetupHelper::createGraphConf("data", "tweetDB");
-    InteractionGraph tweetDB(conf);
-    ExpSetupHelper::populateGraphFromTweets("data/tweets", tweetDB);
+    }, tsStart, tsEnd);
 }
 
 void VsBlockSize::setUp()
@@ -57,11 +53,12 @@ void VsBlockSize::setUp()
     }
 
     Conf tweetConf = ExpSetupHelper::createGraphConf("data", "tweetDB");
-    conf = &tweetConf;
-    graph.reset(new InteractionGraph(*conf));
+    //conf.reset(tweetConf);
+    graph.reset(new InteractionGraph(tweetConf));
+    uint64_t tsStart;
+    uint64_t tsEnd;
 
-    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph);
-
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph, tsStart, tsEnd);
 }
 
 void VsBlockSize::tearDown()
@@ -107,20 +104,25 @@ void VsBlockSize::runWorkload(InteractionGraph * graph)
 void VsBlockSize::process()
 {
 
-    SimulationConf simConf;
+    SimulationConf simConf;    
+    // graph.reset(new InteractionGraph(*conf));
 
-    graph.reset(new InteractionGraph(*conf));
+    simConf.setAttributeCount( graph->getConf().getEdgeSchema().getAttributes().size() );
+    std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graph.get());
 
-    auto workloadAndStats = simConf.getQueryWorkloadAndStats(*conf);
-    QueryWorkload workload = workloadAndStats.first;
-    SchemaStats stats = workloadAndStats.second;   
+    return;
 
+    QueryWorkload workload;
+    SchemaStats stats; 
 
     double storageOverheadThreshold = 1.0;
     Cost cost(stats);
     util::AutoTimer timer;
 
     int numRuns = 1;
+
+
+    
 
     // int meanQueryIntervalSize;
 

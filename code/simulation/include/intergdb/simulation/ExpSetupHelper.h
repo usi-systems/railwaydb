@@ -31,9 +31,11 @@ public:
     static void scanTweets(std::string const & dirPath, std::function<
         void (uint64_t time,
               int64_t from, std::vector<int64_t> const& tos,
-              Tweet const& tweet)> visitor);
+              Tweet const& tweet)> visitor, uint64_t& tsStart, uint64_t& tsEnd);
     static void populateGraphFromTweets(std::string const & dirPath,
-        core::InteractionGraph & graph);
+        core::InteractionGraph & graph, uint64_t& tsStart, uint64_t& tsEnd);
+    std::vector<core::FocusedIntervalQuery> createQueries(core::Conf, uint64_t& tsStart, uint64_t& tsEnd);
+
 };
 
 } }
