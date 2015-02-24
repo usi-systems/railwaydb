@@ -25,46 +25,45 @@ using namespace intergdb::simulation;
 
 void VsBlockSize::printTweets()
 {
+    uint64_t tsStart;
+    uint64_t tsEnd;
+
     ExpSetupHelper::scanTweets("data/tweets", [&] (uint64_t time,
-        int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
+                                                   int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
     {
         for (auto const& to : tos)
             cerr << time << ", " << from << " -> " << to
                  << ", tweet: " << tweet << endl;
-    });
-}
-
-void VsBlockSize::createTweetDB()
-{
-    Conf conf = ExpSetupHelper::createGraphConf("data", "tweetDB");
-    InteractionGraph tweetDB(conf);
-    ExpSetupHelper::populateGraphFromTweets("data/tweets", tweetDB);
+    }, tsStart, tsEnd);
 }
 
 void VsBlockSize::setUp()
 {
     cout << " VsBlockSize::setUp()" << endl;
-/*
-    auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
-    conf.reset(new Conf("testDB", storageDir.string(),
-                        {{"v", DataType::STRING}}, // vertex schema
-                        {{"a", DataType::STRING}, {"b", DataType::STRING}})); // edge schema
-    if (boost::filesystem::exists(conf->getStorageDir()))
-        boost::filesystem::remove_all(conf->getStorageDir());
-    boost::filesystem::create_directories(conf->getStorageDir());
-*/
+
+    // Create tweetDB if its not there
+    if( !(boost::filesystem::exists("data/tweetDB"))) {
+        boost::filesystem::create_directory("data/tweetDB");
+    }
+
+    // Clean up anything that is in the directory
+    boost::filesystem::path path_to_remove("data/tweetDB");
+    for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it) {
+        remove_all(it->path());
+    }
+
     Conf tweetConf = ExpSetupHelper::createGraphConf("data", "tweetDB");
+    //conf.reset(tweetConf);
+    graph.reset(new InteractionGraph(tweetConf));
+    uint64_t tsStart;
+    uint64_t tsEnd;
 
-    conf.reset(&tweetConf);
-    graph.reset(new InteractionGraph(*conf));
-
-    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph);
-
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph, tsStart, tsEnd);
 }
 
 void VsBlockSize::tearDown()
 {
-    boost::filesystem::remove_all(graph->getConf().getStorageDir());
+    // boost::filesystem::remove_all(graph->getConf().getStorageDir());
 }
 
 
@@ -102,30 +101,30 @@ void VsBlockSize::runWorkload(InteractionGraph * graph)
     fiqIt.next();
 }
 
-void VsBlockSize::createGraph()
-{
-    // Create a graph...
-    graph->createVertex(2, "v2");
-    graph->createVertex(4, "v4");
-    Timestamp ts = 7.0;
-    graph->addEdge(2, 4, ts, "a-data", "b-data");
-    graph->flush();
-    graph.reset(nullptr);
-}
-
 void VsBlockSize::process()
 {
 
     SimulationConf simConf;
-    graph.reset(new InteractionGraph(*conf));
-    auto workloadAndStats = simConf.getQueryWorkloadAndStats(*conf);
-    QueryWorkload workload = workloadAndStats.first;
-    SchemaStats stats = workloadAndStats.second;
+    // graph.reset(new InteractionGraph(*conf));
+
+    simConf.setAttributeCount( graph->getConf().getEdgeSchema().getAttributes().size() );
+    std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graph.get());
+
+    return;
+
+    QueryWorkload workload;
+    SchemaStats stats;
+
     double storageOverheadThreshold = 1.0;
     Cost cost(stats);
     util::AutoTimer timer;
 
     int numRuns = 1;
+
+
+
+
+    // int meanQueryIntervalSize;
 
     ExperimentalData queryIOExp("QueryIOVsBlockSize");
     ExperimentalData runningTimeExp("RunningTimeVsBlockSize");
@@ -146,7 +145,7 @@ void VsBlockSize::process()
         SolverFactory::instance().makeOptimalOverlapping()
     };
 
-    auto blockSizes = {2, 4, 6, 8, 10, 12, 14, 16 };
+    auto blockSizes = {1, 2, 4, 6, 8, 16, 32, 64 };
     vector<util::RunningStat> io;
     vector<util::RunningStat> storage;
     vector<util::RunningStat> times;

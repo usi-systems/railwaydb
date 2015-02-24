@@ -18,12 +18,10 @@ namespace intergdb { namespace simulation
             void makeStorageExp(ExperimentalData * exp);
             void makeRunningTimeExp(ExperimentalData * exp);
             void runWorkload(core::InteractionGraph * graph);
-            void createGraph();
         protected:
             void setUp();    //override;
             void tearDown(); //override;
             void printTweets();
-            void createTweetDB();
             std::unique_ptr<core::Conf> conf;
             std::unique_ptr<core::InteractionGraph> graph;
         };

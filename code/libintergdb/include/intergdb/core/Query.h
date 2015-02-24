@@ -1,6 +1,8 @@
 #pragma once
 
 #include <intergdb/common/Query.h>
+#include <intergdb/common/Types.h>
+
 
 namespace intergdb { namespace core
 {
@@ -8,17 +10,17 @@ namespace intergdb { namespace core
     class IntervalQuery : public common::Query
     {
     public:
-        IntervalQuery(Timestamp start, Timestamp end) 
+    IntervalQuery(common::Timestamp start, common::Timestamp end) 
             : Query(start, end, std::vector<std::string>()) {} 
     };
 
     class FocusedIntervalQuery : public common::Query
     {
     public:
-        FocusedIntervalQuery(VertexId headVertex, Timestamp start, Timestamp end, std::vector<std::string> const & attributeNames) 
+    FocusedIntervalQuery(common::VertexId headVertex, common::Timestamp start, common::Timestamp end, std::vector<std::string> const & attributeNames) 
             : Query(start, end, attributeNames), headVertex_(headVertex) {  }
-        VertexId getHeadVertex() const { return headVertex_; }
+        common::VertexId getHeadVertex() const { return headVertex_; }
     private:
-        VertexId headVertex_;
+        common::VertexId headVertex_;
     };
 } } /* namespace */

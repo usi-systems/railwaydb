@@ -1,6 +1,7 @@
 #include <intergdb/simulation/ExpSetupHelper.h>
 
 #include <intergdb/core/InteractionGraph.h>
+#include <intergdb/common/Types.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
@@ -131,9 +132,12 @@ static uint64_t getTweetTimestamp(string const& td, uint64_t dayStart)
 void ExpSetupHelper::scanTweets(string const & dirPath,
     function<void (uint64_t time,
                    int64_t from, vector<int64_t> const& tos,
-                   Tweet const& tweets)> visitor)
+                   Tweet const& tweets)> visitor, uint64_t& tsStart, uint64_t& tsEnd)
 {
     using namespace boost::filesystem;
+    tsStart = std::numeric_limits<int>::max();
+    tsEnd = std::numeric_limits<int>::min();
+
     path tweetDir(dirPath);
     vector<string> fileNames;
     for (directory_iterator it(tweetDir), eit = directory_iterator();
@@ -164,14 +168,18 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
                 repeat = 0;
                 pts = ts;
             }
+            if (ts <= tsStart) tsStart = ts;
+            if (ts <= tsEnd) tsEnd = ts;
             visitor(ts+repeat, from, tos, tweet);
             repeat += tos.size();
         } while(!file.eof());
     }
+    std::cout << "Start: " << tsStart << std::endl;
+    std::cout << "End: " << tsEnd << std::endl;
 }
 
 void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
-    InteractionGraph & graph)
+                                             InteractionGraph & graph, uint64_t& tsStart, uint64_t& tsEnd)
 {
     using namespace boost;
     {
@@ -182,7 +190,7 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
             vertices.insert(from);
             for (int64_t to : tos)
                 vertices.insert(to);
-        });
+        }, tsStart, tsEnd);
         for (int64_t v : vertices) {
             VertexId vi = v;
             graph.createVertex(vi, v);
@@ -197,14 +205,18 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
                 string dir = (from>to) ? "l" : "s";
                 if (from != to) {
                     graph.addEdge(from, to, time+(i++),
-                        dir, tweet.time, tweet.tweetId, tweet.userId,
-                        tweet.retweetId, tweet.inReplyToStatusId,
-                        tweet.isTruncated, tweet.mentionedUsers,
-                        tweet.hashTags, tweet.text);
+                                  dir, tweet.time, tweet.tweetId, tweet.userId,
+                                  tweet.retweetId, tweet.inReplyToStatusId,
+                                  tweet.isTruncated, tweet.mentionedUsers,
+                                  tweet.hashTags, tweet.text);
                 }
             }
-        });
+        }, tsStart, tsEnd);
     }
 }
 
-
+std::vector<FocusedIntervalQuery> createQueries(Conf, uint64_t& tsStart, uint64_t& tsEnd)
+{
+    std::vector<FocusedIntervalQuery> queries;
+    return queries;
+}

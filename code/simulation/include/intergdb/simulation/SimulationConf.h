@@ -4,7 +4,8 @@
 #include <intergdb/common/SchemaStats.h>
 #include <intergdb/util/ZipfRand.h>
 #include <intergdb/util/NormalRand.h>
-#include <intergdb/core/Conf.h>
+#include <intergdb/core/Query.h>
+#include <intergdb/core/InteractionGraph.h>
 
 namespace intergdb { namespace simulation
 {
@@ -36,8 +37,12 @@ namespace intergdb { namespace simulation
       { queryTypeFrequencyZipfParam_ = queryTypeFrequencyZipfParam; }
     double getQueryTypeFrequencyZipfParam() const
       { return queryTypeFrequencyZipfParam_; }
+    void setQueryTimeZipfParam(double queryTimeZipfParam) 
+      { queryTimeZipfParam_ = queryTimeZipfParam; }
+    double getQueryTimeZipfParam() const
+      { return queryTimeZipfParam_; }
     std::pair<common::QueryWorkload, common::SchemaStats> getQueryWorkloadAndStats();
-    std::pair<common::QueryWorkload, common::SchemaStats> getQueryWorkloadAndStats(const core::Conf & conf);
+    std::vector<core::FocusedIntervalQuery> getQueries(core::InteractionGraph * graph);
 
   private:
     size_t attributeCount_ = 10;
@@ -49,9 +54,13 @@ namespace intergdb { namespace simulation
     static const int numAttributeSizes_ = 7;
     static constexpr double const attributeSizes_[numAttributeSizes_] = 
       {4.0, 1.0, 8.0, 2.0, 16.0, 32.0, 64.0}; 
+    double queryTimeZipfParam_ = 0.5;
+    uint64_t queryTsStart;
+    uint64_t queryTsEnd;
     util::ZipfRand attributeSizeGen_; 
     util::NormalRand queryLengthGen_;
     util::ZipfRand queryTypeFrequencyGen_;
+    util::ZipfRand queryTimeGen_;
   };
 
 } } /* namespace */
