@@ -57,6 +57,7 @@ void VsBlockSize::setUp()
 
     conf.reset(&tweetConf);
     graph.reset(new InteractionGraph(*conf));
+
     ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph);
 
 }
@@ -119,7 +120,7 @@ void VsBlockSize::process()
     graph.reset(new InteractionGraph(*conf));
     auto workloadAndStats = simConf.getQueryWorkloadAndStats(*conf);
     QueryWorkload workload = workloadAndStats.first;
-    SchemaStats stats = workloadAndStats.second;   
+    SchemaStats stats = workloadAndStats.second;
     double storageOverheadThreshold = 1.0;
     Cost cost(stats);
     util::AutoTimer timer;
@@ -170,7 +171,7 @@ void VsBlockSize::process()
                 auto & partIndex = graph->getPartitionIndex();
                 auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
 
-                intergdb::common::Partitioning solverSolution = 
+                intergdb::common::Partitioning solverSolution =
                     solver->solve(workload, storageOverheadThreshold, stats);
 
                 std::cout << solverSolution.toString() << std::endl;
