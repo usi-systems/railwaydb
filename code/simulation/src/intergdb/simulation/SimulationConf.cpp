@@ -83,5 +83,12 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGr
     // TODO(rjs): generate the times
     
     std::vector<core::FocusedIntervalQuery> queries;
+
+    // Query temporal range will all be the same "30 min. or 1 hour"
+    // A single bucket over that time range
+    // Random numbers scattered through the range
+    // Random for size
+    // Uniformly random size of location
+
     return queries;
 }
