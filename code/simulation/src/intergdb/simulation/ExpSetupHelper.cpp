@@ -174,16 +174,17 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
             repeat += tos.size();
         } while(!file.eof());
     }
-    std::cout << "Start: " << tsStart << std::endl;
-    std::cout << "End: " << tsEnd << std::endl;
+   
 }
 
 void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
-                                             InteractionGraph & graph, uint64_t& tsStart, uint64_t& tsEnd)
+                                             InteractionGraph & graph, 
+                                             uint64_t& tsStart, 
+                                             uint64_t& tsEnd, 
+                                             std::unordered_set<int64_t> & vertices)
 {
     using namespace boost;
     {
-        std::unordered_set<int64_t> vertices;
         scanTweets(dirPath, [&] (uint64_t time,
             int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
         {
@@ -215,8 +216,3 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
     }
 }
 
-std::vector<FocusedIntervalQuery> createQueries(Conf, uint64_t& tsStart, uint64_t& tsEnd)
-{
-    std::vector<FocusedIntervalQuery> queries;
-    return queries;
-}

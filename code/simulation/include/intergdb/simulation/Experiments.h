@@ -24,6 +24,9 @@ namespace intergdb { namespace simulation
             void printTweets();
             std::unique_ptr<core::Conf> conf;
             std::unique_ptr<core::InteractionGraph> graph;
+            uint64_t tsStart_;
+            uint64_t tsEnd_;
+            std::unordered_set<int64_t> vertices_;
         };
 
     

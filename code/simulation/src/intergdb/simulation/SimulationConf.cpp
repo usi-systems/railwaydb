@@ -59,26 +59,28 @@ std::pair<common::QueryWorkload, common::SchemaStats> SimulationConf::getQueryWo
   return std::make_pair(workload, stats);
 }
 
-std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGraph * graph)
+std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGraph * graph, 
+                                                                   uint64_t& tsStart, 
+                                                                   uint64_t& tsEnd,
+                                                                   std::unordered_set<int64_t> vertices)
 {
     mt19937 rndGen(time(NULL));
     auto const & attributes = graph->getConf().getEdgeSchema().getAttributes();
     vector<size_t> attributeIndices(attributes.size());
     iota(attributeIndices.begin(), attributeIndices.end(), 0);
-    double totalFrequency = 0.0;
+    // double totalFrequency = 0.0;
     vector<std::vector<std::string> > queryAttributeNames;
     for (size_t i=0, iu=getQueryTypeCount(); i<iu; ++i) {        
         std::vector<std::string> attributeNames;
         size_t queryLength = std::min(static_cast<size_t>(queryLengthGen_.getRandomValue()), attributes.size());
         for (size_t j=0; j<queryLength; ++j) {
             uniform_int_distribution<> udis(0, attributes.size()-j-1);
-            size_t k = udis(rndGen);
-            std::cout << attributes[attributeIndices[k]].getName() << std::endl;
+            size_t k = udis(rndGen);       
             attributeNames.push_back( attributes[attributeIndices[k]].getName());          
             swap(attributeIndices[k], attributeIndices[attributes.size()-j-1]);
         }
         queryAttributeNames.push_back(attributeNames);
-        std::cout << "---" << std::endl;
+        
     }
     // TODO(rjs): generate the times
     
@@ -90,5 +92,31 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGr
     // Random for size
     // Uniformly random size of location
 
+    // used to get a random time for the interval query
+    size_t queryTimeMean = (tsStart + tsEnd) / 2;
+    double queryTimeStdDev = queryTimeMean - tsStart;
+    NormalRand queryTimeGen(queryTimeMean, queryTimeStdDev, tsStart, tsEnd);
+
+    // used to get a random start node for the interval query
+    size_t vertexIdMean = (vertices.size()) / 2;
+    double vertexIdStdDev = vertexIdMean - 1;
+    NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev, 1.0, vertices.size());
+    
+    uint64_t start;
+    uint64_t end;
+    uint64_t tmp;
+
+    // Create 1 random query for each set of attributeNames
+    for (auto attributeNames : queryAttributeNames) {
+        start = queryTimeGen.getRandomValue();
+        end = queryTimeGen.getRandomValue();
+        if (end < start) {
+            tmp = start;
+            start = end;
+            end = tmp;
+        } 
+        queries.push_back(FocusedIntervalQuery(vertexIdGen.getRandomValue(), start, end, attributeNames));
+    }
+    
     return queries;
 }

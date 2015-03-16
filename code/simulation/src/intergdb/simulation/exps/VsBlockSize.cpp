@@ -55,10 +55,10 @@ void VsBlockSize::setUp()
     Conf tweetConf = ExpSetupHelper::createGraphConf("data", "tweetDB");
     //conf.reset(tweetConf);
     graph.reset(new InteractionGraph(tweetConf));
-    uint64_t tsStart;
-    uint64_t tsEnd;
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph, tsStart_, tsEnd_, vertices_);
 
-    ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph, tsStart, tsEnd);
+    std::cout << "Start: " << tsStart_ << std::endl;
+    std::cout << "End: " << tsEnd_ << std::endl;
 }
 
 void VsBlockSize::tearDown()
@@ -108,20 +108,27 @@ void VsBlockSize::process()
     // graph.reset(new InteractionGraph(*conf));
 
     simConf.setAttributeCount( graph->getConf().getEdgeSchema().getAttributes().size() );
-    std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graph.get());
+    std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graph.get(), tsStart_, tsEnd_, vertices_);
 
-    return;
+    for (auto q : queries) {
+        std::cout << q.toString() << std::endl;
+        graph->processFocusedIntervalQuery(q);
+    }
+    SchemaStats stats = graph->getSchemaStats();
+    std::map<BucketId,common::QueryWorkload> workloads = graph->getWorkloads();
 
-    QueryWorkload workload;
-    SchemaStats stats;
+    for (auto& x: workloads) {
+        std::cout << "-> " << x.first << std::endl; //" => " << x.second << '\n';
+    }  
+
+    QueryWorkload workload = workloads.begin()->second;
+
 
     double storageOverheadThreshold = 1.0;
     Cost cost(stats);
     util::AutoTimer timer;
 
     int numRuns = 1;
-
-
 
 
     // int meanQueryIntervalSize;

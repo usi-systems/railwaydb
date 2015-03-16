@@ -42,7 +42,10 @@ namespace intergdb { namespace simulation
     double getQueryTimeZipfParam() const
       { return queryTimeZipfParam_; }
     std::pair<common::QueryWorkload, common::SchemaStats> getQueryWorkloadAndStats();
-    std::vector<core::FocusedIntervalQuery> getQueries(core::InteractionGraph * graph);
+    std::vector<core::FocusedIntervalQuery> getQueries(core::InteractionGraph * graph, 
+                                                       uint64_t& tsStart, 
+                                                       uint64_t& tsEnd, 
+                                                       std::unordered_set<int64_t> vertices);
 
   private:
     size_t attributeCount_ = 10;
@@ -55,8 +58,6 @@ namespace intergdb { namespace simulation
     static constexpr double const attributeSizes_[numAttributeSizes_] = 
       {4.0, 1.0, 8.0, 2.0, 16.0, 32.0, 64.0}; 
     double queryTimeZipfParam_ = 0.5;
-    uint64_t queryTsStart;
-    uint64_t queryTsEnd;
     util::ZipfRand attributeSizeGen_; 
     util::NormalRand queryLengthGen_;
     util::ZipfRand queryTypeFrequencyGen_;

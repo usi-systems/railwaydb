@@ -14,6 +14,7 @@
 #include <intergdb/core/QueryCollector.h>
 #include <intergdb/core/Schema.h>
 #include <intergdb/core/VertexManager.h>
+#include <intergdb/common/SchemaStats.h>
 
 #include <memory>
 #include <utility>
@@ -70,6 +71,9 @@ namespace intergdb { namespace core
         Schema const & getVertexSchema() { return conf_.getVertexSchema(); }
         Schema const & getEdgeSchema() { return conf_.getEdgeSchema(); }
         Conf const & getConf() const { return conf_; }
+        common::SchemaStats & getSchemaStats() { return meta_.getSchemaStats(); }
+        std::map<BucketId,common::QueryWorkload> & getWorkloads() { return qcol_.getWorkloads(); }
+
     private:
         Conf conf_;
         VertexManager vman_;

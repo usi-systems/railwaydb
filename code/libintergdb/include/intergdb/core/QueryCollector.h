@@ -48,6 +48,7 @@ namespace intergdb { namespace core
     QueryCollector(Conf const & conf) : conf_(conf), bucketer_(1) { }
         void collectIntervalQuery(Query q);
         void collectFocusedIntervalQuery(Query q);
+        std::map<BucketId,common::QueryWorkload> & getWorkloads() { return workloads_; }
     private:
         Conf const & conf_;
         NaiveBucketer bucketer_;
