@@ -94,11 +94,12 @@ void VsBlockSize::makeRunningTimeExp(ExperimentalData * exp) {
     exp->setKeepValues(false);
 }
 
-void VsBlockSize::runWorkload(InteractionGraph * graph)
+void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries)
 {
-    FocusedIntervalQuery fiq(2, 5.0, 10.0, {"time", "tweetId"});
-    InteractionGraph::EdgeIterator fiqIt = graph->processFocusedIntervalQuery(fiq);
-    fiqIt.next();
+    for (auto q : queries) {
+        std::cout << q.toString() << std::endl;
+        graph->processFocusedIntervalQuery(q);
+    }
 }
 
 void VsBlockSize::process()
@@ -114,6 +115,7 @@ void VsBlockSize::process()
         std::cout << q.toString() << std::endl;
         graph->processFocusedIntervalQuery(q);
     }
+
     SchemaStats stats = graph->getSchemaStats();
     std::map<BucketId,common::QueryWorkload> workloads = graph->getWorkloads();
 
@@ -180,16 +182,24 @@ void VsBlockSize::process()
                 intergdb::common::Partitioning solverSolution =
                     solver->solve(workload, storageOverheadThreshold, stats);
 
+                std::cout << ">>>>>" << std::endl;
+
                 std::cout << solverSolution.toString() << std::endl;
+
+                std::cout << "<<<<<" << std::endl;
 
                 TimeSlicedPartitioning newParting{}; // -inf to inf
 
                 newParting.getPartitioning() = solverSolution.toStringSet();
 
                 partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
+
+                std::cout << "A" << std::endl;
+
+
                 timer.start();
                 // run workload
-                runWorkload(graph.get());
+                //runWorkload(graph.get());
                 io.at(j).push(cost.getIOCost(solverSolution, workload));
                 storage.at(j).push(cost.getStorageOverhead(solverSolution, workload));
                 times.at(j).push(timer.getRealTimeInSeconds());

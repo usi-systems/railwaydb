@@ -17,7 +17,8 @@ namespace intergdb { namespace simulation
             void makeQueryIOExp(ExperimentalData * exp);      
             void makeStorageExp(ExperimentalData * exp);
             void makeRunningTimeExp(ExperimentalData * exp);
-            void runWorkload(core::InteractionGraph * graph);
+            void runWorkload(core::InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries);
+
         protected:
             void setUp();    //override;
             void tearDown(); //override;
