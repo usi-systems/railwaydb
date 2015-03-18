@@ -220,5 +220,8 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
             }
         }, tsStart, tsEnd);
     }
+    for (auto iter = graphs.begin(); iter != graphs.end(); ++iter) {
+        (*iter)->flush();
+    }
 }
 

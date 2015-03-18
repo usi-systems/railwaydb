@@ -143,12 +143,6 @@ void VsBlockSize::process()
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
 
-    // Do I need to do this?
-    for (int k = 0; k <= graphs_.size(); k++) {
-        graphs_[k].reset(nullptr);
-        graphs_[k].reset(new InteractionGraph(confs_[k]));
-    }
-
     assert(graphs_.size() >= 1);
     simConf.setAttributeCount( graphs_[0]->getConf().getEdgeSchema().getAttributes().size() );
     std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
