@@ -44,16 +44,28 @@ namespace intergdb { namespace core
         int bucketSize_;
     };
 
+    class OneBucketer : public Bucketer
+    {
+    public:
+        OneBucketer() { }        
+        virtual std::vector<BucketId> getBuckets(Query q) { 
+            std::vector<BucketId> bucketIds;
+            bucketIds.push_back(0);
+            return bucketIds; 
+        } 
+    };
+
+
     class QueryCollector
     {
     public:
-    QueryCollector(Conf const & conf) : conf_(conf), bucketer_(std::numeric_limits<int>::max()) { }
+    QueryCollector(Conf const & conf) : conf_(conf), bucketer_() { }
         void collectIntervalQuery(Query q);
         void collectFocusedIntervalQuery(Query q);
         std::map<BucketId,common::QueryWorkload> & getWorkloads() { return workloads_; }
     private:
         Conf const & conf_;
-        NaiveBucketer bucketer_;
+        OneBucketer bucketer_;
         std::map<BucketId,common::QueryWorkload> workloads_;
     };
 

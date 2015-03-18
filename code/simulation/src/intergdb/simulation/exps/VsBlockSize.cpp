@@ -139,6 +139,8 @@ void VsBlockSize::process()
 {
 
     SimulationConf simConf;
+    double storageOverheadThreshold = 1.0;
+
     assert(graphs_.size() >= 1);
     simConf.setAttributeCount( graphs_[0]->getConf().getEdgeSchema().getAttributes().size() );
     std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
@@ -150,12 +152,12 @@ void VsBlockSize::process()
     std::map<BucketId,common::QueryWorkload> workloads = graphs_[0]->getWorkloads();
 
     // TODO: this shouldn't be failing...
-    // assert(workloads.size() == 1);
+    assert(workloads.size() == 1);
 
     QueryWorkload workload = workloads.begin()->second;
 
 
-//     double storageOverheadThreshold = 1.0;
+
 
 
 //     // Want to keep the delta large enough so that 
@@ -205,6 +207,61 @@ void VsBlockSize::process()
 //     // experiment
 //     // right before time.start()
 //     // on mac, system(“purge”);
+
+     int j;
+     for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {
+         for (int i = 0; i < numRuns_; i++) {
+             j = 0;
+             for (auto solver : solvers) {
+                 auto & partIndex = (*iter)->getPartitionIndex();
+                 auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
+                 intergdb::common::Partitioning solverSolution =
+                     solver->solve(workload, storageOverheadThreshold, stats);
+                 std::cout << solverSolution.toString() << std::endl;
+                 TimeSlicedPartitioning newParting{}; // -inf to inf
+                 newParting.getPartitioning() = solverSolution.toStringSet();
+                 partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
+                 runWorkload((*iter).get(),queries, indicies);
+
+                 std::cout << (*iter)->getEdgeIOCount() << std::endl;
+                 std::cout << (*iter)->getEdgeReadIOCount() << std::endl;
+                 std::cout << (*iter)->getEdgeWriteIOCount() << std::endl;
+
+                 edgeIO[j].push((*iter)->getEdgeIOCount());
+                 edgeWriteIO[j].push((*iter)->getEdgeReadIOCount());
+                 edgeReadIO[j].push((*iter)->getEdgeWriteIOCount());
+                 j++;
+             }
+         }
+        j = 0;
+/*
+        for (auto solver : solvers) {
+
+          edgeIOCountExp.addRecord();
+          edgeIOCountExp.setFieldValue("solver", solver->getClassName());
+          edgeIOCountExp.setFieldValue("blockSize", blockSize);
+          edgeIOCountExp.setFieldValue("time", edgeIO.at(j).getMean());
+          edgeIOCountExp.setFieldValue("deviation", edgeIO.at(j).getStandardDeviation());
+          edgeIO.at(j).clear();
+
+          queryIOExp.addRecord();
+          queryIOExp.setFieldValue("solver", solver->getClassName());
+          queryIOExp.setFieldValue("blockSize", blockSize);
+          queryIOExp.setFieldValue("io", io.at(j).getMean());
+          queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
+          io.at(j).clear();
+
+          storageExp.addRecord();
+          storageExp.setFieldValue("solver", solver->getClassName());
+          storageExp.setFieldValue("blockSize",blockSize);
+          storageExp.setFieldValue("storage", storage.at(j).getMean());
+          storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());
+          storage.at(j).clear();
+
+          j++;
+      }
+*/
+     }
 
 //     int j;
 //     for (double blockSize : blockSizes_) {
