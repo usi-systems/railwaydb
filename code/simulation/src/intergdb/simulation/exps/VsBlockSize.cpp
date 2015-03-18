@@ -13,6 +13,8 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp> 
+#include <boost/lexical_cast.hpp>
+
 #include <iostream>
 #include <random>
 #include <vector>
@@ -141,6 +143,12 @@ void VsBlockSize::process()
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
 
+    // Do I need to do this?
+    for (int k = 0; k <= graphs_.size(); k++) {
+        graphs_[k].reset(nullptr);
+        graphs_[k].reset(new InteractionGraph(confs_[k]));
+    }
+
     assert(graphs_.size() >= 1);
     simConf.setAttributeCount( graphs_[0]->getConf().getEdgeSchema().getAttributes().size() );
     std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
@@ -151,22 +159,10 @@ void VsBlockSize::process()
     SchemaStats stats = graphs_[0]->getSchemaStats();
     std::map<BucketId,common::QueryWorkload> workloads = graphs_[0]->getWorkloads();
 
-    // TODO: this shouldn't be failing...
+    // Make sure everything is in one bucket
     assert(workloads.size() == 1);
 
     QueryWorkload workload = workloads.begin()->second;
-
-
-
-
-
-//     // Want to keep the delta large enough so that 
-//     // it is not cached
-//     // make the cache size a few blocks, pick a time range bigger than
-//     // that
-//     // Keep the database small as well.
-//     // Query range is the entire databae
-    
 
     ExperimentalData edgeIOCountExp("EdgeIOCountVsBlockSize");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
@@ -182,15 +178,16 @@ void VsBlockSize::process()
         exp->open();
      }
 
-    auto solvers = {
-        SolverFactory::instance().makeSinglePartition(),
-        SolverFactory::instance().makeOptimalNonOverlapping()
-    };
-
     vector<util::RunningStat> edgeIO;
     vector<util::RunningStat> edgeWriteIO;
     vector<util::RunningStat> edgeReadIO;
     vector<std::string> names;
+    vector< shared_ptr<Solver> > solvers =
+        {
+            SolverFactory::instance().makeSinglePartition(),
+            SolverFactory::instance().makeOptimalNonOverlapping()
+        };
+
 
      for (auto solver : solvers) {
          edgeIO.push_back(util::RunningStat());
@@ -198,15 +195,6 @@ void VsBlockSize::process()
          edgeReadIO.push_back(util::RunningStat());
          names.push_back(solver->getClassName());
      }
-
-//     // Create k databases, one for each block size
-//     // For each block size, use a different database
-//     // for each data base, try the different partitioning schemes
-//     // We will only run on non-overlapping
-//     // Need to flush the file system cache between each run of the
-//     // experiment
-//     // right before time.start()
-//     // on mac, system(“purge”);
 
      int j;
      for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {
@@ -221,6 +209,8 @@ void VsBlockSize::process()
                  TimeSlicedPartitioning newParting{}; // -inf to inf
                  newParting.getPartitioning() = solverSolution.toStringSet();
                  partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
+                 // to flush the filesystem cache
+                 //system(“purge”);
                  runWorkload((*iter).get(),queries, indicies);
 
                  std::cout << (*iter)->getEdgeIOCount() << std::endl;
@@ -233,125 +223,36 @@ void VsBlockSize::process()
                  j++;
              }
          }
-        j = 0;
-/*
-        for (auto solver : solvers) {
+
+        for (int j = 0; j < solvers.size(); j++) {
 
           edgeIOCountExp.addRecord();
-          edgeIOCountExp.setFieldValue("solver", solver->getClassName());
-          edgeIOCountExp.setFieldValue("blockSize", blockSize);
-          edgeIOCountExp.setFieldValue("time", edgeIO.at(j).getMean());
-          edgeIOCountExp.setFieldValue("deviation", edgeIO.at(j).getStandardDeviation());
-          edgeIO.at(j).clear();
+          edgeIOCountExp.setFieldValue("solver", solvers[j]->getClassName());
+          edgeIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[j]));
+          edgeIOCountExp.setFieldValue("edgeIO", edgeIO[j].getMean());
+          edgeIOCountExp.setFieldValue("deviation", edgeIO[j].getStandardDeviation());
+          edgeIO[j].clear();
 
-          queryIOExp.addRecord();
-          queryIOExp.setFieldValue("solver", solver->getClassName());
-          queryIOExp.setFieldValue("blockSize", blockSize);
-          queryIOExp.setFieldValue("io", io.at(j).getMean());
-          queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
-          io.at(j).clear();
+          edgeWriteIOCountExp.addRecord();
+          edgeWriteIOCountExp.setFieldValue("solver", solvers[j]->getClassName());
+          edgeWriteIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[j]));
+          edgeWriteIOCountExp.setFieldValue("edgeWriteIO", edgeWriteIO[j].getMean());
+          edgeWriteIOCountExp.setFieldValue("deviation", edgeWriteIO[j].getStandardDeviation());
+          edgeWriteIO[j].clear();
 
-          storageExp.addRecord();
-          storageExp.setFieldValue("solver", solver->getClassName());
-          storageExp.setFieldValue("blockSize",blockSize);
-          storageExp.setFieldValue("storage", storage.at(j).getMean());
-          storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());
-          storage.at(j).clear();
+          edgeReadIOCountExp.addRecord();
+          edgeReadIOCountExp.setFieldValue("solver", solvers[j]->getClassName());
+          edgeReadIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[j]));
+          edgeReadIOCountExp.setFieldValue("edgeReadIO", edgeReadIO[j].getMean());
+          edgeReadIOCountExp.setFieldValue("deviation", edgeReadIO[j].getStandardDeviation());
+          edgeReadIO[j].clear();
 
-          j++;
       }
-*/
+
      }
 
-//     int j;
-//     for (double blockSize : blockSizes_) {
-//         for (int i = 0; i < numRuns; i++) {
-//             // set the block size
-//             j = 0;
-//             for (auto solver : solvers) {
-//                 auto & partIndex = graph->getPartitionIndex();
-//                 auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
-
-//                 intergdb::common::Partitioning solverSolution =
-//                     solver->solve(workload, storageOverheadThreshold, stats);
-
-//                 std::cout << ">>>>>" << std::endl;
-
-//                 std::cout << solverSolution.toString() << std::endl;
-
-//                 std::cout << "<<<<<" << std::endl;
-
-//                 TimeSlicedPartitioning newParting{}; // -inf to inf
-
-//                 newParting.getPartitioning() = solverSolution.toStringSet();
-
-//                 partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
-
-//                 std::cout << "A" << std::endl;
-
-
-//                 timer.start();
-//                 // run workload
-//                 //runWorkload(graph.get());
-//                 io.at(j).push(cost.getIOCost(solverSolution, workload));
-//                 storage.at(j).push(cost.getStorageOverhead(solverSolution, workload));
-//                 times.at(j).push(timer.getRealTimeInSeconds());
-
-
-//                 // use iteractiongraph.getEdgeIOCount()
-//                 // use iteractiongraph.getEdgeReadIOCount()
-//                 // use iteractiongraph.getEdgeWriteIOCount()
-
-//                 // Look at how much data is in the directory? It should match the model.
-                
-
-//                 j++;
-//                 timer.stop();
-//                 std::cout << "Workload took: " << timer.getRealTimeInSeconds() << std::endl;
-//             }
-//         }
-//         j = 0;
-//         for (auto solver : solvers) {
-
-//           runningTimeExp.addRecord();
-//           runningTimeExp.setFieldValue("solver", solver->getClassName());
-//           runningTimeExp.setFieldValue("blockSize", blockSize);
-//           runningTimeExp.setFieldValue("time", times.at(j).getMean());
-//           runningTimeExp.setFieldValue("deviation", times.at(j).getStandardDeviation());
-//           times.at(j).clear();
-
-//           queryIOExp.addRecord();
-//           queryIOExp.setFieldValue("solver", solver->getClassName());
-//           queryIOExp.setFieldValue("blockSize", blockSize);
-//           queryIOExp.setFieldValue("io", io.at(j).getMean());
-//           queryIOExp.setFieldValue("deviation", io.at(j).getStandardDeviation());
-//           io.at(j).clear();
-
-//           storageExp.addRecord();
-//           storageExp.setFieldValue("solver", solver->getClassName());
-//           storageExp.setFieldValue("blockSize",blockSize);
-//           storageExp.setFieldValue("storage", storage.at(j).getMean());
-//           storageExp.setFieldValue("deviation", storage.at(j).getStandardDeviation());
-//           storage.at(j).clear();
-
-//           j++;
-//       }
-//     }
-
-//     for (auto exp : expData) {
-//         exp->close();
-//     }
-
-
-// /*
-//   cerr << "This is an experiment with name: "
-//     << this->getClassName() << endl;
-
-
-//   SimulationConf simConf;
-//   SchemaStats stats;
-//   Cost cost(stats);
-//   util::AutoTimer timer;
-// */
+     for (auto exp : expData) {
+         exp->close();
+     }
 
 };
