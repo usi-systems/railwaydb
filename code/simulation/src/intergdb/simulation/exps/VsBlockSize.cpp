@@ -44,12 +44,11 @@ void VsBlockSize::setUp()
 {
     cout << " VsBlockSize::setUp()" << endl;
 
-
     for (size_t blockSize : blockSizes_) {
         std::cout << "block size " << blockSize << std::endl;       
-        string dbDirPath = str(boost::format("data%08d") % blockSize);
+        string dbDirPath = "data";
         string expName   = str(boost::format("tweetDB%08d") % blockSize);
-        string pathAndName      = str(boost::format("data%08d/tweetDB%08d") % blockSize % blockSize);
+        string pathAndName      = str(boost::format("data/tweetDB%08d") % blockSize);
         std::cout << dbDirPath << std::endl;
         std::cout << expName << std::endl;
         std::cout << pathAndName << std::endl;
@@ -76,11 +75,11 @@ void VsBlockSize::setUp()
         graphs_.push_back(std::move(graph));
 
     }
-
     
-    // ExpSetupHelper::populateGraphFromTweets("data/tweets", *graph, tsStart_, tsEnd_, vertices_);
-    // std::cout << "Start: " << tsStart_ << std::endl;
-    // std::cout << "End: " << tsEnd_ << std::endl;
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", graphs_, tsStart_, tsEnd_, vertices_);
+    
+    std::cout << "Start: " << tsStart_ << std::endl;
+    std::cout << "End: " << tsEnd_ << std::endl;
 
 }
 
@@ -89,82 +88,76 @@ void VsBlockSize::tearDown()
 
 }
 
-
-void VsBlockSize::makeQueryIOExp(ExperimentalData * exp) {
-  exp->setDescription("Query IO Vs. BlockSize");
+void VsBlockSize::makeEdgeIOCountExp(ExperimentalData * exp) {
+  exp->setDescription("Query IO Vs. EdgeIOCount");
   exp->addField("solver");
   exp->addField("blockSize");
-  exp->addField("io");
+  exp->addField("edgeIO");
   exp->addField("deviation");
   exp->setKeepValues(false);
 }
 
-void VsBlockSize::makeStorageExp(ExperimentalData * exp) {
-  exp->setDescription("Storage Overhead Vs. BlockSize");
+void VsBlockSize::makeEdgeWriteIOCountExp(ExperimentalData * exp) {
+  exp->setDescription("Storage Overhead Vs. EdgeWriteIOCount");
   exp->addField("solver");
   exp->addField("blockSize");
-  exp->addField("storage");
+  exp->addField("edgeWriteIO");
   exp->addField("deviation");
   exp->setKeepValues(false);
 }
 
-void VsBlockSize::makeRunningTimeExp(ExperimentalData * exp) {
-    exp->setDescription("Running Time Vs. BlockSize");
+void VsBlockSize::makeEdgeReadIOCountExp(ExperimentalData * exp) {
+    exp->setDescription("Running Time Vs. EdgeReadIOCount");
     exp->addField("solver");
     exp->addField("blockSize");
-    exp->addField("time");
+    exp->addField("edgeReadIO");
     exp->addField("deviation");
     exp->setKeepValues(false);
 }
 
-void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries)
+void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries, std::vector<int> indices)
 {
-    for (auto q : queries) {
-        std::cout << q.toString() << std::endl;
-        graph->processFocusedIntervalQuery(q);
+    for (int i : indices) {
+        graph->processFocusedIntervalQuery(queries[i]);
     }
+}
+
+
+std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes) 
+{
+    util::ZipfRand queryGen_(queryZipfParam_, numQueryTypes);
+    unsigned seed = time(NULL);
+    queryGen_.setSeed(seed++);
+    vector<int> indices;
+    for (int i = 0; i < numQueries_; ++i) {
+        indices.push_back(queryGen_.getRandomValue());
+    }
+    return indices;
 }
 
 void VsBlockSize::process()
 {
 
-
     SimulationConf simConf;
-//     // graph.reset(new InteractionGraph(*conf));
+    assert(graphs_.size() >= 1);
+    simConf.setAttributeCount( graphs_[0]->getConf().getEdgeSchema().getAttributes().size() );
+    std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
+    std::vector<int> indicies = genWorkload(queries.size()-1);
 
-//     simConf.setAttributeCount( graph->getConf().getEdgeSchema().getAttributes().size() );
-//     std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graph.get(), tsStart_, tsEnd_, vertices_);
+    runWorkload(graphs_[0].get(),queries, indicies);
 
-//     for (auto q : queries) {
-//         std::cout << q.toString() << std::endl;
-//         graph->processFocusedIntervalQuery(q);
-//     }
+    SchemaStats stats = graphs_[0]->getSchemaStats();
+    std::map<BucketId,common::QueryWorkload> workloads = graphs_[0]->getWorkloads();
 
-//     SchemaStats stats = graph->getSchemaStats();
-//     std::map<BucketId,common::QueryWorkload> workloads = graph->getWorkloads();
+    // TODO: this shouldn't be failing...
+    // assert(workloads.size() == 1);
 
-//     for (auto& x: workloads) {
-//         std::cout << "-> " << x.first << std::endl; //" => " << x.second << '\n';
-//     }  
-
-//     QueryWorkload workload = workloads.begin()->second;
+    QueryWorkload workload = workloads.begin()->second;
 
 
 //     double storageOverheadThreshold = 1.0;
-//     Cost cost(stats);
-//     util::AutoTimer timer;
-
-//     int numRuns = 1;
-
-//     // TODO:
-//     // Repeatedly call zipf.random
-//     // from the set of queries for 100 times...
-
-//     // int meanQueryIntervalSize;
 
 
-//     // use a fixed start and end 
-//     // start time of graph + some delta (30 min)
 //     // Want to keep the delta large enough so that 
 //     // it is not cached
 //     // make the cache size a few blocks, pick a time range bigger than
@@ -173,40 +166,36 @@ void VsBlockSize::process()
 //     // Query range is the entire databae
     
 
+    ExperimentalData edgeIOCountExp("EdgeIOCountVsBlockSize");
+    ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
+    ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsBlockSize");
 
+    auto expData = { &edgeIOCountExp, &edgeIOCountExp, &edgeReadIOCountExp };
 
-//     ExperimentalData queryIOExp("QueryIOVsBlockSize");
-//     ExperimentalData runningTimeExp("RunningTimeVsBlockSize");
-//     ExperimentalData storageExp("StorageOverheadVsBlockSize");
+    makeEdgeIOCountExp(&edgeIOCountExp);
+    makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
+    makeEdgeReadIOCountExp(&edgeReadIOCountExp);
+    
+    for (auto exp : expData) {
+        exp->open();
+     }
 
-//     auto expData = { &queryIOExp, &runningTimeExp, &storageExp };
+    auto solvers = {
+        SolverFactory::instance().makeSinglePartition(),
+        SolverFactory::instance().makeOptimalNonOverlapping()
+    };
 
-//     makeQueryIOExp(&queryIOExp);
-//     makeRunningTimeExp(&runningTimeExp);
-//     makeStorageExp(&storageExp);
+    vector<util::RunningStat> edgeIO;
+    vector<util::RunningStat> edgeWriteIO;
+    vector<util::RunningStat> edgeReadIO;
+    vector<std::string> names;
 
-//     for (auto exp : expData) {
-//         exp->open();
-//     }
-
-//     auto solvers = {
-//         SolverFactory::instance().makeSinglePartition(),
-//         SolverFactory::instance().makeOptimalNonOverlapping()
-//     };
-
-//     vector<util::RunningStat> io;
-//     vector<util::RunningStat> storage;
-//     vector<util::RunningStat> times;
-//     vector<std::string> names;
-
-
-//     for (auto solver : solvers) {
-//         io.push_back(util::RunningStat());
-//         storage.push_back(util::RunningStat());
-//         times.push_back(util::RunningStat());
-//         names.push_back(solver->getClassName());
-//         vector<std::string> names;
-//     }
+     for (auto solver : solvers) {
+         edgeIO.push_back(util::RunningStat());
+         edgeWriteIO.push_back(util::RunningStat());
+         edgeReadIO.push_back(util::RunningStat());
+         names.push_back(solver->getClassName());
+     }
 
 //     // Create k databases, one for each block size
 //     // For each block size, use a different database

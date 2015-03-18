@@ -178,7 +178,7 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
 }
 
 void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
-                                             InteractionGraph & graph, 
+                                             std::vector< std::unique_ptr<core::InteractionGraph> > & graphs,
                                              uint64_t& tsStart, 
                                              uint64_t& tsEnd, 
                                              std::unordered_set<int64_t> & vertices)
@@ -194,7 +194,9 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
         }, tsStart, tsEnd);
         for (int64_t v : vertices) {
             VertexId vi = v;
-            graph.createVertex(vi, v);
+            for (auto iter = graphs.begin(); iter != graphs.end(); ++iter) {
+                (*iter)->createVertex(vi, v);
+            }
         }
     }
     {
@@ -204,12 +206,16 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
             int i = 0;
             for (int64_t to : tos) {
                 string dir = (from>to) ? "l" : "s";
-                if (from != to) {
-                    graph.addEdge(from, to, time+(i++),
-                                  dir, tweet.time, tweet.tweetId, tweet.userId,
-                                  tweet.retweetId, tweet.inReplyToStatusId,
-                                  tweet.isTruncated, tweet.mentionedUsers,
-                                  tweet.hashTags, tweet.text);
+                if (from != to) {                    
+                    for (auto iter = graphs.begin(); iter != graphs.end(); ++iter) {
+
+                        (*iter)->addEdge(from, to, time+(i++),
+                                       dir, tweet.time, tweet.tweetId, tweet.userId,
+                                       tweet.retweetId, tweet.inReplyToStatusId,
+                                       tweet.isTruncated, tweet.mentionedUsers,
+                                       tweet.hashTags, tweet.text);
+
+                    }
                 }
             }
         }, tsStart, tsEnd);

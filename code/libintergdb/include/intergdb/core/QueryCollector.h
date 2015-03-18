@@ -8,6 +8,8 @@
 #include <map>
 #include <iostream>
 
+#include <limits>
+
 using namespace intergdb::common;
 
 namespace intergdb { namespace core
@@ -45,7 +47,7 @@ namespace intergdb { namespace core
     class QueryCollector
     {
     public:
-    QueryCollector(Conf const & conf) : conf_(conf), bucketer_(1) { }
+    QueryCollector(Conf const & conf) : conf_(conf), bucketer_(std::numeric_limits<int>::max()) { }
         void collectIntervalQuery(Query q);
         void collectFocusedIntervalQuery(Query q);
         std::map<BucketId,common::QueryWorkload> & getWorkloads() { return workloads_; }

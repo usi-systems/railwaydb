@@ -13,12 +13,13 @@ namespace intergdb { namespace simulation
         class VsBlockSize : public ExperimentalRun 
         {
             void process(); //override;
-        private:          
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-            void runWorkload(core::InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries);
-
+        private:                      
+            void makeEdgeIOCountExp(ExperimentalData * exp);      
+            void makeEdgeWriteIOCountExp(ExperimentalData * exp);
+            void makeEdgeReadIOCountExp(ExperimentalData * exp);
+            void runWorkload(core::InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries, std::vector<int> indicies);
+            std::vector<int> genWorkload(size_t numQueryTypes);
+    
         protected:
             void setUp();    //override;
             void tearDown(); //override;
@@ -30,6 +31,7 @@ namespace intergdb { namespace simulation
             std::unordered_set<int64_t> vertices_;
             double queryZipfParam_ = 0.5;
             int numRuns_ = 1;
+            int numQueries_ = 100;
             std::vector<int> blockSizes_ = {1, 2, 4, 6, 8, 16, 32, 64 };
         public:
             VsBlockSize();
