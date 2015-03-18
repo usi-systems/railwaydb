@@ -34,7 +34,7 @@ ostream& operator<<(ostream& ostr, Tweet const& tweet)
 } }
 
 Conf ExpSetupHelper::createGraphConf(string const& dbDirPath,
-    string const& expName)
+                                     string const& expName)
 {
     boost::filesystem::path expDir = dbDirPath;
     expDir = expDir / expName;

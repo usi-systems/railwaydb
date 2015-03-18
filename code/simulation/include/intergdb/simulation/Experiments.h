@@ -23,11 +23,17 @@ namespace intergdb { namespace simulation
             void setUp();    //override;
             void tearDown(); //override;
             void printTweets();
-            std::unique_ptr<core::Conf> conf;
-            std::unique_ptr<core::InteractionGraph> graph;
+            std::vector< core::Conf > confs_;
+            std::vector< std::unique_ptr<core::InteractionGraph> > graphs_;
             uint64_t tsStart_;
             uint64_t tsEnd_;
             std::unordered_set<int64_t> vertices_;
+            double queryZipfParam_ = 0.5;
+            int numRuns_ = 1;
+            std::vector<int> blockSizes_ = {1, 2, 4, 6, 8, 16, 32, 64 };
+        public:
+            VsBlockSize();
+
         };
 
     
