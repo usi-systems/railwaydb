@@ -73,6 +73,7 @@ namespace intergdb { namespace core
         Conf const & getConf() const { return conf_; }
         common::SchemaStats & getSchemaStats() { return meta_.getSchemaStats(); }
         std::map<BucketId,common::QueryWorkload> & getWorkloads() { return qcol_.getWorkloads(); }
+        void resetWorkloads() { qcol_.reset(); }
 
     private:
         Conf conf_;

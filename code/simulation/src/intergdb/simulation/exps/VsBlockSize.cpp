@@ -146,18 +146,32 @@ void VsBlockSize::process()
 
     assert(graphs_.size() >= 1);
     simConf.setAttributeCount( graphs_[0]->getConf().getEdgeSchema().getAttributes().size() );
-    std::vector<core::FocusedIntervalQuery> queries = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
-    std::vector<int> indicies = genWorkload(queries.size()-1);
 
-    runWorkload(graphs_[0].get(),queries, indicies);
+    std::vector< std::vector<core::FocusedIntervalQuery> > queries;
+    std::vector< std::vector<int> > indicies;
+    std::vector< SchemaStats > stats;
+    std::vector< QueryWorkload > workloads;
 
-    SchemaStats stats = graphs_[0]->getSchemaStats();
-    std::map<BucketId,common::QueryWorkload> workloads = graphs_[0]->getWorkloads();
+    for (int i=0; i < numRuns_; i++) {
 
-    // Make sure everything is in one bucket
-    assert(workloads.size() == 1);
+        std::vector<core::FocusedIntervalQuery> qs = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
+        std::vector<int> inds = genWorkload(qs.size()-1);
+        runWorkload(graphs_[0].get(),qs, inds);
+        SchemaStats ss = graphs_[0]->getSchemaStats();
+        std::map<BucketId,common::QueryWorkload> ws = graphs_[0]->getWorkloads();
+        // Make sure everything is in one bucket
+        assert(ws.size() == 1);
+        QueryWorkload w = ws.begin()->second;
 
-    QueryWorkload workload = workloads.begin()->second;
+        // (queries, indices, stats, workload)
+        queries.push_back(qs);
+        indicies.push_back(inds);
+        stats.push_back(ss);
+        workloads.push_back(w);
+
+        graphs_[0]->resetWorkloads();
+
+    }
 
     ExperimentalData edgeIOCountExp("EdgeIOCountVsBlockSize");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
@@ -204,7 +218,7 @@ void VsBlockSize::process()
                  auto & partIndex = (*iter)->getPartitionIndex();
                  auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                  intergdb::common::Partitioning solverSolution =
-                     solver->solve(workload, storageOverheadThreshold, stats);
+                     solver->solve(workloads[i], storageOverheadThreshold, stats[i]);
                  std::cout << solverSolution.toString() << std::endl;
                  TimeSlicedPartitioning newParting{}; // -inf to inf
                  newParting.getPartitioning() = solverSolution.toStringSet();
@@ -216,7 +230,7 @@ void VsBlockSize::process()
                  prevEdgeReadIOCount = (*iter)->getEdgeReadIOCount();
                  prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
 
-                 runWorkload((*iter).get(),queries, indicies);
+                 runWorkload((*iter).get(),queries[i], indicies[i]);
 
                  std::cout << (*iter)->getEdgeIOCount() - prevEdgeIOCount << std::endl;
                  std::cout << (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount << std::endl;

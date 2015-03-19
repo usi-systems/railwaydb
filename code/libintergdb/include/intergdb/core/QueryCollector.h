@@ -63,6 +63,7 @@ namespace intergdb { namespace core
         void collectIntervalQuery(Query q);
         void collectFocusedIntervalQuery(Query q);
         std::map<BucketId,common::QueryWorkload> & getWorkloads() { return workloads_; }
+        void reset() { workloads_.clear(); }
     private:
         Conf const & conf_;
         OneBucketer bucketer_;
