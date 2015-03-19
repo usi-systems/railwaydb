@@ -65,9 +65,6 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGr
                                                                    uint64_t& tsEnd,
                                                                    std::unordered_set<int64_t> vertices)
 {
-
-    const int THIRTY_MINUTES_IN_SECONDS = 60 * 30;
-
     mt19937 rndGen(time(NULL));
     auto const & attributes = graph->getConf().getEdgeSchema().getAttributes();
     vector<size_t> attributeIndices(attributes.size());
@@ -96,7 +93,7 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGr
     for (auto attributeNames : queryAttributeNames) {
         queries.push_back(FocusedIntervalQuery(vertexIdGen.getRandomValue(), 
                                                tsStart,  
-                                               tsStart + THIRTY_MINUTES_IN_SECONDS, 
+                                               tsEnd,
                                                attributeNames));
     }
     

@@ -69,6 +69,7 @@ void VsBlockSize::setUp()
         // Create the graph conf, one for each block size
         Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
         conf.blockSize() = blockSize;
+        conf.blockBufferSize() = blockBufferSize_;
         confs_.push_back(conf);
 
         // Create a graph for each block size
@@ -162,7 +163,7 @@ void VsBlockSize::process()
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
     ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsBlockSize");
 
-    auto expData = { &edgeIOCountExp, &edgeIOCountExp, &edgeReadIOCountExp };
+    auto expData = { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp };
 
     makeEdgeIOCountExp(&edgeIOCountExp);
     makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
@@ -179,7 +180,8 @@ void VsBlockSize::process()
     vector< shared_ptr<Solver> > solvers =
         {
             SolverFactory::instance().makeSinglePartition(),
-            SolverFactory::instance().makeOptimalNonOverlapping()
+            SolverFactory::instance().makeOptimalNonOverlapping(),
+            SolverFactory::instance().makeHeuristicNonOverlapping()
         };
 
 
@@ -191,6 +193,10 @@ void VsBlockSize::process()
      }
 
      int j;
+     size_t prevEdgeIOCount;
+     size_t prevEdgeReadIOCount;
+     size_t prevEdgeWriteIOCount;
+
      for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {
          for (int i = 0; i < numRuns_; i++) {
              j = 0;
@@ -205,15 +211,20 @@ void VsBlockSize::process()
                  partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
                  // to flush the filesystem cache
                  //system(“purge”);
+
+                 prevEdgeIOCount = (*iter)->getEdgeIOCount();
+                 prevEdgeReadIOCount = (*iter)->getEdgeReadIOCount();
+                 prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
+
                  runWorkload((*iter).get(),queries, indicies);
 
-                 std::cout << (*iter)->getEdgeIOCount() << std::endl;
-                 std::cout << (*iter)->getEdgeReadIOCount() << std::endl;
-                 std::cout << (*iter)->getEdgeWriteIOCount() << std::endl;
+                 std::cout << (*iter)->getEdgeIOCount() - prevEdgeIOCount << std::endl;
+                 std::cout << (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount << std::endl;
+                 std::cout << (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount<< std::endl;
 
-                 edgeIO[j].push((*iter)->getEdgeIOCount());
-                 edgeWriteIO[j].push((*iter)->getEdgeReadIOCount());
-                 edgeReadIO[j].push((*iter)->getEdgeWriteIOCount());
+                 edgeIO[j].push((*iter)->getEdgeIOCount() - prevEdgeIOCount);
+                 edgeReadIO[j].push((*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount);
+                 edgeWriteIO[j].push((*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
                  j++;
              }
          }
