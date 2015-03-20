@@ -20,6 +20,18 @@ namespace intergdb { namespace core
     FocusedIntervalQuery(common::VertexId headVertex, common::Timestamp start, common::Timestamp end, std::vector<std::string> const & attributeNames) 
             : Query(start, end, attributeNames), headVertex_(headVertex) {  }
         common::VertexId getHeadVertex() const { return headVertex_; }
+
+        std::string toString() const
+        {
+            std::stringstream ss;
+            ss << "head:" <<  headVertex_ << " ";
+            ss << "start:" <<  start_ << " ";
+            ss << "end:" <<  end_ << " ";
+            for (auto const & a : attributeNames_) 
+                ss << a << " ";
+            return ss.str();
+        }
+
     private:
         common::VertexId headVertex_;
     };

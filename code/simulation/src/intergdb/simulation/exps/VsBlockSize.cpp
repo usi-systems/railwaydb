@@ -26,7 +26,8 @@ using namespace intergdb::common;
 using namespace intergdb::optimizer;
 using namespace intergdb::simulation;
 
-#define RECREATE 1
+#define RECREATE 
+#undef RECREATE 
 
 VsBlockSize::VsBlockSize() { }
 
@@ -138,13 +139,17 @@ void VsBlockSize::makeEdgeReadIOCountExp(ExperimentalData * exp) {
 
 void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries, std::vector<int> indices)
 {
+    int sum = 0;
     for (int i : indices) {
-        int sum = 0;
+        std::cout << queries[i].toString() << std::endl;
         for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]); iqIt.isValid(); iqIt.next()) {
             sum += iqIt.getToVertex();
+            std::cout << "+= " << iqIt.getToVertex() << std::endl;
         }
-        std::cout << "sum " << sum << std::endl;
     }
+    std::cout << "sum " << sum << std::endl;
+    std::cout << "----" << std::endl;
+
 }
 
 

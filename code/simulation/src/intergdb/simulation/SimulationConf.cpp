@@ -84,18 +84,25 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGr
     
     std::vector<core::FocusedIntervalQuery> queries;
 
+    std::vector<int64_t> vertexList;
+    std::copy(vertices.begin(), vertices.end(), std::back_inserter(vertexList));
+
+
     // used to get a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
     NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev, 1.0, vertices.size());
-    
+
+    std::cout << "random vertices" << std::endl;
     // Create 1 random query for each set of attributeNames
     for (auto attributeNames : queryAttributeNames) {
-        queries.push_back(FocusedIntervalQuery(vertexIdGen.getRandomValue(), 
+        std::cout << vertexList[vertexIdGen.getRandomValue()] << std::endl;
+        queries.push_back(FocusedIntervalQuery(vertexList[vertexIdGen.getRandomValue()], 
                                                tsStart,  
                                                tsEnd,
                                                attributeNames));
     }
-    
+    std::cout << "done random vertices" << std::endl;
+
     return queries;
 }
