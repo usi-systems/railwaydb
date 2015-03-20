@@ -235,7 +235,7 @@ void VsBlockSize::process()
          names.push_back(solver->getClassName());
      }
 
-     int j;
+     int solverIndex;
      size_t prevEdgeIOCount;
      size_t prevEdgeReadIOCount;
      size_t prevEdgeWriteIOCount;
@@ -243,10 +243,13 @@ void VsBlockSize::process()
      int total = graphs_.size() * numRuns_ * solvers.size();
 
      std::cout << "Running experiments..." << std::endl;
+     int blockSizeIndex = -1;
      for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {      
+         blockSizeIndex++;
          for (int i = 0; i < numRuns_; i++) {
-             j = 0;
+             solverIndex = -1;
              for (auto solver : solvers) {
+                 solverIndex++;
                  auto & partIndex = (*iter)->getPartitionIndex();
                  auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                  intergdb::common::Partitioning solverSolution =
@@ -269,37 +272,36 @@ void VsBlockSize::process()
                  std::cout << (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount << std::endl;
                  std::cout << (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount<< std::endl;
                  
-                 edgeIO[j].push((*iter)->getEdgeIOCount() - prevEdgeIOCount);
-                 edgeReadIO[j].push((*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount);
-                 edgeWriteIO[j].push((*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                 j++;
+                 edgeIO[solverIndex].push((*iter)->getEdgeIOCount() - prevEdgeIOCount);
+                 edgeReadIO[solverIndex].push((*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount);
+                 edgeWriteIO[solverIndex].push((*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);             
                  x++;
                  std::cout << "    " << x << "/" << total << std::endl;         
              }
          }
 
-        for (int j = 0; j < solvers.size(); j++) {
+        for (int solverIndex = 0; solverIndex < solvers.size(); solverIndex++) {
 
           edgeIOCountExp.addRecord();
-          edgeIOCountExp.setFieldValue("solver", solvers[j]->getClassName());
-          edgeIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[j]));
-          edgeIOCountExp.setFieldValue("edgeIO", edgeIO[j].getMean());
-          edgeIOCountExp.setFieldValue("deviation", edgeIO[j].getStandardDeviation());
-          edgeIO[j].clear();
+          edgeIOCountExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
+          edgeIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[blockSizeIndex]));
+          edgeIOCountExp.setFieldValue("edgeIO", edgeIO[solverIndex].getMean());
+          edgeIOCountExp.setFieldValue("deviation", edgeIO[solverIndex].getStandardDeviation());
+          edgeIO[solverIndex].clear();
 
           edgeWriteIOCountExp.addRecord();
-          edgeWriteIOCountExp.setFieldValue("solver", solvers[j]->getClassName());
-          edgeWriteIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[j]));
-          edgeWriteIOCountExp.setFieldValue("edgeWriteIO", edgeWriteIO[j].getMean());
-          edgeWriteIOCountExp.setFieldValue("deviation", edgeWriteIO[j].getStandardDeviation());
-          edgeWriteIO[j].clear();
+          edgeWriteIOCountExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
+          edgeWriteIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[blockSizeIndex]));
+          edgeWriteIOCountExp.setFieldValue("edgeWriteIO", edgeWriteIO[solverIndex].getMean());
+          edgeWriteIOCountExp.setFieldValue("deviation", edgeWriteIO[solverIndex].getStandardDeviation());
+          edgeWriteIO[solverIndex].clear();
 
           edgeReadIOCountExp.addRecord();
-          edgeReadIOCountExp.setFieldValue("solver", solvers[j]->getClassName());
-          edgeReadIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[j]));
-          edgeReadIOCountExp.setFieldValue("edgeReadIO", edgeReadIO[j].getMean());
-          edgeReadIOCountExp.setFieldValue("deviation", edgeReadIO[j].getStandardDeviation());
-          edgeReadIO[j].clear();
+          edgeReadIOCountExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
+          edgeReadIOCountExp.setFieldValue("blockSize", boost::lexical_cast<std::string>(blockSizes_[blockSizeIndex]));
+          edgeReadIOCountExp.setFieldValue("edgeReadIO", edgeReadIO[solverIndex].getMean());
+          edgeReadIOCountExp.setFieldValue("deviation", edgeReadIO[solverIndex].getStandardDeviation());
+          edgeReadIO[solverIndex].clear();
 
       }
 
