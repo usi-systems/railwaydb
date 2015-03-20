@@ -26,6 +26,8 @@ using namespace intergdb::common;
 using namespace intergdb::optimizer;
 using namespace intergdb::simulation;
 
+#define RECREATE 1
+
 VsBlockSize::VsBlockSize() { }
 
 void VsBlockSize::printTweets()
@@ -49,6 +51,7 @@ void VsBlockSize::setUp()
     int x = 0;
     int total = blockSizes_.size();
 
+
     for (size_t blockSize : blockSizes_) {
         x++;
         std::cout << "    " << x << "/" << total << std::endl;
@@ -62,12 +65,13 @@ void VsBlockSize::setUp()
             boost::filesystem::create_directory(pathAndName);
         }
 
+#ifndef RECREATE
         // Clean up anything that is in the directory
-        //boost::filesystem::path path_to_remove(pathAndName);
-        //for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it) {
-        //    remove_all(it->path());
-        //}
-
+        boost::filesystem::path path_to_remove(pathAndName);
+        for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it) {
+            remove_all(it->path());
+        }
+#endif
         // Create the graph conf, one for each block size
         Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
         conf.blockSize() = blockSize;
@@ -83,9 +87,20 @@ void VsBlockSize::setUp()
 
     cout << " done." << endl;
 
-    //cout << " populateGraphFromTweets..." << endl;
-    //ExpSetupHelper::populateGraphFromTweets("data/tweets", graphs_, tsStart_, tsEnd_, vertices_);
-    //cout << " done." << endl;
+#ifndef RECREATE
+    cout << " populateGraphFromTweets..." << endl;
+    ExpSetupHelper::populateGraphFromTweets("data/tweets", graphs_, tsStart_, tsEnd_, vertices_);
+    cout << " done." << endl;
+#else
+    tsStart_ = 2147483647; // Hard coded values for specific test instance
+    tsEnd_ = 1368491654000;   
+#endif
+
+    tsStart_--;
+    tsEnd_++;
+
+    std::cout << "start " << tsStart_ << std::endl;
+    std::cout << "stop " << tsEnd_ << std::endl;
 
 }
 
@@ -128,7 +143,7 @@ void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::Focuse
         for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]); iqIt.isValid(); iqIt.next()) {
             sum += iqIt.getToVertex();
         }
-        assert (sum != 0);
+        std::cout << "sum " << sum << std::endl;
     }
 }
 
