@@ -170,7 +170,7 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
                 pts = ts;
             }
             if (ts <= tsStart) tsStart = ts;
-            if (ts <= tsEnd) tsEnd = ts;
+            if (ts >= tsEnd) tsEnd = ts;
             visitor(ts+repeat, from, tos, tweet);
             repeat += tos.size();
         } while(!file.eof());
