@@ -44,27 +44,29 @@ void VsBlockSize::printTweets()
 
 void VsBlockSize::setUp()
 {
-    cout << " VsBlockSize::setUp()" << endl;
+    cout << " VsBlockSize::setUp()..." << endl;
+
+    int x = 0;
+    int total = blockSizes_.size();
 
     for (size_t blockSize : blockSizes_) {
-        std::cout << "block size " << blockSize << std::endl;       
+        x++;
+        std::cout << "    " << x << "/" << total << std::endl;
+
         string dbDirPath = "data";
         string expName   = str(boost::format("tweetDB%08d") % blockSize);
         string pathAndName      = str(boost::format("data/tweetDB%08d") % blockSize);
-        std::cout << dbDirPath << std::endl;
-        std::cout << expName << std::endl;
-        std::cout << pathAndName << std::endl;
-
+      
         // Create tweetDB if its not there
         if( !(boost::filesystem::exists(pathAndName))) {
             boost::filesystem::create_directory(pathAndName);
         }
 
         // Clean up anything that is in the directory
-        boost::filesystem::path path_to_remove(pathAndName);
-        for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it) {
-            remove_all(it->path());
-        }
+        //boost::filesystem::path path_to_remove(pathAndName);
+        //for (boost::filesystem::directory_iterator end_dir_it, it(path_to_remove); it!=end_dir_it; ++it) {
+        //    remove_all(it->path());
+        //}
 
         // Create the graph conf, one for each block size
         Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
@@ -78,11 +80,12 @@ void VsBlockSize::setUp()
         graphs_.push_back(std::move(graph));
 
     }
-    
-    ExpSetupHelper::populateGraphFromTweets("data/tweets", graphs_, tsStart_, tsEnd_, vertices_);
-    
-    std::cout << "Start: " << tsStart_ << std::endl;
-    std::cout << "End: " << tsEnd_ << std::endl;
+
+    cout << " done." << endl;
+
+    //cout << " populateGraphFromTweets..." << endl;
+    //ExpSetupHelper::populateGraphFromTweets("data/tweets", graphs_, tsStart_, tsEnd_, vertices_);
+    //cout << " done." << endl;
 
 }
 
@@ -121,7 +124,11 @@ void VsBlockSize::makeEdgeReadIOCountExp(ExperimentalData * exp) {
 void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries, std::vector<int> indices)
 {
     for (int i : indices) {
-        graph->processFocusedIntervalQuery(queries[i]);
+        int sum = 0;
+        for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]); iqIt.isValid(); iqIt.next()) {
+            sum += iqIt.getToVertex();
+        }
+        assert (sum != 0);
     }
 }
 
@@ -152,8 +159,9 @@ void VsBlockSize::process()
     std::vector< SchemaStats > stats;
     std::vector< QueryWorkload > workloads;
 
+    std::cout << "Generating workload..." << std::endl;
     for (int i=0; i < numRuns_; i++) {
-
+        std::cout << "    " << i << "/" << numRuns_ << std::endl;
         std::vector<core::FocusedIntervalQuery> qs = simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
         std::vector<int> inds = genWorkload(qs.size()-1);
         runWorkload(graphs_[0].get(),qs, inds);
@@ -172,6 +180,7 @@ void VsBlockSize::process()
         graphs_[0]->resetWorkloads();
 
     }
+    std::cout << "done." << std::endl;
 
     ExperimentalData edgeIOCountExp("EdgeIOCountVsBlockSize");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
@@ -210,8 +219,11 @@ void VsBlockSize::process()
      size_t prevEdgeIOCount;
      size_t prevEdgeReadIOCount;
      size_t prevEdgeWriteIOCount;
+     int x = 0;
+     int total = graphs_.size() * numRuns_ * solvers.size();
 
-     for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {
+     std::cout << "Running experiments..." << std::endl;
+     for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {      
          for (int i = 0; i < numRuns_; i++) {
              j = 0;
              for (auto solver : solvers) {
@@ -219,7 +231,7 @@ void VsBlockSize::process()
                  auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                  intergdb::common::Partitioning solverSolution =
                      solver->solve(workloads[i], storageOverheadThreshold, stats[i]);
-                 std::cout << solverSolution.toString() << std::endl;
+                 //std::cout << solverSolution.toString() << std::endl;
                  TimeSlicedPartitioning newParting{}; // -inf to inf
                  newParting.getPartitioning() = solverSolution.toStringSet();
                  partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
@@ -232,14 +244,17 @@ void VsBlockSize::process()
 
                  runWorkload((*iter).get(),queries[i], indicies[i]);
 
+                 
                  std::cout << (*iter)->getEdgeIOCount() - prevEdgeIOCount << std::endl;
                  std::cout << (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount << std::endl;
                  std::cout << (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount<< std::endl;
-
+                 
                  edgeIO[j].push((*iter)->getEdgeIOCount() - prevEdgeIOCount);
                  edgeReadIO[j].push((*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount);
                  edgeWriteIO[j].push((*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
                  j++;
+                 x++;
+                 std::cout << "    " << x << "/" << total << std::endl;         
              }
          }
 
@@ -269,6 +284,9 @@ void VsBlockSize::process()
       }
 
      }
+
+     std::cout << "done." << std::endl;
+
 
      for (auto exp : expData) {
          exp->close();
