@@ -131,7 +131,8 @@ static uint64_t getTweetTimestamp(string const& td, uint64_t dayStart)
 
 void ExpSetupHelper::scanTweets(string const & dirPath,
     function<void (uint64_t time,
-                   int64_t from, vector<int64_t> const& tos,
+                   int64_t from, 
+                   vector<int64_t> const& tos,
                    Tweet const& tweets)> visitor, uint64_t& tsStart, uint64_t& tsEnd)
 {
     using namespace boost::filesystem;
