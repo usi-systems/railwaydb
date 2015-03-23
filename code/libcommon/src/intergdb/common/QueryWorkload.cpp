@@ -93,6 +93,7 @@ void QueryWorkload::addQuery(Query q)
         QuerySummary summary(attributes);
         summaries_.emplace(std::pair<Query,QuerySummary>(q, summary));
         counts_.emplace(std::pair<QuerySummary,double>(summary, 1.0));
+        queries_.push_back(summary);
     }
 
 }
