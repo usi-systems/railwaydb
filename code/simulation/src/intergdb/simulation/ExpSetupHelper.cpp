@@ -170,7 +170,7 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
                 pts = ts;
             }
             if (ts <= tsStart) tsStart = ts;
-            if (ts <= tsEnd) tsEnd = ts;
+            if (ts >= tsEnd) tsEnd = ts;
             visitor(ts+repeat, from, tos, tweet);
             repeat += tos.size();
         } while(!file.eof());
@@ -209,7 +209,6 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
                 string dir = (from>to) ? "l" : "s";
                 if (from != to) {
                     for (auto iter = graphs.begin(); iter != graphs.end(); ++iter) {
-cerr << time+i << endl;
                         (*iter)->addEdge(from, to, time+(i++),
                                        dir, tweet.time, tweet.tweetId, tweet.userId,
                                        tweet.retweetId, tweet.inReplyToStatusId,
