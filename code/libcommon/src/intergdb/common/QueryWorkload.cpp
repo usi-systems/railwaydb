@@ -23,6 +23,7 @@ string QuerySummary::toString() const
   for (size_t i=1, iu=attributes_.size(); i<iu; ++i) 
       str += "," + to_string(attributes_[i]->getIndex());
   str += "]";
+  
   return str;
 }
 
@@ -88,12 +89,18 @@ void QueryWorkload::addQuery(Query q)
             if(it == nameToAttribute_.end()) {        
                 assert(false);
             }
+            std::cout << "*** QueryWorkload::addQuery " 
+                      << it->first
+                      << " " 
+                      << it->second.getIndex()
+                      << std::endl;
             attributes.push_back(&it->second);            
         }
         QuerySummary summary(attributes);
+        queries_.push_back(summary);
         summaries_.emplace(std::pair<Query,QuerySummary>(q, summary));
         counts_.emplace(std::pair<QuerySummary,double>(summary, 1.0));
-        queries_.push_back(summary);
+       
     }
 
 }

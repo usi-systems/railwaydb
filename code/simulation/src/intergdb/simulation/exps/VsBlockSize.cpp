@@ -224,7 +224,7 @@ void VsBlockSize::process()
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
         {
-            SolverFactory::instance().makeSinglePartition(),
+            //SolverFactory::instance().makeSinglePartition(),
             SolverFactory::instance().makeOptimalNonOverlapping()
             //SolverFactory::instance().makeHeuristicNonOverlapping()
         };
