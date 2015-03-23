@@ -144,6 +144,7 @@ void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::Focuse
         std::cout << queries[i].toString() << std::endl;
         for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]); iqIt.isValid(); iqIt.next()) {
             count += 1;
+            // std::cout << "queries[i] " << queries[i] << std::endl;
             //std::cout << "+= " << iqIt.getToVertex() << std::endl;
         }
         std::cout << "count " << count << std::endl;
@@ -159,7 +160,8 @@ std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes)
     queryGen_.setSeed(seed++);
     vector<int> indices;
     for (int i = 0; i < numQueries_; ++i) {
-        indices.push_back(queryGen_.getRandomValue());
+        // indices.push_back(queryGen_.getRandomValue());
+        indices.push_back(0);
     }
     return indices;
 }
