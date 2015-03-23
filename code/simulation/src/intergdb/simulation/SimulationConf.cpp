@@ -101,6 +101,7 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(InteractionGr
                                                tsStart,  
                                                tsEnd,
                                                attributeNames));
+        break; // Debugging.
     }
     std::cout << "done random vertices" << std::endl;
 

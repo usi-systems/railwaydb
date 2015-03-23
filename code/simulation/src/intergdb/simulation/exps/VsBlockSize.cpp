@@ -139,17 +139,17 @@ void VsBlockSize::makeEdgeReadIOCountExp(ExperimentalData * exp) {
 
 void VsBlockSize::runWorkload(InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries, std::vector<int> indices)
 {
-    int sum = 0;
+    int count = 0;
     for (int i : indices) {
         std::cout << queries[i].toString() << std::endl;
         for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]); iqIt.isValid(); iqIt.next()) {
-            sum += iqIt.getToVertex();
-            std::cout << "+= " << iqIt.getToVertex() << std::endl;
+            count += 1;
+            //std::cout << "+= " << iqIt.getToVertex() << std::endl;
         }
+        std::cout << "count " << count << std::endl;
+        std::cout << "----" << std::endl;
     }
-    std::cout << "sum " << sum << std::endl;
-    std::cout << "----" << std::endl;
-
+ 
 }
 
 
@@ -254,7 +254,7 @@ void VsBlockSize::process()
                  auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                  intergdb::common::Partitioning solverSolution =
                      solver->solve(workloads[i], storageOverheadThreshold, stats[i]);
-                 //std::cout << solverSolution.toString() << std::endl;
+                 std::cout << solverSolution.toString() << std::endl;
                  TimeSlicedPartitioning newParting{}; // -inf to inf
                  newParting.getPartitioning() = solverSolution.toStringSet();
                  partIndex.replaceTimeSlicedPartitioning(origParting, {newParting});
