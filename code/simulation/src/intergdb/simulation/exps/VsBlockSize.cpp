@@ -256,6 +256,8 @@ void VsBlockSize::process()
                  auto origParting = partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                  intergdb::common::Partitioning solverSolution =
                      solver->solve(workloads[i], storageOverheadThreshold, stats[i]);
+
+                 std::cout << "Workload: " << workloads[i].toString() << std::endl;
                  std::cout << solverSolution.toString() << std::endl;
                  TimeSlicedPartitioning newParting{}; // -inf to inf
                  newParting.getPartitioning() = solverSolution.toStringSet();

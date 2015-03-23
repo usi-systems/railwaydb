@@ -21,22 +21,36 @@ string QuerySummary::toString() const
     return "[attributes: ]";
   string str = "[attributes: " + to_string(attributes_[0]->getIndex());
   for (size_t i=1, iu=attributes_.size(); i<iu; ++i) 
-    str += "," + to_string(attributes_[i]->getIndex());    
+      str += "," + to_string(attributes_[i]->getIndex());
   str += "]";
   return str;
 }
 
 string QueryWorkload::toString() const
 { 
-  string str = "Attributes:\n";
-  for (Attribute const & attribute : attributes_) 
-    str += "\t" + attribute.toString() + "\n";
-  str += "Queries:\n";
-  for (QuerySummary const & query : queries_) {  
-      str += "\t" + query.toString() 
-          + ", frequency: " + to_string(getFrequency(query)) + "\n";
-  }
-  return str;
+    std::stringstream ss;
+
+    ss << "Attributes:" << endl;
+    for (Attribute const & attribute : attributes_) {
+        ss << "\t" << attribute.toString() << endl;
+    }
+    ss << "Queries:" << endl;
+    for (QuerySummary const & query : queries_) {  
+        ss  << "\t" << query.toString() 
+            << ", frequency: " 
+            << to_string(getFrequency(query)) << endl;
+    }
+    ss << "Counts:" << endl;
+    for (auto it : counts_) {
+        ss  << "\t" << it.first.toString()
+            << ", count: "
+            << it.second;
+            
+    }
+    ss << endl;
+  return ss.str();
+
+
 }
 
 
