@@ -131,7 +131,7 @@ static uint64_t getTweetTimestamp(string const& td, uint64_t dayStart)
 
 void ExpSetupHelper::scanTweets(string const & dirPath,
     function<void (uint64_t time,
-                   int64_t from, 
+                   int64_t from,
                    vector<int64_t> const& tos,
                    Tweet const& tweets)> visitor, uint64_t& tsStart, uint64_t& tsEnd)
 {
@@ -175,13 +175,13 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
             repeat += tos.size();
         } while(!file.eof());
     }
-   
+
 }
 
 void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
                                              std::vector< std::unique_ptr<core::InteractionGraph> > & graphs,
-                                             uint64_t& tsStart, 
-                                             uint64_t& tsEnd, 
+                                             uint64_t& tsStart,
+                                             uint64_t& tsEnd,
                                              std::unordered_set<int64_t> & vertices)
 {
     using namespace boost;
@@ -207,9 +207,9 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
             int i = 0;
             for (int64_t to : tos) {
                 string dir = (from>to) ? "l" : "s";
-                if (from != to) {                    
+                if (from != to) {
                     for (auto iter = graphs.begin(); iter != graphs.end(); ++iter) {
-
+cerr << time+i << endl;
                         (*iter)->addEdge(from, to, time+(i++),
                                        dir, tweet.time, tweet.tweetId, tweet.userId,
                                        tweet.retweetId, tweet.inReplyToStatusId,
