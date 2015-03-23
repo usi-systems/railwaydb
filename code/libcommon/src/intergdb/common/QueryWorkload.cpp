@@ -88,7 +88,7 @@ void QueryWorkload::addQuery(Query q)
             if(it == nameToAttribute_.end()) {        
                 assert(false);
             }
-            attributes.push_back(&it->second);
+            attributes.push_back(&it->second);            
         }
         QuerySummary summary(attributes);
         summaries_.emplace(std::pair<Query,QuerySummary>(q, summary));

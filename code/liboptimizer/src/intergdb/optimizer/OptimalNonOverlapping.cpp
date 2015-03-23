@@ -27,6 +27,9 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
     int j = 0;
     std::vector<QuerySummary> const & queries = workload->getQuerySummaries();
 
+    std::cout << "************ OptimalNonOverlapping::constraints ************" << std::endl;
+
+
     /* First set of constraints */    
     for (int a = 0; a < e->A; ++a) {
         j = 0;
@@ -42,9 +45,12 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
 
     /* Second set of constraints */    
     for (int p = 0; p < e->P; ++p) {
+        std::cout << "************ OptimalNonOverlapping::Second set of constraints (A) ************" << std::endl;
         for (int q = 0; q < e->Q; ++q) {
+        std::cout << "************ OptimalNonOverlapping::Second set of constraints (B) ************" << std::endl;
             j = 0;
             for (int a = 0; a < e->A; ++a) {
+        std::cout << "************ OptimalNonOverlapping::Second set of constraints (C) ************" << std::endl;
                 ctx->ind[j] = x(e,a,p);
                 ctx->val[j] = accesses(queries,q,a);
                 j++;

@@ -224,9 +224,9 @@ void VsBlockSize::process()
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
         {
-            SolverFactory::instance().makeSinglePartition(),
-            SolverFactory::instance().makeOptimalNonOverlapping(),
-            SolverFactory::instance().makeHeuristicNonOverlapping()
+            //SolverFactory::instance().makeSinglePartition(),
+            SolverFactory::instance().makeOptimalNonOverlapping()
+            //SolverFactory::instance().makeHeuristicNonOverlapping()
         };
 
 
@@ -258,6 +258,13 @@ void VsBlockSize::process()
                      solver->solve(workloads[i], storageOverheadThreshold, stats[i]);
 
                  std::cout << "Workload: " << workloads[i].toString() << std::endl;
+                 std::cout << "Summary size: " << workloads[i].getQuerySummaries().size() << std::endl;
+
+                 for (auto summary : workloads[i].getQuerySummaries()) {
+                     std::cout << "Summary: " << summary.toString() << std::endl;
+                 }
+
+
                  std::cout << solverSolution.toString() << std::endl;
                  TimeSlicedPartitioning newParting{}; // -inf to inf
                  newParting.getPartitioning() = solverSolution.toStringSet();
