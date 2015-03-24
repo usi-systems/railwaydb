@@ -5,12 +5,10 @@
 namespace intergdb { namespace simulation
 {
 
-class PartitionAlgorithm
-{
-public:
-  std::vector<Partition> createPartitions(QueryWorkload & workload,
-      double storageOverheadLimit) = 0;
-};
-
+    class PartitionAlgorithm
+    {
+    public:
+        std::vector<Partition> createPartitions(
+            QueryWorkload & workload, double storageOverheadLimit) = 0;
+    };
 } }
-

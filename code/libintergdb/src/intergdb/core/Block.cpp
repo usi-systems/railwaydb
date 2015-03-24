@@ -23,12 +23,30 @@ public:
     EdgeTriplet(VertexId id1, VertexId id2, Timestamp tm)
         : lowId_ (std::min(id1, id2)),
           highId_ (std::max(id1, id2)),
-          tm_ (tm) {}
-    VertexId getLowId() const { return lowId_; }
-    VertexId getHighId() const { return highId_; }
-    Timestamp getTime() const { return tm_; }
+          tm_ (tm)
+    {}
+
+    VertexId getLowId() const
+    {
+        return lowId_;
+    }
+
+    VertexId getHighId() const
+    {
+        return highId_;
+    }
+
+    Timestamp getTime() const
+    {
+        return tm_;
+    }
+
     bool operator==(EdgeTriplet const & rhs) const
-        { return lowId_==rhs.lowId_ && highId_==rhs.highId_ && tm_==rhs.tm_; }
+    {
+        return lowId_ == rhs.lowId_ &&
+            highId_ == rhs.highId_ && tm_ == rhs.tm_;
+    }
+
 private:
     VertexId lowId_;
     VertexId highId_;
@@ -52,7 +70,8 @@ Timestamp Block::getPartitioningTimestamp() const
     return partitioningTimestamp;
 }
 
-void Block::findMinMaxTimestamps(Timestamp & minTimestamp, Timestamp & maxTimestamp) const
+void Block::findMinMaxTimestamps(Timestamp & minTimestamp,
+                                 Timestamp & maxTimestamp) const
 {
     minTimestamp = numeric_limits<Timestamp>::max();
     maxTimestamp = 0;
@@ -99,7 +118,8 @@ void Block::removeNewestEdge(VertexId headVertex)
     if (neigs_.count(to)>0) {
         auto & nlist = neigs_[to];
         std::shared_ptr<AttributeData> sdata;
-        bool there = nlist.getEdgeAttributeData(headVertex, edge.getTime(), sdata);
+        bool there =
+            nlist.getEdgeAttributeData(headVertex, edge.getTime(), sdata);
         if (!there)
             serializedSize_ -= getSerializedSizeOf(*edge.getData());
     }
@@ -120,9 +140,12 @@ namespace std {
     struct hash<EdgeTriplet> {
         inline size_t operator()(EdgeTriplet const & et) const {
             size_t hval = 17;
-            hval = hval * 37 + hash<intergdb::common::VertexId>()(et.getLowId());
-            hval = hval * 37 + hash<intergdb::common::VertexId>()(et.getHighId());
-            hval = hval * 37 + hash<intergdb::common::Timestamp>()(et.getTime());
+            hval = hval * 37 +
+                hash<intergdb::common::VertexId>()(et.getLowId());
+            hval = hval * 37 +
+                hash<intergdb::common::VertexId>()(et.getHighId());
+            hval = hval * 37 +
+                hash<intergdb::common::Timestamp>()(et.getTime());
             return hval;
         }
     };
@@ -166,10 +189,12 @@ Block Block::recombineBlock(Schema const & schema, BlockManager & bman) const
     return block;
 }
 
-vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & partitionIndex) const
+vector<Block> Block::partitionBlock(Schema const & schema,
+                                    PartitionIndex & partitionIndex) const
 {
     Timestamp partitioningTimestamp = getPartitioningTimestamp();
-    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioning(partitioningTimestamp);
+    TimeSlicedPartitioning tpart =
+        partitionIndex.getTimeSlicedPartitioning(partitioningTimestamp);
     Partitioning const & part = tpart.getPartitioning();
 
     vector<Block> blocks;
@@ -177,7 +202,8 @@ vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & part
     { // master block (no edge data)
         Block block;
         block.partition_ = -1;
-        std::shared_ptr<AttributeData> sdata(schema.newAttributeData(unordered_set<string>()));
+        std::shared_ptr<AttributeData> sdata(
+            schema.newAttributeData(unordered_set<string>()));
         for (auto const & vIdNListPair : getNeighborLists()) {
             VertexId headVertex = vIdNListPair.first;
             auto const & neighborList = vIdNListPair.second;
@@ -209,7 +235,8 @@ vector<Block> Block::partitionBlock(Schema const & schema, PartitionIndex & part
                     sdata.reset(schema.newAttributeData(attributes));
                     for (auto const & attrb : attributes) {
                         auto attrbIdx = schema.getIndex(attrb);
-                        sdata->setAttribute(attrbIdx, edge.getData()->getAttribute(attrbIdx));
+                        sdata->setAttribute(attrbIdx,
+                            edge.getData()->getAttribute(attrbIdx));
                     }
                     read[etrip] = sdata;
                 } else {
@@ -281,7 +308,8 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
     sbuf >> maxTimestamp;
     sbuf >> partition_;
     Timestamp blockTimestamp = (minTimestamp+maxTimestamp)/2.0;
-    TimeSlicedPartitioning tpart = partitionIndex.getTimeSlicedPartitioningForBlockDeserialization(blockTimestamp);
+    TimeSlicedPartitioning tpart = partitionIndex.
+        getTimeSlicedPartitioningForBlockDeserialization(blockTimestamp);
     Partitioning const & part = tpart.getPartitioning();
     unordered_set<string> const & attributes = part[partition_];
     std::unordered_map<EdgeTriplet, std::shared_ptr<AttributeData> > read;
@@ -316,5 +344,4 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
     }
     return sbuf;
 }
-
 } }

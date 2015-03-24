@@ -18,8 +18,11 @@ namespace intergdb { namespace core
     {
     public:
         static uint64_t getCurrentTimemillis();
+
         static Timestamp getCurrentTimestamp();
+
         static Timestamp millisToTimestamp(double millis);
+
         static std::string exec(std::string cmd);
     };
 
@@ -28,7 +31,8 @@ namespace intergdb { namespace core
     {
         if (std::is_integral<T>::value || std::is_floating_point<T>::value)
             return sizeof(T);
-        throw std::runtime_error("Type "+std::string(typeid(T).name())+" does not have getSerializedSizeOf defined for it");
+        throw std::runtime_error("Type "+std::string(typeid(T).name()) +
+            " does not have getSerializedSizeOf defined for it");
         return 0;
     }
 
@@ -38,32 +42,33 @@ namespace intergdb { namespace core
     }
 
     inline size_t getSerializedSizeOf(AttributeData const & data)
-    {                
-        size_t size = 0;  
-        Schema const & schema = data.getSchema();      
+    {
+        size_t size = 0;
+        Schema const & schema = data.getSchema();
         for (auto const & indexTypePair : data.getFields()) {
             switch (schema.getAttributes().at(indexTypePair.first).getType()) {
-            case Attribute::INT64:
-            {
-                size += getSerializedSizeOf(data.getIntAttribute(indexTypePair.first));
-                break;
-            }
-            case Attribute::DOUBLE:
-            {
-                size += getSerializedSizeOf(data.getDoubleAttribute(indexTypePair.first));
-                break;
-            }
-            case Attribute::STRING:
-            {
-                size += getSerializedSizeOf(data.getStringAttribute(indexTypePair.first));
-                break;
-            }
-            default:
-                assert(false);
-            } 
+                case Attribute::INT64:
+                {
+                    size += getSerializedSizeOf(
+                        data.getIntAttribute(indexTypePair.first));
+                    break;
+                }
+                case Attribute::DOUBLE:
+                {
+                    size += getSerializedSizeOf(
+                        data.getDoubleAttribute(indexTypePair.first));
+                    break;
+                }
+                case Attribute::STRING:
+                {
+                    size += getSerializedSizeOf(
+                        data.getStringAttribute(indexTypePair.first));
+                    break;
+                }
+                default:
+                    assert(false);
+                }
         }
-        return size;    
+        return size;
     }
-
-
 } } /* namespace */

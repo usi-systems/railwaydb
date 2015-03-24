@@ -5,8 +5,8 @@
 
 #include <leveldb/db.h>
 
-#include <memory>
 #include <list>
+#include <memory>
 
 namespace intergdb { namespace core
 {
@@ -21,11 +21,19 @@ namespace intergdb { namespace core
             std::shared_ptr<AttributeData> data;
             std::list<VertexId>::iterator iter;
         };
+
     public:
         VertexManager(Conf const & conf);
+
         void addVertex(VertexId id, AttributeData const & data);
+
         std::shared_ptr<AttributeData> getVertexData(VertexId id);
-        double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
+
+        double getHitRatio()
+        {
+            return hitCount_/static_cast<double>(reqCount_);
+        }
+
     private:
         size_t reqCount_;
         size_t hitCount_;
@@ -34,8 +42,5 @@ namespace intergdb { namespace core
         std::unordered_map<VertexId, VertexDataAndIdIter> cache_;
         std::auto_ptr<leveldb::DB> db_;
         Schema const & vertexSchema_;
-
     };
-
 } } /* namespace */
-

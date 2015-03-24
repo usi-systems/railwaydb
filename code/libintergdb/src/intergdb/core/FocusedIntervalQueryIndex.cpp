@@ -57,18 +57,22 @@ void FocusedIntervalQueryIndex::Iterator::readCurrents()
     assert(dbIter_->Valid());
     leveldb::Slice keyStr = dbIter_->key();
     leveldb::Slice valueStr = dbIter_->value();
-    NetworkByteBuffer keyBuffer(reinterpret_cast<unsigned char *>(const_cast<char *>(keyStr.data())), keyStr.size());
-    NetworkByteBuffer valueBuffer(reinterpret_cast<unsigned char *>(const_cast<char *>(valueStr.data())), valueStr.size());
+    NetworkByteBuffer keyBuffer(reinterpret_cast<unsigned char *>(
+        const_cast<char *>(keyStr.data())), keyStr.size());
+    NetworkByteBuffer valueBuffer(reinterpret_cast<unsigned char *>(
+        const_cast<char *>(valueStr.data())), valueStr.size());
     keyBuffer >> currentVertex_;
     keyBuffer >> currentEnd_;
     valueBuffer >> currentBlock_;
     valueBuffer >> currentStart_;
 }
 
-std::shared_ptr<typename FocusedIntervalQueryIndex::Iterator> FocusedIntervalQueryIndex::
-    query(VertexId vertex, Timestamp start, Timestamp end)
+std::shared_ptr<typename FocusedIntervalQueryIndex::Iterator>
+    FocusedIntervalQueryIndex::query(
+        VertexId vertex, Timestamp start, Timestamp end)
 {
-    return std::shared_ptr<FocusedIntervalQueryIndex::Iterator>(new Iterator(db_.get(), vertex, start, end));
+    return std::shared_ptr<FocusedIntervalQueryIndex::Iterator>(
+        new Iterator(db_.get(), vertex, start, end));
 }
 
 void FocusedIntervalQueryIndex::indexBlock(Block const & block)
@@ -83,14 +87,15 @@ void FocusedIntervalQueryIndex::indexBlock(Block const & block)
         pair<BlockId, Timestamp> data(block.id(), start);
         NetworkByteBuffer keyBuf(sizeof(key));
         keyBuf << key;
-        leveldb::Slice keySlice(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
+        leveldb::Slice keySlice(reinterpret_cast<char *>(keyBuf.getPtr()),
+                                keyBuf.getSerializedDataSize());
         NetworkByteBuffer dataBuf(sizeof(data));
         dataBuf << data;
-        leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()), dataBuf.getSerializedDataSize());
-        leveldb::Status status = db_->Put(leveldb::WriteOptions(), keySlice, dataSlice);
+        leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()),
+                                 dataBuf.getSerializedDataSize());
+        leveldb::Status status = db_->Put(leveldb::WriteOptions(), keySlice,
+                                          dataSlice);
         if (!status.ok())
             throw std::runtime_error(status.ToString());
     }
 }
-
-

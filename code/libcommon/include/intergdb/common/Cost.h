@@ -6,25 +6,35 @@
 
 namespace intergdb { namespace common
 {
+    class Cost
+    {
+    public:
+        Cost(SchemaStats const & stats)
+          : stats_(stats)
+        {}
 
-class Cost
-{
-public:
+        double getPartitionSize(Partition const & partition);
 
-    Cost(SchemaStats const & stats) : stats_(stats) {}
-    double getPartitionSize(Partition const & partition);    
-    double getIOCost(Partitioning const & partitioning, QueryWorkload const & workload);
-    double getStorageOverhead(Partitioning const & partitioning, QueryWorkload const &workload);
+        double getIOCost(Partitioning const & partitioning,
+                         QueryWorkload const & workload);
 
-    // the m-function from the paper
-    std::vector<Partition const *> getUsedPartitions(std::vector<Partition> const & partitions, 
-      std::unordered_set<Attribute const *> const & attributes, QuerySummary const & query);
-    // used for the non-overlapping heuristic, only considers some of the attributes (filterAttributes)
-    double getIOCost(std::vector<Partition> const & partitions, QueryWorkload const & workload, 
-      std::unordered_set<Attribute const *> const & filterAttributes);
-private:
-    SchemaStats const & stats_;
-};
+        double getStorageOverhead(Partitioning const & partitioning,
+                                  QueryWorkload const &workload);
 
+        // the m-function from the paper
+        std::vector<Partition const *> getUsedPartitions(
+            std::vector<Partition> const & partitions,
+            std::unordered_set<Attribute const *> const & attributes,
+            QuerySummary const & query);
+
+        // used for the non-overlapping heuristic, only considers some of the attributes (filterAttributes)
+        double getIOCost(
+            std::vector<Partition> const & partitions,
+            QueryWorkload const & workload,
+            std::unordered_set<Attribute const *> const & filterAttributes);
+
+    private:
+        SchemaStats const & stats_;
+    };
 } }
 

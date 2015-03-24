@@ -17,8 +17,9 @@ IntervalQueryIndex::IntervalQueryIndex(Conf const & conf, BlockManager * bman)
     iidx_.openOrCreate(conf.getStorageDir()+"/"+INTERVAL_QUERY_INDEX_NAME);
 }
 
-IntervalQueryIndex::Iterator::Iterator(RTreeIntervalIndex & iidx,
-        BlockManager * bman, Timestamp start, Timestamp end)
+IntervalQueryIndex::Iterator::Iterator(
+    RTreeIntervalIndex & iidx, BlockManager * bman,
+    Timestamp start, Timestamp end)
     : start_(start), end_(end), bman_(bman)
 {
     iidxIter_.reset(iidx.getNewIterator(start, end));
@@ -49,7 +50,8 @@ void IntervalQueryIndex::IntervalQueryIndex::Iterator::findNext()
         if (start_>currentStart_ && end_<=currentEnd_) {
             Block const & block = bman_->getBlock(currentBlock_);
             assert(block.getNeighborLists().count(currentVertex_)>0);
-            auto const & nlist = block.getNeighborLists().find(currentVertex_)->second;
+            auto const & nlist = block.getNeighborLists().find(
+                currentVertex_)->second;
             if (!nlist.hasEdgesInRange(start_, end_))
                 iidxIter_->moveToNext();
             else break;
@@ -69,10 +71,12 @@ void IntervalQueryIndex::IntervalQueryIndex::Iterator::readCurrents()
 std::shared_ptr<typename IntervalQueryIndex::Iterator> IntervalQueryIndex::
     query(Timestamp start, Timestamp end)
 {
-    return std::shared_ptr<IntervalQueryIndex::Iterator>(new Iterator(iidx_, bman_, start, end));
+    return std::shared_ptr<IntervalQueryIndex::Iterator>(
+        new Iterator(iidx_, bman_, start, end));
 }
 
-void IntervalQueryIndex::queryBatch(Timestamp start, Timestamp end, std::vector<VertexId> & results)
+void IntervalQueryIndex::queryBatch(Timestamp start, Timestamp end,
+                                    std::vector<VertexId> & results)
 {
     iidx_.queryBatch(start, end, results);
 }
@@ -89,6 +93,3 @@ void IntervalQueryIndex::indexBlock(Block const & block)
         iidx_.addInterval(block.id(), head, start, end);
     }
 }
-
-
-

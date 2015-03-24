@@ -6,97 +6,119 @@
 #include <intergdb/common/Partitioning.h>
 
 namespace intergdb { namespace simulation
+{
+    class VsBlockSize : public ExperimentalRun
     {
+    public:
+        void process() override;
 
-        /////////////////// Twitter Experiments ///////////////////
+        VsBlockSize();
 
-        class VsBlockSize : public ExperimentalRun 
-        {
-            void process(); //override;
-        private:                      
-            void makeEdgeIOCountExp(ExperimentalData * exp);      
-            void makeEdgeWriteIOCountExp(ExperimentalData * exp);
-            void makeEdgeReadIOCountExp(ExperimentalData * exp);
-            void runWorkload(core::InteractionGraph * graph, std::vector<core::FocusedIntervalQuery> & queries, std::vector<int> indicies);
-            std::vector<int> genWorkload(size_t numQueryTypes);
-    
-        protected:
-            void setUp();    //override;
-            void tearDown(); //override;
-            void printTweets();
-            std::vector< core::Conf > confs_;
-            std::vector< std::unique_ptr<core::InteractionGraph> > graphs_;
-            uint64_t tsStart_;
-            uint64_t tsEnd_;
-            std::unordered_set<int64_t> vertices_;
-            double queryZipfParam_ = 0.5;
-            int numRuns_ = 1;
-            int numQueries_ = 10;
-            int blockBufferSize_ = 5; /* 5 blocks */
-            std::vector<int> blockSizes_ = { 1, 2, 4, 8}; //, 16, 32, 64 };
-        public:
-            VsBlockSize();
+    private:
+        void makeEdgeIOCountExp(ExperimentalData * exp);
 
-        };
+        void makeEdgeWriteIOCountExp(ExperimentalData * exp);
 
-    
-        /////////////////// Simulation Experiments ///////////////////
+        void makeEdgeReadIOCountExp(ExperimentalData * exp);
 
-        class VsNumAttributes : public ExperimentalRun 
-        {
-            void process() override;
-        private:     
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-        };
+        void runWorkload(core::InteractionGraph * graph,
+                         std::vector<core::FocusedIntervalQuery> & queries,
+                         std::vector<int> indicies);
 
+        std::vector<int> genWorkload(size_t numQueryTypes);
 
-        class VsNumQueryKinds : public ExperimentalRun 
-        {
-            void process() override;
-        private:     
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-        };
+    protected:
+        void setUp() override;
+        void tearDown() override;
+        void printTweets();
+        std::vector< core::Conf > confs_;
+        std::vector< std::unique_ptr<core::InteractionGraph> > graphs_;
+        uint64_t tsStart_;
+        uint64_t tsEnd_;
+        std::unordered_set<int64_t> vertices_;
+        double queryZipfParam_ = 0.5;
+        int numRuns_ = 1;
+        int numQueries_ = 10;
+        int blockBufferSize_ = 5; /* 5 blocks */
+        std::vector<int> blockSizes_ = { 1, 2, 4, 8 }; // 16, 32, 64 };
+    };
 
-        class VsStorageOverheadThreshold : public ExperimentalRun 
-        {
-            void process() override;
-        private:     
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-        };
+    class VsNumAttributes : public ExperimentalRun
+    {
+    public:
+        void process() override;
 
-        class VsQueryLength : public ExperimentalRun 
-        {
-            void process() override;
-        private:     
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-        };
+    private:
+        void makeQueryIOExp(ExperimentalData * exp);
 
-        class VsAttributeSizeSkew : public ExperimentalRun 
-        {
-            void process() override;
-        private:     
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-        };
+        void makeStorageExp(ExperimentalData * exp);
 
-        class VsQueryFreqSkew : public ExperimentalRun 
-        {
-            void process() override;
-        private:     
-            void makeQueryIOExp(ExperimentalData * exp);      
-            void makeStorageExp(ExperimentalData * exp);
-            void makeRunningTimeExp(ExperimentalData * exp);
-        };
+        void makeRunningTimeExp(ExperimentalData * exp);
+    };
 
 
-    } } /* namespace */
+    class VsNumQueryKinds : public ExperimentalRun
+    {
+    public:
+        void process() override;
 
+    private:
+        void makeQueryIOExp(ExperimentalData * exp);
+
+        void makeStorageExp(ExperimentalData * exp);
+
+        void makeRunningTimeExp(ExperimentalData * exp);
+    };
+
+    class VsStorageOverheadThreshold : public ExperimentalRun
+    {
+    public:
+        void process() override;
+
+    private:
+        void makeQueryIOExp(ExperimentalData * exp);
+
+        void makeStorageExp(ExperimentalData * exp);
+
+        void makeRunningTimeExp(ExperimentalData * exp);
+    };
+
+    class VsQueryLength : public ExperimentalRun
+    {
+    public:
+        void process() override;
+
+    private:
+        void makeQueryIOExp(ExperimentalData * exp);
+
+        void makeStorageExp(ExperimentalData * exp);
+
+        void makeRunningTimeExp(ExperimentalData * exp);
+    };
+
+    class VsAttributeSizeSkew : public ExperimentalRun
+    {
+    public:
+        void process() override;
+
+    private:
+        void makeQueryIOExp(ExperimentalData * exp);
+
+        void makeStorageExp(ExperimentalData * exp);
+
+        void makeRunningTimeExp(ExperimentalData * exp);
+    };
+
+    class VsQueryFreqSkew : public ExperimentalRun
+    {
+    public:
+        void process() override;
+
+    private:
+        void makeQueryIOExp(ExperimentalData * exp);
+
+        void makeStorageExp(ExperimentalData * exp);
+
+        void makeRunningTimeExp(ExperimentalData * exp);
+    };
+} } /* namespace */

@@ -11,49 +11,64 @@ namespace intergdb { namespace core
     {
     public:
         vertex_already_exists_exception(VertexId id)
-          : std::runtime_error("vertex "+boost::lexical_cast<std::string>(id)+" already exists") {}
+            : std::runtime_error("vertex " +
+                boost::lexical_cast<std::string>(id) + " already exists")
+        {}
     };
 
     class vertex_not_found_exception : public std::runtime_error
     {
     public:
         vertex_not_found_exception(VertexId id)
-          : std::runtime_error("vertex "+boost::lexical_cast<std::string>(id)+" not found") {}
+            : std::runtime_error("vertex " +
+                    boost::lexical_cast<std::string>(id) + " not found")
+        {}
     };
 
     class block_already_exists_exception : public std::runtime_error
     {
     public:
         block_already_exists_exception(BlockId id)
-          : std::runtime_error("block "+boost::lexical_cast<std::string>(id)+" already exists") {}
+            : std::runtime_error("block " +
+                boost::lexical_cast<std::string>(id) + " already exists")
+        {}
     };
 
     class block_not_found_exception : public std::runtime_error
     {
     public:
         block_not_found_exception(BlockId id)
-          : std::runtime_error("block "+boost::lexical_cast<std::string>(id)+" not found") {}
+          : std::runtime_error("block " +
+                boost::lexical_cast<std::string>(id) + " not found")
+        {}
     };
 
     class attribute_not_found_exception : public std::runtime_error
     {
     public:
         attribute_not_found_exception(std::string const & description)
-          : std::runtime_error("attribute not found: " + description) {}
+            : std::runtime_error("attribute not found: " + description)
+        {}
     };
 
     class time_sliced_partition_not_found_exception : public std::runtime_error
     {
     public:
         time_sliced_partition_not_found_exception(Timestamp time)
-          : std::runtime_error("time sliced partition that contains timestamp  "+boost::lexical_cast<std::string>(time)+" not found") {}
+            : std::runtime_error(
+                "time sliced partition that contains timestamp " +
+                    boost::lexical_cast<std::string>(time) + " not found")
+        {}
     };
 
     class time_sliced_partition_replacement_exception : public std::runtime_error
     {
     public:
-        time_sliced_partition_replacement_exception(std::string const & description)
-          : std::runtime_error("error in replacing time sliced partition(s): " + description) {}
+        time_sliced_partition_replacement_exception(
+            std::string const & description)
+            : std::runtime_error(
+                "error in replacing time sliced partition(s): " + description)
+        {}
     };
 
 

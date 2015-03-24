@@ -24,21 +24,53 @@ namespace intergdb { namespace core
             Block block;
             std::list<BlockId>::iterator iter;
         };
+
     public:
-        BlockManager(Conf const & conf, PartitionIndex & partitionIndex, MetaDataManager & meta);
+        BlockManager(Conf const & conf,
+                     PartitionIndex & partitionIndex,
+                     MetaDataManager & meta);
+
         Block const & getBlock(BlockId id);
-        Schema const & getEdgeSchema() const { return edgeSchema_; }
-        SchemaStats const & getEdgeSchemaStats() const { return meta_.getSchemaStats(); }
-        PartitionIndex & getPartitionIndex() { return partitionIndex_; }
+
+        Schema const & getEdgeSchema() const
+        {
+            return edgeSchema_;
+        }
+
+        SchemaStats const & getEdgeSchemaStats() const
+        {
+            return meta_.getSchemaStats();
+        }
+
+        PartitionIndex & getPartitionIndex()
+        {
+            return partitionIndex_;
+        }
+
         void addBlock(Block & data, bool setId=true);
+
         void updateBlock(Block const & block);
+
         void removeBlock(BlockId blockId);
-        double getHitRatio() { return hitCount_/static_cast<double>(reqCount_); }
-        size_t getNumIOReads() const { return nIOReads_; }
-        size_t getNumIOWrites() const { return nIOWrites_; }
+
+        double getHitRatio()
+        {
+            return hitCount_/static_cast<double>(reqCount_);
+        }
+
+        size_t getNumIOReads() const
+        {
+            return nIOReads_;
+        }
+
+        size_t getNumIOWrites() const
+        {
+            return nIOWrites_;
+        }
+
     private:
         void findNextBlockId();
-    private:
+
         size_t nIOReads_;
         size_t nIOWrites_;
         size_t reqCount_;
@@ -52,6 +84,5 @@ namespace intergdb { namespace core
         MetaDataManager & meta_;
         BlockId & nextBlockId_;
     };
-
 } } /* namespace */
 
