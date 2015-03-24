@@ -28,18 +28,6 @@ string QuerySummary::toString() const
 }
 
 string QueryWorkload::toString() const
-<<<<<<< HEAD
-{
-  string str = "Attributes:\n";
-  for (Attribute const & attribute : attributes_)
-    str += "\t" + attribute.toString() + "\n";
-  str += "Queries:\n";
-  for (QuerySummary const & query : queries_) {
-      str += "\t" + query.toString()
-          + ", frequency: " + to_string(getFrequency(query)) + "\n";
-  }
-  return str;
-=======
 {
     std::stringstream ss;
 
@@ -62,9 +50,6 @@ string QueryWorkload::toString() const
     }
     ss << endl;
   return ss.str();
-
-
->>>>>>> d46fdfb33655b96f38f127fa0055132ece5456d1
 }
 
 
