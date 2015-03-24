@@ -176,10 +176,10 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
 }
 
 void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
-                                             std::vector< std::unique_ptr<core::InteractionGraph> > & graphs,
-                                             uint64_t& tsStart,
-                                             uint64_t& tsEnd,
-                                             std::unordered_set<int64_t> & vertices)
+    std::vector< std::unique_ptr<core::InteractionGraph>> & graphs,
+    uint64_t& tsStart,
+    uint64_t& tsEnd,
+    std::unordered_set<int64_t> & vertices)
 {
     using namespace boost;
     {
