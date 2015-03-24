@@ -67,7 +67,7 @@ void VsBlockSize::setUp()
             boost::filesystem::create_directory(pathAndName);
         }
 
-#ifndef RECREATE
+#ifdef RECREATE
         // Clean up anything that is in the directory
         boost::filesystem::path path_to_remove(pathAndName);
         for (boost::filesystem::directory_iterator end_dir_it,
@@ -78,8 +78,8 @@ void VsBlockSize::setUp()
 #endif
         // Create the graph conf, one for each block size
         Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
-        conf.blockSize() = blockSize * 1024;
-        conf.blockBufferSize() = blockBufferSize_;
+        conf.setBlockSize(blockSize * 1024);
+        conf.setBlockBufferSize(blockBufferSize_);
         confs_.push_back(conf);
 
         // Create a graph for each block size

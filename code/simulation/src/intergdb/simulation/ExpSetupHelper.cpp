@@ -52,11 +52,6 @@ Conf ExpSetupHelper::createGraphConf(string const& dbDirPath,
                 {"hashTags", DataType::STRING},
                 {"text", DataType::STRING}
             });
-    conf.blockSize() = 1024; // num bytes
-    conf.windowSize() = 10*1000; // num edges
-    conf.blockBufferSize() = 100; // num blocks
-    conf.vertexDataBufferSize() = 100*1000; // num verices
-    conf.expirationMapSize() = 1000; // num edges (0.1)
     return conf;
 }
 
@@ -133,7 +128,9 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
     function<void (uint64_t time,
                    int64_t from,
                    vector<int64_t> const& tos,
-                   Tweet const& tweets)> visitor, uint64_t& tsStart, uint64_t& tsEnd)
+                   Tweet const& tweets)> visitor,
+                   uint64_t& tsStart,
+                   uint64_t& tsEnd)
 {
     using namespace boost::filesystem;
     tsStart = std::numeric_limits<uint64_t>::max();
@@ -201,21 +198,28 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
         }
     }
     {
-        scanTweets(dirPath, [&] (uint64_t time,
+        int i = 0;
+        Timestamp lastTimestamp = 0;
+        scanTweets(dirPath, [&] (uint64_t timestamp,
             int64_t from, vector<int64_t> const& tos, Tweet const& tweet)
         {
-            int i = 0;
+            if (timestamp != lastTimestamp)
+            {
+                i = 0;
+                lastTimestamp = timestamp;
+            }
             for (int64_t to : tos) {
                 string dir = (from>to) ? "l" : "s";
                 if (from != to) {
-                    for (auto iter = graphs.begin(); iter != graphs.end(); ++iter) {
-                        (*iter)->addEdge(from, to, time+(i++),
-                                       dir, tweet.time, tweet.tweetId, tweet.userId,
-                                       tweet.retweetId, tweet.inReplyToStatusId,
-                                       tweet.isTruncated, tweet.mentionedUsers,
-                                       tweet.hashTags, tweet.text);
-
+                    for (auto iter = graphs.begin(); iter != graphs.end();
+                         ++iter) {
+                        (*iter)->addEdge(from, to, timestamp + i,
+                            dir, tweet.time, tweet.tweetId, tweet.userId,
+                            tweet.retweetId, tweet.inReplyToStatusId,
+                            tweet.isTruncated, tweet.mentionedUsers,
+                            tweet.hashTags, tweet.text);
                     }
+                    i++;
                 }
             }
         }, tsStart, tsEnd);

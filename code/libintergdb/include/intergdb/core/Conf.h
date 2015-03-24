@@ -135,20 +135,17 @@ namespace intergdb { namespace core
             return windowSize_;
         }
 
-        size_t & windowSize()
-        {
-            return windowSize_;
-        }
-
         // in bytes
         size_t blockSize() const
         {
             return blockSize_;
         }
 
-        size_t & blockSize()
+        void setBlockSize(size_t blockSize)
         {
-            return blockSize_;
+            blockSize_ = blockSize;
+            expirationMapSize_ = std::max(windowSize_/100,
+                blockSize_/(sizeof(VertexId)+sizeof(Timestamp)));
         }
 
         // in blocks
@@ -157,18 +154,13 @@ namespace intergdb { namespace core
             return blockBufferSize_;
         }
 
-        size_t & blockBufferSize()
+        void setBlockBufferSize(size_t blockBufferSize)
         {
-            return blockBufferSize_;
+            blockBufferSize_ = blockBufferSize;
         }
 
         // in partitionings
         size_t partitioningBufferSize() const
-        {
-            return partitioningBufferSize_;
-        }
-
-        size_t & partitioningsBufferSize()
         {
             return partitioningBufferSize_;
         }
@@ -179,18 +171,8 @@ namespace intergdb { namespace core
             return vertexDataBufferSize_;
         }
 
-        size_t & vertexDataBufferSize()
-        {
-            return vertexDataBufferSize_;
-        }
-
         // number of expired edges to keep in memory
         size_t expirationMapSize() const
-        {
-            return expirationMapSize_;
-        }
-
-        size_t & expirationMapSize()
         {
             return expirationMapSize_;
         }

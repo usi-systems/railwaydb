@@ -179,6 +179,7 @@ namespace intergdb { namespace core
         HistoricalGraph hisg_;
         InMemoryGraph memg_;
         QueryCollector qcol_;
+        Timestamp lastTime_;
     };
 
     template<typename T1, typename... TN>
@@ -213,6 +214,8 @@ namespace intergdb { namespace core
     void InteractionGraph::addEdge(VertexId v, VertexId u, Timestamp time,/*=Helper::getCurrentTimestamp()*/ EdgeDataAttributes&&... edgeData)
     {
         assert(v!=u);
+        assert(time>lastTime_);
+        lastTime_ = time;
         getVertexData(v);
         getVertexData(u);
         std::shared_ptr<AttributeData> data(getEdgeSchema().newAttributeData());

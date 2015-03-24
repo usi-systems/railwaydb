@@ -25,6 +25,7 @@ void Candidate::setEdgeCount(ExpirationMap const & map,
                 presentVertices_[to]++;
             bool found = hasReverseEdge(map, headVertex, edge);
             if (found) {
+                assert(outEdgeCount_>0);
                 outEdgeCount_--;
                 SUEdge ie(headVertex, to);
                 if(internalEdges_.count(ie))
@@ -52,9 +53,10 @@ void Candidate::setEdgeCount(ExpirationMap const & map,
                 if(--internalEdges_[ie]==0)
                     internalEdges_.erase(ie);
             } else {
+                assert(outEdgeCount_>0);
                 outEdgeCount_--;
             }
-             edgeCount_--;
+            edgeCount_--;
             if (!found)
                 size_ -= getSerializedSizeOf(*edge.getData());
         }

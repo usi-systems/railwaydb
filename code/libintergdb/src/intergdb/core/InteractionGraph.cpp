@@ -6,7 +6,7 @@ using namespace intergdb::core;
 InteractionGraph::InteractionGraph(Conf const & conf)
   : conf_(conf), vman_(conf_),  meta_(conf_.getStorageDir()),
   hisg_(conf_, meta_), memg_(conf_, &hisg_, meta_.getSchemaStats()),
-  qcol_(conf_)
+  qcol_(conf_), lastTime_(0)
 {}
 
 void InteractionGraph::flush()
