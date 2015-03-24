@@ -42,11 +42,6 @@ namespace intergdb { namespace common
         attributes_.push_back(&attribute); 
     }
     
-    void setAttributes(std::vector<Attribute const *> const & attributes) 
-    { 
-        attributes_ = attributes; 
-    }
-    
     std::vector<Attribute const *> const & getAttributes() const 
     { 
         return attributes_; 
