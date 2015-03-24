@@ -94,7 +94,9 @@ double OptimalCommon::s(std::vector<Attribute> const & attributes, common::Schem
 
 int OptimalCommon::accesses(std::vector<QuerySummary> const & queries, int q, int a)
 {
+    std::cout << "OptimalCommon::accesses" << std::endl;        
     for (auto & attribute : queries[q].getAttributes()) {
+        std::cout << "attribute->getIndex()" << attribute->getIndex() << std::endl;
         if (attribute->getIndex() == a) return 1;
     }
     return 0;
@@ -186,6 +188,9 @@ void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload)
 {
     e->P = workload->getAttributes().size();
     e->Q = workload->getQuerySummaries().size();
+
+    std::cout << "create_env e->Q " << e->Q << std::endl;
+
     e->A = workload->getAttributes().size();
     
     e->num_vars 
@@ -320,6 +325,8 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     storageThreshold_ = storageThreshold;
     create_env(&e, &workload);
     init_ctx(&e, &ctx);
+
+    std::cout << "************ OptimalCommon::solve ************" << std::endl;
 
     error = GRBnewmodel(ctx.env, &ctx.model, "storage_optimizer", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) goto QUIT;

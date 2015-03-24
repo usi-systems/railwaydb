@@ -30,10 +30,10 @@ namespace intergdb { namespace simulation
             uint64_t tsEnd_;
             std::unordered_set<int64_t> vertices_;
             double queryZipfParam_ = 0.5;
-            int numRuns_ = 3;
+            int numRuns_ = 1;
             int numQueries_ = 10;
             int blockBufferSize_ = 5; /* 5 blocks */
-            std::vector<int> blockSizes_ = { 1, 2, 4, 8, 16, 32, 64 };
+            std::vector<int> blockSizes_ = { 1, 2, 4, 8}; //, 16, 32, 64 };
         public:
             VsBlockSize();
 
