@@ -277,6 +277,8 @@ void VsBlockSize::process()
                     std::cout << "Summary: "
                               << summary.toString() << std::endl;
 
+                std::cout << "Solver: " <<  solver->getClassName() << std::endl;
+
                 std::cout << solverSolution.toString() << std::endl;
                 TimeSlicedPartitioning newParting{}; // -inf to inf
                 newParting.getPartitioning() = solverSolution.toStringSet();
