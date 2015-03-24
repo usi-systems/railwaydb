@@ -6,8 +6,8 @@
 using namespace std;
 using namespace intergdb::core;
 
-bool NeighborList::getEdgeAttributeData(VertexId to, Timestamp tm,
-        std::shared_ptr<AttributeData> & sdata)
+bool NeighborList::getEdgeAttributeData(
+    VertexId to, Timestamp tm, std::shared_ptr<AttributeData> & sdata)
 {
     bool found = false;
     Edge tmEdge(to, tm, std::shared_ptr<AttributeData>());

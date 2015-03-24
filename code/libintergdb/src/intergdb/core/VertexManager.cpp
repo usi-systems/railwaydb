@@ -24,7 +24,7 @@ VertexManager::VertexManager(Conf const & conf)
     db_.reset(db);
 }
 
-std::shared_ptr<AttributeData> VertexManager::getVertexData(VertexId id)
+shared_ptr<AttributeData> VertexManager::getVertexData(VertexId id)
 {
     reqCount_++;
     auto it = cache_.find(id);
@@ -40,14 +40,16 @@ std::shared_ptr<AttributeData> VertexManager::getVertexData(VertexId id)
     } else {
         NetworkByteBuffer keyBuf(sizeof(id));
         keyBuf << id;
-        leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
+        leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()),
+                           keyBuf.getSerializedDataSize());
         std::string value;
         leveldb::Status status = db_->Get(leveldb::ReadOptions(), key, &value);
         if (status.IsNotFound())
             throw vertex_not_found_exception(id);
         else if (!status.ok())
             throw std::runtime_error(status.ToString());
-        NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(const_cast<char *>(value.data())), value.size());
+        NetworkByteBuffer dataBuf(reinterpret_cast<unsigned char *>(
+            const_cast<char *>(value.data())), value.size());
         VertexDataAndIdIter & dataAndIter = cache_[id];
         dataAndIter.data.reset(vertexSchema_.newAttributeData());
         dataBuf >> *dataAndIter.data;
@@ -68,7 +70,8 @@ void VertexManager::addVertex(VertexId id, AttributeData const & data)
         throw vertex_already_exists_exception(id);
     NetworkByteBuffer keyBuf(sizeof(id));
     keyBuf << id;
-    leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()), keyBuf.getSerializedDataSize());
+    leveldb::Slice key(reinterpret_cast<char *>(keyBuf.getPtr()),
+                       keyBuf.getSerializedDataSize());
     std::string value;
     leveldb::Status status = db_->Get(leveldb::ReadOptions(), key, &value);
     if (status.ok())
@@ -77,7 +80,8 @@ void VertexManager::addVertex(VertexId id, AttributeData const & data)
         throw std::runtime_error(status.ToString());
     NetworkByteBuffer dataBuf;
     dataBuf << data;
-    leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()), dataBuf.getSerializedDataSize());
+    leveldb::Slice dataSlice(reinterpret_cast<char *>(dataBuf.getPtr()),
+                             dataBuf.getSerializedDataSize());
     status = db_->Put(leveldb::WriteOptions(), key, dataSlice);
     if (!status.ok())
         throw std::runtime_error(status.ToString());

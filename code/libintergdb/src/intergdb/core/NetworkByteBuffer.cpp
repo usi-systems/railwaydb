@@ -38,7 +38,8 @@ NetworkByteBuffer::NetworkByteBuffer(NetworkByteBuffer const & r)
 }
 
 NetworkByteBuffer::NetworkByteBuffer(NetworkByteBuffer & r, bool isDestructive)
-    : autoDealloc(true), buf(NULL), size(r.size), icursor(r.icursor), ocursor(r.ocursor)
+    : autoDealloc(true), buf(NULL), size(r.size),
+    icursor(r.icursor), ocursor(r.ocursor)
 {
     // a destructive copy will destroy the original object
     if(isDestructive) {
@@ -98,6 +99,3 @@ NetworkByteBuffer::~NetworkByteBuffer()
         buf = NULL;
     }
 }
-
-
-

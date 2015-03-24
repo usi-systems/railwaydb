@@ -29,51 +29,61 @@ void BlockStats::update(Candidate const & candidate)
 }
 
 ExpirationMap::ExpirationMap(Conf const & conf, HistoricalGraph * histg)
-    : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()), conf_(conf), histg_(histg), edgeSchema_(conf.getEdgeSchema())
+    : stats_(conf), size_(0), maxSize_(2*conf.expirationMapSize()),
+    conf_(conf), histg_(histg), edgeSchema_(conf.getEdgeSchema())
 {
     locMetric_ = conf.smartLayoutConf().localityMetric();
     hvScorer_.reset(getHeadVertexScorer());
 }
 
-void ExpirationMap::addEdge(UEdge const & edge, std::shared_ptr<AttributeData> data)
+void ExpirationMap::addEdge(UEdge const & edge,
+                            std::shared_ptr<AttributeData> data)
 {
     typedef NeighborList::Edge NLEdge;
     {
         NeighborList & nlist = neigLists_[edge.getFirstVertex()];
         nlist.headVertex() = edge.getFirstVertex();
         nlist.addEdge(NLEdge(edge.getSecondVertex(), edge.getTime(), data));
-        scoreQueue_.updateItem(hvScorer_->score(nlist.headVertex(), 0), nlist.headVertex());
+        scoreQueue_.updateItem(hvScorer_->score(nlist.headVertex(), 0),
+                               nlist.headVertex());
     }
     {
         NeighborList & nlist = neigLists_[edge.getSecondVertex()];
         nlist.headVertex() = edge.getSecondVertex();
         nlist.addEdge(NLEdge(edge.getFirstVertex(), edge.getTime(), data));
-        scoreQueue_.updateItem(hvScorer_->score(nlist.headVertex(), 0), nlist.headVertex());
+        scoreQueue_.updateItem(hvScorer_->score(nlist.headVertex(), 0),
+                               nlist.headVertex());
     }
     size_+=2;
     if (size_>maxSize_)
         writeBlock();
 }
 
-ExpirationMap::HeadVertexMaxScorer::HeadVertexScorer * ExpirationMap::getHeadVertexScorer()
+ExpirationMap::HeadVertexMaxScorer::HeadVertexScorer *
+    ExpirationMap::getHeadVertexScorer()
 {
     if (conf_.layoutMode()==Conf::LM_Max ||
-            (conf_.layoutMode()==Conf::LM_Smart &&
-                    conf_.smartLayoutConf().initialCandidateSelectionPolicy()==Conf::SmartLayoutConf::ICS_Max))
+        (conf_.layoutMode()==Conf::LM_Smart &&
+            conf_.smartLayoutConf().initialCandidateSelectionPolicy() ==
+                Conf::SmartLayoutConf::ICS_Max))
         return new HeadVertexMaxScorer(this);
     if ((conf_.layoutMode()==Conf::LM_Smart &&
-            conf_.smartLayoutConf().initialCandidateSelectionPolicy()==Conf::SmartLayoutConf::ICS_Min))
+        conf_.smartLayoutConf().initialCandidateSelectionPolicy() ==
+            Conf::SmartLayoutConf::ICS_Min))
         return new HeadVertexMinScorer(this);
     if (conf_.layoutMode()==Conf::LM_Old ||
-            (conf_.layoutMode()==Conf::LM_Smart &&
-                    conf_.smartLayoutConf().initialCandidateSelectionPolicy()==Conf::SmartLayoutConf::ICS_Old))
+        (conf_.layoutMode()==Conf::LM_Smart &&
+            conf_.smartLayoutConf().initialCandidateSelectionPolicy() ==
+                Conf::SmartLayoutConf::ICS_Old))
         return new HeadVertexOldScorer(this);
     if ((conf_.layoutMode()==Conf::LM_Smart &&
-            conf_.smartLayoutConf().initialCandidateSelectionPolicy()==Conf::SmartLayoutConf::ICS_New))
+        conf_.smartLayoutConf().initialCandidateSelectionPolicy() ==
+            Conf::SmartLayoutConf::ICS_New))
         return new HeadVertexNewScorer(this);
     if (conf_.layoutMode()==Conf::LM_Random ||
-            (conf_.layoutMode()==Conf::LM_Smart &&
-                    conf_.smartLayoutConf().initialCandidateSelectionPolicy()==Conf::SmartLayoutConf::ICS_Random))
+        (conf_.layoutMode()==Conf::LM_Smart &&
+            conf_.smartLayoutConf().initialCandidateSelectionPolicy() ==
+                Conf::SmartLayoutConf::ICS_Random))
         return new HeadVertexRandScorer(this);
     assert(!"cannot happen");
     return 0;
@@ -139,16 +149,21 @@ void ExpirationMap::getBlock(Block & block)
         size_t i = nTaken[headVertex]++;
         NeighborList const & nlist = neigLists_[headVertex];
         auto const & edge = nlist.getNthOldestEdge(i);
-        block.addEdge(headVertex, edge.getToVertex(), edge.getTime(), edge.getData());
+        block.addEdge(headVertex, edge.getToVertex(), edge.getTime(),
+                      edge.getData());
         if (i==nlist.getEdges().size()-1)
             scoreQueue_.removeItem(headVertex);
         else
-            scoreQueue_.updateItem(hvScorer_->score(headVertex, i+1), headVertex);
+            scoreQueue_.updateItem(hvScorer_->score(headVertex, i+1),
+                                   headVertex);
     }
     if (block.getSerializedSize()>maxBlockSize) {
         block.removeNewestEdge(headVertex);
-        scoreQueue_.updateItem(hvScorer_->score(headVertex, block.getNeighborLists().count(headVertex)
-                ? block.getNeighborLists().find(headVertex)->second.getEdges().size() : 0), headVertex);
+        scoreQueue_.updateItem(
+            hvScorer_->score(headVertex,
+                block.getNeighborLists().count(headVertex)
+                ? block.getNeighborLists().find(headVertex)->second
+                    .getEdges().size() : 0), headVertex);
     }
     {
         Candidate candidate;
@@ -173,7 +188,8 @@ void ExpirationMap::getBlockSmart(Block & block)
         for (size_t j=0; j<k; ++j, ++it) {
             size_t headVertex = it->id();
             std::shared_ptr<Candidate> candidate(new Candidate());
-            size_t edgeCount = std::min(neigLists_[headVertex].getEdges().size(), l);
+            size_t edgeCount = std::min(
+                neigLists_[headVertex].getEdges().size(), l);
             assert(edgeCount<=neigLists_[headVertex].getEdges().size());
             candidate->setEdgeCount(*this, headVertex, edgeCount);
             candidates.insert(candidate);
@@ -225,7 +241,8 @@ void ExpirationMap::getBlockSmart(Block & block)
             auto const & nlist = neigLists_.find(headVertex)->second;
             for (size_t i=0; i<count; ++i) {
                 auto const & edge = nlist.getNthOldestEdge(i);
-                block.addEdge(headVertex, edge.getToVertex(), edge.getTime(), edge.getData());
+                block.addEdge(headVertex, edge.getToVertex(), edge.getTime(),
+                              edge.getData());
             }
         }
     }
@@ -241,7 +258,8 @@ bool ExpirationMap::extendCandidate(Candidate & candidate)
     size_t orgSize = candidate.getSerializedSize();
     Timestamp orgMaxTime = candidate.getNewestTime();
     size_t maxBlockSize = conf_.blockSize();
-    // consider all alternatives from the present vertices that increase the number of in edges
+    // consider all alternatives from the present vertices that
+    // increase the number of in edges
     // making a copy here !!!!
     auto vertices = candidate.getPresentVertices();
     for(auto it = vertices.begin(); it != vertices.end(); ++it) {
@@ -251,8 +269,10 @@ bool ExpirationMap::extendCandidate(Candidate & candidate)
             continue; // the other side was assigned to some other block
         auto const & nlist = nlIt->second;
         size_t orgEdgeCount = candidate.getEdgeCount(headVertex);
-        for (size_t edgeCount=orgEdgeCount+1, maxEdgeCount=nlist.getEdges().size();
-                edgeCount<=maxEdgeCount; edgeCount++) {
+        for (size_t edgeCount=orgEdgeCount+1,
+            maxEdgeCount=nlist.getEdges().size();
+            edgeCount<=maxEdgeCount; edgeCount++)
+        {
             size_t i = edgeCount-1; // the new one being added
             auto const & edge = nlist.getNthOldestEdge(i);
             if (edge.getTime()>orgMaxTime)
@@ -274,7 +294,7 @@ bool ExpirationMap::extendCandidate(Candidate & candidate)
         assert(orgEdgeCount<=neigLists_[headVertex].getEdges().size());
         candidate.setEdgeCount(*this, headVertex, orgEdgeCount);
     }
-    // if none found, consider all one step alternatives from the present vertices
+    // if none found, consider one step alternatives from the present vertices
     if (!found) {
         for(auto it = vertices.begin(); it != vertices.end(); ++it) {
             VertexId headVertex = it->first;
@@ -342,4 +362,3 @@ bool ExpirationMap::extendCandidate(Candidate & candidate)
     // return true if this candidate cannot be extended anymore
     return !found || (candidate.getSerializedSize()==maxBlockSize);
 }
-

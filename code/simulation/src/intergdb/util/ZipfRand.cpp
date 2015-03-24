@@ -8,12 +8,12 @@ using namespace intergdb::util;
 
 ZipfRand::ZipfRand(double zipfParam, size_t numItems)
     : z_(zipfParam), n_(numItems), c_(16384),
-      rng_(new mt19937()), uniDist_(0,1)
+    rng_(new mt19937()), uniDist_(0,1)
 {
     init();
 }
 
-void ZipfRand::init() 
+void ZipfRand::init()
 {
     m_ = ::min(n_, c_);
     p_.reserve(m_);
@@ -30,7 +30,7 @@ void ZipfRand::init()
         p_[i] = p_[i] + p_[i-1];
 }
 
-size_t ZipfRand::getRandomValue() 
+size_t ZipfRand::getRandomValue()
 {
     double v = uniDist_(*rng_);
     if (v<p_[m_-1])
@@ -53,4 +53,3 @@ void ZipfRand::setSeed(unsigned seed)
 {
     rng_.reset(new mt19937(seed));
 }
-

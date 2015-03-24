@@ -6,9 +6,11 @@
 using namespace std;
 using namespace intergdb::core;
 
-void Candidate::setEdgeCount(ExpirationMap const & map, VertexId headVertex, size_t n)
+void Candidate::setEdgeCount(ExpirationMap const & map,
+                             VertexId headVertex, size_t n)
 {
-    size_t const cn = (numEdges_.count(headVertex)==0) ? 0 : numEdges_[headVertex];
+    size_t const cn = (numEdges_.count(headVertex)==0)
+        ? 0 : numEdges_[headVertex];
     if (cn==n)
         return; // no change
     auto const & nlist = map.getNeighborLists().find(headVertex)->second;
@@ -70,7 +72,8 @@ void Candidate::setEdgeCount(ExpirationMap const & map, VertexId headVertex, siz
             presentVertices_.erase(headVertex);
     } else {
         numEdges_[headVertex] = n;
-        timestamps_.updateItem(nlist.getNthOldestEdge(n-1).getTime(), headVertex);
+        timestamps_.updateItem(
+            nlist.getNthOldestEdge(n-1).getTime(), headVertex);
     }
 }
 
@@ -99,7 +102,9 @@ bool Candidate::hasReverseEdge(ExpirationMap const & map, VertexId headVertex,
             }
         }
         //std::shared_ptr dummy;
-        //assert (!found || const_cast<NeighborList &>(nlist).getEdgeData(headVertex, edge.getTime(), dummy));
+        // assert (!found ||
+        //    const_cast<NeighborList &>(nlist).getEdgeData(
+        //        headVertex, edge.getTime(), dummy));
     }
     return found;
 }
@@ -120,18 +125,19 @@ std::ostream & Candidate::print(std::ostream & out, ExpirationMap const & map)
     return out;
 }
 
-double Candidate::getLocality(Conf::SmartLayoutConf::LocalityMetric metric) const
+double Candidate::getLocality(
+    Conf::SmartLayoutConf::LocalityMetric metric) const
 {
     double rConductance = 1.0 - outEdgeCount_ / ((double)edgeCount_);
     size_t nlistCount = numEdges_.size();
     double cohesiveness = (nlistCount==1) ? 0.5 :
             (internalEdges_.size() / (0.5*nlistCount*(nlistCount-1.0)));
     switch (metric) {
-    case Conf::SmartLayoutConf::LM_RCC_MIXED:
-        return rConductance * cohesiveness;
-    case Conf::SmartLayoutConf::LM_RCONDUCTANCE:
-        return rConductance;
-    case Conf::SmartLayoutConf::LM_COHESIVENESS:
-        return cohesiveness;
+        case Conf::SmartLayoutConf::LM_RCC_MIXED:
+            return rConductance * cohesiveness;
+        case Conf::SmartLayoutConf::LM_RCONDUCTANCE:
+            return rConductance;
+        case Conf::SmartLayoutConf::LM_COHESIVENESS:
+            return cohesiveness;
     }
 }

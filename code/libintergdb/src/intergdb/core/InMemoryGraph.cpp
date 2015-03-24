@@ -7,10 +7,13 @@
 using namespace std;
 using namespace intergdb::core;
 
-InMemoryGraph::InMemoryGraph(Conf const & conf, HistoricalGraph * hisg, SchemaStats & stats)
-    : vfifo_(conf.windowSize()), expm_(conf, hisg), stats_(stats) {}
+InMemoryGraph::InMemoryGraph(
+    Conf const & conf, HistoricalGraph * hisg, SchemaStats & stats)
+    : vfifo_(conf.windowSize()), expm_(conf, hisg), stats_(stats)
+{}
 
-void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_ptr<AttributeData> data)
+void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts,
+                            std::shared_ptr<AttributeData> data)
 {
     typedef NeighborList::Edge NLEdge;
     {
@@ -26,8 +29,9 @@ void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_pt
     UEdge edge(v, u, ts);
     vfifo_.addEdge(edge);
     //Timestamp lastExpired = 0;
-    while(vfifo_.hasExpiredEdges() /*||
-            (!vfifo_.isEmpty() && vfifo_.getOldestEdge().getTime()==lastExpired)*/) {
+    while(vfifo_.hasExpiredEdges()) /* ||
+      (!vfifo_.isEmpty() && vfifo_.getOldestEdge().getTime()==lastExpired)*/
+    {
         UEdge & oldEdge = vfifo_.getOldestEdge();
         //lastExpired = oldEdge.getTime();
         std::shared_ptr<AttributeData> data = removeEdge(oldEdge);
@@ -36,11 +40,11 @@ void InMemoryGraph::addEdge(VertexId v, VertexId u, Timestamp ts, std::shared_pt
     }
     // hook to keep track of data sizes
     {
-        for (auto const & indexTypePair : data->getFields()) {                      
-            stats_.incrCountAndBytes(indexTypePair.first, data->getFieldSize(indexTypePair.first));
-        }            
+        for (auto const & indexTypePair : data->getFields()) {
+            stats_.incrCountAndBytes(indexTypePair.first,
+                                     data->getFieldSize(indexTypePair.first));
+        }
     }
-
 }
 
 void InMemoryGraph::flush()
@@ -78,6 +82,3 @@ std::shared_ptr<AttributeData> InMemoryGraph::removeEdge(UEdge const & edge)
     }
     return data;
 }
-
-
-    

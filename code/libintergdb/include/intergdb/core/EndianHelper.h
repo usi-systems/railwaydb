@@ -15,8 +15,8 @@ namespace intergdb { namespace core {
     {
         T data;
         char rawData[sizeof (T)];
-    }
-    ;
+    };
+
     template <typename T>
     inline HostNetworkTmp<T> host_to_network(const T& v)
     {
@@ -47,6 +47,7 @@ namespace intergdb { namespace core {
         dst.data = htons(v);
         return dst;
     }
+
     template<>
     inline HostNetworkTmp<uint16_t> host_to_network(const uint16_t& v)
     {
@@ -54,6 +55,7 @@ namespace intergdb { namespace core {
         dst.data = htons(v);
         return dst;
     }
+
     template<>
     inline HostNetworkTmp<int32_t> host_to_network(const int32_t& v)
     {
@@ -61,6 +63,7 @@ namespace intergdb { namespace core {
         dst.data = htonl(v);
         return dst;
     }
+
     template<>
     inline HostNetworkTmp<uint32_t> host_to_network(const uint32_t& v)
     {
