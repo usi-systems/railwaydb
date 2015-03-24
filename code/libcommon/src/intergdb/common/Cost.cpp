@@ -70,8 +70,8 @@ double Cost::getIOCost(Partitioning const & partitioning,
                        QueryWorkload const & workload)
 {
     unordered_set<Attribute const *> attributes;
-    for (Attribute const & attrb : workload.getAttributes())
-        attributes.insert(&attrb);
+    for (Attribute const * attrb : workload.getAttributes())
+        attributes.insert(attrb);
     return getIOCost(partitioning.getPartitions(), workload, attributes);
 }
 
@@ -113,8 +113,8 @@ double Cost::getStorageOverhead(Partitioning const & partitioning,
 {
     auto const & attributes = workload.getAttributes();
     Partition wholePartition;
-    for (Attribute const & attribute : attributes)
-        wholePartition.addAttribute(&attribute);
+    for (Attribute const * attribute : attributes)
+        wholePartition.addAttribute(attribute);
     double blockSize = getPartitionSize(wholePartition);
     double totalPartitionSize = 0.0;
     for (Partition const & partition : partitioning.getPartitions())

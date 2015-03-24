@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <iostream>
-#include <string>       
-#include <iostream>     
-#include <sstream>      
+#include <string>
+#include <iostream>
+#include <sstream>
 
 #include <intergdb/common/SystemConstants.h>
 #include <intergdb/common/Partition.h>
@@ -23,11 +23,11 @@ private:
         bool error = GRBloadenv(&env_, NULL);
         if (error) {
             cerr << "ERROR in GRBloadenv: " << GRBgeterrormsg(env_) << endl;
-            throw runtime_error(GRBgeterrormsg(env_)); 
+            throw runtime_error(GRBgeterrormsg(env_));
         }
     }
 public:
-    ~GRBEnvironment() 
+    ~GRBEnvironment()
     {
         GRBfreeenv(env_);
     }
@@ -35,7 +35,7 @@ public:
     {
         return env_;
     }
-    static GRBEnvironment & instance() 
+    static GRBEnvironment & instance()
     {
         static GRBEnvironment genv;
         return genv;
@@ -83,11 +83,11 @@ double OptimalCommon::alpha()
     return storageThreshold_;
 }
 
-double OptimalCommon::s(std::vector<Attribute> const & attributes, common::SchemaStats const & stats)
+double OptimalCommon::s(std::vector<Attribute const *> const & attributes, common::SchemaStats const & stats)
 {
     double sum = 0;
-    for (auto & attribute : attributes) {
-        sum += stats.getAvgSize(attribute.getIndex());
+    for (auto attribute : attributes) {
+        sum += stats.getAvgSize(attribute->getIndex());
     }
     return sum;
 }
@@ -103,8 +103,8 @@ int OptimalCommon::accesses(std::vector<QuerySummary> const & queries, int q, in
 void OptimalCommon::name_variables(var_env *e, char** vname)
 {
     int j = 0;
-    
-    std::stringbuf buffer; 
+
+    std::stringbuf buffer;
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             std::ostringstream oss;
@@ -116,7 +116,7 @@ void OptimalCommon::name_variables(var_env *e, char** vname)
 
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
-            std::ostringstream oss;            
+            std::ostringstream oss;
             oss << "y_p" << (p+1) << "_q" << (q+1);
             vname[j] = strdup(oss.str().c_str());
             j++;
@@ -150,7 +150,7 @@ void OptimalCommon::print_name_variables(var_env *e, char** vname)
     cerr << "---- xs ----" << endl;
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
-            cerr << j << ":" << " " << x(e,a,p) << " " << vname[x(e,a,p)] << endl;            
+            cerr << j << ":" << " " << x(e,a,p) << " " << vname[x(e,a,p)] << endl;
             j++;
         }
     }
@@ -158,7 +158,7 @@ void OptimalCommon::print_name_variables(var_env *e, char** vname)
     cerr << "---- ys ----" << endl;
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
-            cerr << j << ":" << " " << y(e,p,q) << " " << vname[ y(e,p,q) ] << endl;          
+            cerr << j << ":" << " " << y(e,p,q) << " " << vname[ y(e,p,q) ] << endl;
             j++;
         }
     }
@@ -167,7 +167,7 @@ void OptimalCommon::print_name_variables(var_env *e, char** vname)
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             for (int q = 0; q < e->Q; ++q) {
-                cerr << j << ":" << " " <<  z(e,a,p,q) << " " << vname[z(e,a,p,q)] << endl;          
+                cerr << j << ":" << " " <<  z(e,a,p,q) << " " << vname[z(e,a,p,q)] << endl;
                 j++;
             }
         }
@@ -175,14 +175,14 @@ void OptimalCommon::print_name_variables(var_env *e, char** vname)
 
     cerr << "---- us ----" << endl;
     for (int p = 0; p < e->P; ++p) {
-        cerr << j << ":" << " " << u(e,p) << " " << vname[u(e,p)] << endl;          
+        cerr << j << ":" << " " << u(e,p) << " " << vname[u(e,p)] << endl;
         j++;
     }
 
     cerr << e->num_vars << " " << j << endl;
 }
 
-void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload) 
+void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload)
 {
     e->P = workload->getAttributes().size();
     e->Q = workload->getQuerySummaries().size();
@@ -190,20 +190,20 @@ void OptimalCommon::create_env(var_env *e, QueryWorkload const * workload)
     std::cout << "create_env e->Q " << e->Q << std::endl;
 
     e->A = workload->getAttributes().size();
-    
-    e->num_vars 
+
+    e->num_vars
         = (e->A * e->P)         /* xs */
         + (e->P * e->Q)         /* ys */
         + (e->A * e->P * e->Q)  /* zs */
         + (e->P);               /* us */
-    
+
     e->x_offset = 0;
     e->y_offset = e->A * e->P ;
     e->z_offset = e->y_offset + (e->P * e->Q);
     e->u_offset = e->z_offset + (e->A * e->P * e->Q);
 }
 
-void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx) 
+void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx)
 {
     ctx->obj = new double[e->num_vars];
     ctx->vtype = new char[e->num_vars];
@@ -216,17 +216,17 @@ void OptimalCommon::init_ctx(var_env *e, gurobi_ctx *ctx)
 
 void OptimalCommon::variables(var_env *e, gurobi_ctx *ctx)
 {
-    /* set variables types */    
+    /* set variables types */
     for (int i = 0; i < e->num_vars; ++i) {
         ctx->vtype[i] = GRB_BINARY;
     }
-    
-    /* give variables meaningful names */    
+
+    /* give variables meaningful names */
     name_variables(e, ctx->vname);
 }
 
 /* objective coefficients for each of the variables */
-void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload, common::SchemaStats const & stats) 
+void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const * workload, common::SchemaStats const & stats)
 {
 
     std::vector<QuerySummary> queries = workload->getQuerySummaries();
@@ -237,8 +237,8 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
             ctx->obj[x(e,a,p)] = 0;
         }
     }
-    
-    double val = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e() 
+
+    double val = (SystemConstants::edgeIdSize + SystemConstants::timestampSize) * c_e()
         + (SystemConstants::headVertexSize + SystemConstants::numEntriesSize) * c_n();
 
     for (int q = 0; q < e->Q; ++q) {
@@ -246,7 +246,7 @@ void OptimalCommon::objective(var_env *e, gurobi_ctx *ctx, QueryWorkload const *
         for (int p = 0; p < e->P; ++p) {
             ctx->obj[y(e,p,q)] = val * workload->getFrequency(queries[q]);
         }
-    
+
         for (int a = 0; a < e->A; ++a) {
             for (int p = 0; p < e->P; ++p) {
                 ctx->obj[z(e,a,p,q)] = stats.getAvgSize(workload->getAttribute(a).getIndex()) * c_e() * workload->getFrequency(queries[q]);
@@ -303,7 +303,7 @@ int OptimalCommon::solve_model(var_env *e, gurobi_ctx *ctx)
 void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
 {
     if (ctx->vname) {
-        for(int i = 0; i < e->num_vars; ++i) 
+        for(int i = 0; i < e->num_vars; ++i)
             free(ctx->vname[i]);
         delete [] ctx->vname;
     }
@@ -311,7 +311,7 @@ void OptimalCommon::cleanup(var_env *e, gurobi_ctx *ctx)
     if (ctx->vtype) delete [] ctx->vtype;
     if (ctx->ind) delete [] ctx->ind;
     if (ctx->val) delete [] ctx->val;
-    if (ctx->sol) delete [] ctx->sol; 
+    if (ctx->sol) delete [] ctx->sol;
     GRBfreemodel(ctx->model);
 }
 
@@ -336,7 +336,7 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     objective(&e, &ctx, &workload, stats);
 
     /* Add variables */
-    error = GRBaddvars(ctx.model, e.num_vars, 0, NULL, NULL, NULL, 
+    error = GRBaddvars(ctx.model, e.num_vars, 0, NULL, NULL, NULL,
                        ctx.obj, NULL, NULL, ctx.vtype,
                        ctx.vname /*NULL if you want default names */);
     if (error) goto QUIT;
@@ -345,13 +345,13 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
     if (error) goto QUIT;
 
     error = GRBupdatemodel(ctx.model);
-    if (error) goto QUIT; 
+    if (error) goto QUIT;
 
     error = constraints(&e, &ctx, &workload, stats);
     if (error) goto QUIT;
 
     error = solve_model(&e, &ctx);
-    if (error) goto QUIT; 
+    if (error) goto QUIT;
 
     {
         Partitioning partitioning;
@@ -360,10 +360,10 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
             Partition partition;
             for (int a = 0; a < e.A; ++a) {
                 j = x(&e,a,p);
-                if (ctx.sol[j] == 1) 
+                if (ctx.sol[j] == 1)
                     partition.addAttribute(&workload.getAttribute(a));
             }
-            if (partition.numAttributes() > 0) 
+            if (partition.numAttributes() > 0)
                 partitioning.addPartition(partition);
         }
         cleanup(&e, &ctx);
@@ -373,7 +373,7 @@ Partitioning OptimalCommon::solve(QueryWorkload const & workload, double storage
 QUIT:
     cerr << "ERROR: " << GRBgeterrormsg(ctx.env) << endl;
     cleanup(&e, &ctx);
-    throw runtime_error(GRBgeterrormsg(ctx.env)); 
+    throw runtime_error(GRBgeterrormsg(ctx.env));
     return *((Partitioning *)nullptr);
 }
 

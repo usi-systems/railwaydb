@@ -11,15 +11,15 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning PartitionPerAttribute::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats) 
+Partitioning PartitionPerAttribute::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats)
 {
     Partition partition;
     Partitioning partitioning;
-    for (auto & attribute : workload.getAttributes()) {
+    for (Attribute const * attribute : workload.getAttributes()) {
         partition.clearAttributes();
-        partition.addAttribute(&attribute);
+        partition.addAttribute(attribute);
         partitioning.addPartition(partition);
-    }  
+    }
     return partitioning;
 }
-   
+

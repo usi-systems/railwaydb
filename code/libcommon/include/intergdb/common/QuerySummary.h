@@ -17,10 +17,6 @@ namespace intergdb { namespace common
             : attributes_(attributes)
         {
             std::sort(attributes_.begin(), attributes_.end());
-
-            for (auto a : attributes_)
-                std::cout << a->getIndex() << " ";
-            std::cout << std::endl;
             hash_ = hash();
         }
 

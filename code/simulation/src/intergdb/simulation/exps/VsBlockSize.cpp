@@ -162,7 +162,6 @@ void VsBlockSize::runWorkload(
     }
 }
 
-
 std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes)
 {
     util::ZipfRand queryGen_(queryZipfParam_, numQueryTypes);
@@ -238,7 +237,6 @@ void VsBlockSize::process()
         SolverFactory::instance().makeOptimalNonOverlapping(),
         SolverFactory::instance().makeHeuristicNonOverlapping()
     };
-
 
     for (auto solver : solvers) {
         edgeIO.push_back(util::RunningStat());

@@ -86,7 +86,8 @@ namespace intergdb { namespace simulation
         }
 
         std::pair<common::QueryWorkload, common::SchemaStats>
-          getQueryWorkloadAndStats();
+            getQueryWorkloadAndStats(
+                std::vector<std::unique_ptr<Attribute>> & attributes);
 
         std::vector<core::FocusedIntervalQuery> getQueries(
             core::InteractionGraph * graph,

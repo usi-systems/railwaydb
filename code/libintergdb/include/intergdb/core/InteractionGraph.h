@@ -162,7 +162,7 @@ namespace intergdb { namespace core
             return meta_.getSchemaStats();
         }
 
-        std::map<BucketId,common::QueryWorkload> & getWorkloads()
+        std::map<BucketId,common::QueryWorkload> const & getWorkloads()
         {
             return qcol_.getWorkloads();
         }

@@ -114,7 +114,9 @@ void VsStorageOverheadThreshold::process()
     int j;
     for (double sot : storageOverheadThresholds) {
         for (int i = 0; i < numRuns; i++) {
-            auto workloadAndStats = simConf.getQueryWorkloadAndStats();
+            vector<std::unique_ptr<Attribute>> allAttributes;
+            auto workloadAndStats =
+                simConf.getQueryWorkloadAndStats(allAttributes);
             QueryWorkload workload = workloadAndStats.first;
             stats = workloadAndStats.second;
             j = 0;

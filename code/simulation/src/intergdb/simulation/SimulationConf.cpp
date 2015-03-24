@@ -28,16 +28,18 @@ SimulationConf::SimulationConf()
     queryTypeFrequencyGen_.setSeed(seed++);
 }
 
-std::pair<common::QueryWorkload, common::SchemaStats>
-    SimulationConf::getQueryWorkloadAndStats()
+pair<common::QueryWorkload, common::SchemaStats>
+    SimulationConf::getQueryWorkloadAndStats(
+        vector<unique_ptr<Attribute>> & allAttributes)
 {
     QueryWorkload workload;
     SchemaStats stats;
     for (size_t i=0, iu=getAttributeCount(); i<iu; ++i)  {
         double attributeSize =
           attributeSizes_[attributeSizeGen_.getRandomValue()];
-        workload.addAttribute(Attribute(i, std::to_string(i),
-                              common::Attribute::UNDEFINED));
+        allAttributes.emplace_back(new Attribute(i, std::to_string(i),
+            common::Attribute::UNDEFINED));
+        workload.addAttribute(*allAttributes.back());
         stats.incrCountAndBytes(i, attributeSize);
     }
     mt19937 rndGen(time(NULL));
@@ -52,7 +54,7 @@ std::pair<common::QueryWorkload, common::SchemaStats>
         for (size_t j=0; j<queryLength; ++j) {
             uniform_int_distribution<> udis(0, attributes.size()-j-1);
             size_t k = udis(rndGen);
-            query.addAttribute(attributes[attributeIndices[k]]);
+            query.addAttribute(*attributes[attributeIndices[k]]);
             swap(attributeIndices[k], attributeIndices[attributes.size()-j-1]);
         }
         double queryFrequency = queryTypeFrequencyGen_.getItemFrequency(

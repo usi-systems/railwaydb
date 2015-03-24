@@ -93,8 +93,8 @@ void Block::addEdge(VertexId headVertex, VertexId to, Timestamp tm,
     if (neigs_.count(to)>0) {
         auto & nlist = neigs_[to];
         bool there = nlist.getEdgeAttributeData(headVertex, tm, sdata);
-        if (!(!there || (sdata.get()==data.get())))
-            std::cerr << *this << std::endl;
+        // if (!(!there || (sdata.get()==data.get())))
+        //    std::cerr << *this << std::endl;
         assert(!there || (sdata.get()==data.get()));
     }
     if (sdata.get()==nullptr) {

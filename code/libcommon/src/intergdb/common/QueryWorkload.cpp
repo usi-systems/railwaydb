@@ -31,8 +31,8 @@ string QueryWorkload::toString() const
 {
     std::stringstream ss;
     ss << "Attributes:" << endl;
-    for (Attribute const & attribute : attributes_)
-        ss << "\t" << attribute.toString() << endl;
+    for (Attribute const * attribute : attributes_)
+        ss << "\t" << attribute->toString() << endl;
     ss << "Queries:" << endl;
     for (QuerySummary const & query : queries_)
         ss  << "\t" << query.toString()
@@ -73,11 +73,13 @@ void QueryWorkload::addQuery(Query const & q)
         for (auto name : q.getAttributeNames()) {
             auto it = nameToAttribute_.find(name);
             assert(it != nameToAttribute_.end());
+            /*
             std::cout << "*** QueryWorkload::addQuery "
                       << it->first
                       << " "
                       << it->second->getIndex()
                       << std::endl;
+            */
             attributes.push_back(it->second);
         }
         QuerySummary summary(attributes);

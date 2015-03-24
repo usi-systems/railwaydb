@@ -16,42 +16,33 @@ namespace intergdb { namespace common
         {}
 
         QueryWorkload(std::vector<Attribute> const & attributes)
-            : attributes_(attributes),  totalQueries_(0)
+            : totalQueries_(0)
         {
             for (auto &attribute : attributes)
             {
+                attributes_.push_back(&attribute);
                 nameToAttribute_[attribute.getName()] = &attribute;
             }
         }
 
         QueryWorkload(std::vector<Attribute> const & attributes,
-            std::vector<QuerySummary> const & queries)
-            : attributes_(attributes), queries_(queries), totalQueries_(0)
+                      std::vector<QuerySummary> const & queries)
+            : QueryWorkload(attributes)
         {
-            for (auto &attribute : attributes)
-                nameToAttribute_[attribute.getName()] = &attribute;
+            queries_ = queries;
         }
 
         void addAttribute(Attribute const & attribute)
         {
-            attributes_.push_back(attribute);
+            attributes_.push_back(&attribute);
         }
 
         Attribute const & getAttribute(int index) const
         {
-            return attributes_.at(index);
+            return *attributes_.at(index);
         }
 
-        void setAttributes(std::vector<Attribute> const & attributes)
-        {
-            attributes_ = attributes;
-        }
-
-        std::vector<Attribute> const & getAttributes() const {
-            return attributes_;
-        }
-
-        std::vector<Attribute> & getAttributes()
+        std::vector<Attribute const *> const & getAttributes() const
         {
             return attributes_;
         }
@@ -80,7 +71,7 @@ namespace intergdb { namespace common
         void setFrequency(QuerySummary const & s, double f);
 
     private:
-        std::vector<Attribute> attributes_;
+        std::vector<Attribute const *> attributes_;
         std::vector<QuerySummary> queries_;
         std::unordered_map<Query, QuerySummary> summaries_;
         std::unordered_map<QuerySummary, double> counts_;

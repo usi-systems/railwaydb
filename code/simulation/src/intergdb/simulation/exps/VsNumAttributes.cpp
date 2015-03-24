@@ -103,7 +103,9 @@ void VsNumAttributes::process()
     for (double attributeCount : attributeCounts) {
         for (int i = 0; i < numRuns; i++) {
             simConf.setAttributeCount(attributeCount);
-            auto workloadAndStats = simConf.getQueryWorkloadAndStats();
+            vector<unique_ptr<Attribute>> allAttributes;
+            auto workloadAndStats =
+                simConf.getQueryWorkloadAndStats(allAttributes);
             QueryWorkload workload = workloadAndStats.first;
             stats = workloadAndStats.second;
             j = 0;

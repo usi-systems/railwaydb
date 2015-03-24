@@ -27,7 +27,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
     int j = 0;
     std::vector<QuerySummary> const & queries = workload->getQuerySummaries();
 
-    /* First set of constraints */    
+    /* First set of constraints */
     for (int a = 0; a < e->A; ++a) {
         j = 0;
         for (int p = 0; p < e->P; ++p) {
@@ -35,12 +35,12 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
             ctx->val[j] = 1.0;
             j++;
         }
-        error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val, 
+        error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val,
                              GRB_EQUAL, 1.0, NULL);
         if (error) return error;
     }
 
-    /* Second set of constraints */    
+    /* Second set of constraints */
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             j = 0;
@@ -51,13 +51,13 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
             }
             ctx->ind[j] = y(e,p,q);
             ctx->val[j] = -1.0;
-            error = GRBaddconstr(ctx->model, e->A + 1, ctx->ind, ctx->val, 
+            error = GRBaddconstr(ctx->model, e->A + 1, ctx->ind, ctx->val,
                                  GRB_GREATER_EQUAL, 0.0, NULL);
             if (error) return error;
         }
     }
 
-    /* Third set of constraints */    
+    /* Third set of constraints */
     for (int p = 0; p < e->P; ++p) {
         for (int q = 0; q < e->Q; ++q) {
             j = 0;
@@ -69,13 +69,13 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
                 ctx->val[j] = -(accesses(queries,q,a));
                 j++;
             }
-            error = GRBaddconstr(ctx->model, e->A + 1, ctx->ind, ctx->val, 
+            error = GRBaddconstr(ctx->model, e->A + 1, ctx->ind, ctx->val,
                                  GRB_GREATER_EQUAL, 0.0, NULL);
             if (error) return error;
         }
     }
 
-    /* Fourth set of constraints */    
+    /* Fourth set of constraints */
     for (int a = 0; a < e->A; ++a) {
         for (int p = 0; p < e->P; ++p) {
             for (int q = 0; q < e->Q; ++q) {
@@ -85,14 +85,14 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
                 ctx->val[1] = -1.0;
                 ctx->ind[2] = y(e,p,q);
                 ctx->val[2] = -1.0;
-                error = GRBaddconstr(ctx->model, 3, ctx->ind, ctx->val, 
+                error = GRBaddconstr(ctx->model, 3, ctx->ind, ctx->val,
                                      GRB_GREATER_EQUAL, -1.0, NULL);
-                if (error) return error;                
+                if (error) return error;
             }
         }
     }
-    
-    /* Fifth set of constraints */    
+
+    /* Fifth set of constraints */
     for (int p = 0; p < e->P; ++p) {
         j = 0;
         for (int a = 0; a < e->A; ++a) {
@@ -102,13 +102,13 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
         }
         ctx->ind[j] = u(e,p);
         ctx->val[j] = -1.0;
-        error = GRBaddconstr(ctx->model, e->A+1, ctx->ind, ctx->val, 
+        error = GRBaddconstr(ctx->model, e->A+1, ctx->ind, ctx->val,
                              GRB_GREATER_EQUAL, 0.0, NULL);
         if (error) return error;
 
     }
 
-    /* Sixth set of constraints */    
+    /* Sixth set of constraints */
     for (int p = 0; p < e->P; ++p) {
         j = 0;
         ctx->ind[j] = u(e,p);
@@ -118,23 +118,23 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
             ctx->ind[j] = x(e,a,p);
             ctx->val[j] = -1.0;
             j++;
-        }       
-        error = GRBaddconstr(ctx->model, e->A+1, ctx->ind, ctx->val, 
+        }
+        error = GRBaddconstr(ctx->model, e->A+1, ctx->ind, ctx->val,
                              GRB_GREATER_EQUAL, 0.0, NULL);
-        if (error) return error;    
+        if (error) return error;
     }
 
-    
-    auto attributes = workload->getAttributes();
+
+    auto const & attributes = workload->getAttributes();
     Cost cost(stats);
-    Partition part; 
-    for_each(attributes.begin(), attributes.end(), [&] (Attribute const & attr) {
-            part.addAttribute(&attr);            
+    Partition part;
+    for_each(attributes.begin(), attributes.end(), [&] (Attribute const * attr) {
+            part.addAttribute(attr);
         });
-    
+
     double limit = 1.0 + alpha() /  (1.0 - (s(workload->getAttributes(), stats) * c_e()) / cost.getPartitionSize(part));
 
-    /* 6th set of constraints */    
+    /* 6th set of constraints */
     j = 0;
     for (int p = 0; p < e->P; ++p) {
         int index = u(e,p);
@@ -142,7 +142,7 @@ int OptimalNonOverlapping::constraints(var_env *e, gurobi_ctx *ctx, QueryWorkloa
         ctx->val[j] = 1;
         j++;
     }
-    error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val, 
+    error = GRBaddconstr(ctx->model, e->P, ctx->ind, ctx->val,
                          GRB_LESS_EQUAL, limit, NULL);
     if (error) return error;
 

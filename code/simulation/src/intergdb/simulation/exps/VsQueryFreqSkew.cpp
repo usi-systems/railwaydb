@@ -103,7 +103,9 @@ void VsQueryFreqSkew::process()
     for (double queryFreqSkew : queryFreqSkews) {
         for (int i = 0; i < numRuns; i++) {
             simConf.setQueryTypeFrequencyZipfParam(queryFreqSkew);
-            auto workloadAndStats = simConf.getQueryWorkloadAndStats();
+            vector<unique_ptr<Attribute>> allAttributes;
+            auto workloadAndStats =
+                simConf.getQueryWorkloadAndStats(allAttributes);
             QueryWorkload workload = workloadAndStats.first;
             stats = workloadAndStats.second;
             j = 0;

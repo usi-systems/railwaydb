@@ -108,7 +108,9 @@ void VsNumQueryKinds::process()
     for (int queryTypeCount : queryTypeCounts) {
         for (int i = 0; i < numRuns; i++) {
             simConf.setQueryTypeCount(queryTypeCount);
-            auto workloadAndStats = simConf.getQueryWorkloadAndStats();
+            vector<std::unique_ptr<Attribute>> allAttributes;
+            auto workloadAndStats =
+                simConf.getQueryWorkloadAndStats(allAttributes);
             QueryWorkload workload = workloadAndStats.first;
             stats = workloadAndStats.second;
             j = 0;

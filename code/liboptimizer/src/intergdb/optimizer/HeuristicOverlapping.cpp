@@ -12,13 +12,16 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats) 
+Partitioning HeuristicOverlapping::solve(
+  QueryWorkload const & workload,
+  double storageThreshold,
+  SchemaStats const & stats)
 {
   Partitioning partitioning;
   auto const & allAttributes = workload.getAttributes();
   unordered_set<Attribute const *> missingAttributes;
-  for (auto const & attrb : allAttributes)
-    missingAttributes.insert(&attrb);
+  for (auto const * attrb : allAttributes)
+    missingAttributes.insert(attrb);
   for (QuerySummary const & query : workload.getQuerySummaries()) {
     Partition partition;
     for (Attribute const * attrb : query.getAttributes()) {
@@ -30,7 +33,7 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
   }
   if (missingAttributes.size()>0) {
     Partition partition;
-    for (Attribute const * attrb : missingAttributes) 
+    for (Attribute const * attrb : missingAttributes)
       partition.addAttribute(attrb);
     partitioning.addPartition(partition);
   }
@@ -48,8 +51,8 @@ Partitioning HeuristicOverlapping::solve(QueryWorkload const & workload, double 
         partitioning.mergePartitions(i, j);
         double newCost = costModel.getIOCost(partitioning, workload);
         Partition const & newP = partitions[i];
-        double newSize = costModel.getPartitionSize(newP);      
-        double cost = (newCost-oldCost) / (oldSize-newSize); 
+        double newSize = costModel.getPartitionSize(newP);
+        double cost = (newCost-oldCost) / (oldSize-newSize);
         minCostSolution.push(make_pair(i, j), cost);
         partitioning.splitPartition(i, j, lhsP, rhsP);
         // assert(partitioning==partitioningClone);

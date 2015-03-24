@@ -14,7 +14,7 @@ using namespace std;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
-Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats) 
+Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats)
 {
   Cost costModel(stats);
   MinCostSolution<Partitioning> minCostPart;
@@ -30,7 +30,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
   return minCostPart.getBestSolution();
 }
 
-Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions, SchemaStats const & stats) 
+Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions, SchemaStats const & stats)
 {
   // Initialize partitions
   vector<Partition> partitions;
@@ -41,15 +41,15 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
   //  - Order attributes in decreasing order of frequency
   vector<Attribute const *> attributes;
   unordered_map<Attribute const *, int> attrbFreq;
-  for (Attribute const & attrb : workload.getAttributes()) {
-    attrbFreq[&attrb] = 0;
-    attributes.push_back(&attrb);
+  for (Attribute const * attrb : workload.getAttributes()) {
+    attrbFreq[attrb] = 0;
+    attributes.push_back(attrb);
   }
   for (QuerySummary const & query : workload.getQuerySummaries())
     for (Attribute const * attrb : query.getAttributes())
       ++(attrbFreq[attrb]);
-  std::sort(begin(attributes), end(attributes), 
-    [&](Attribute const * lhs, Attribute const * rhs) 
+  std::sort(begin(attributes), end(attributes),
+    [&](Attribute const * lhs, Attribute const * rhs)
   {
     return attrbFreq[lhs] > attrbFreq[rhs];
   });
@@ -67,7 +67,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
     }
     Partition const * bestPart = minCostPart.getBestSolution();
     const_cast<Partition *>(bestPart)->addAttribute(attrb);
-  } 
+  }
 
   // Create a partitioning
   Partitioning partitioning;
