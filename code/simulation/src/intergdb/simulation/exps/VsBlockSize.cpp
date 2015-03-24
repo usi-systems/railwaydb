@@ -26,7 +26,7 @@ using namespace intergdb::optimizer;
 using namespace intergdb::simulation;
 
 #define RECREATE
-#undef RECREATE
+//#undef RECREATE
 
 VsBlockSize::VsBlockSize() { }
 
@@ -78,7 +78,7 @@ void VsBlockSize::setUp()
 #endif
         // Create the graph conf, one for each block size
         Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
-        conf.blockSize() = blockSize;
+        conf.blockSize() = blockSize * 1024;
         conf.blockBufferSize() = blockBufferSize_;
         confs_.push_back(conf);
 
@@ -91,7 +91,7 @@ void VsBlockSize::setUp()
 
     cout << " done." << endl;
 
-#ifndef RECREATE
+#ifdef RECREATE
     cout << " populateGraphFromTweets..." << endl;
     ExpSetupHelper::populateGraphFromTweets(
         "data/tweets", graphs_, tsStart_, tsEnd_, vertices_);

@@ -93,7 +93,7 @@ namespace intergdb { namespace simulation
             core::InteractionGraph * graph,
             uint64_t& tsStart,
             uint64_t& tsEnd,
-            std::unordered_set<int64_t> vertices);
+            std::unordered_set<int64_t> const & vertices);
 
     private:
         size_t attributeCount_ = 10;

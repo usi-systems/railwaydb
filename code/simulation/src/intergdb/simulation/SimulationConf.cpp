@@ -73,7 +73,7 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(
     InteractionGraph * graph,
     uint64_t& tsStart,
     uint64_t& tsEnd,
-    std::unordered_set<int64_t> vertices)
+    std::unordered_set<int64_t> const & vertices)
 {
     mt19937 rndGen(time(NULL));
     auto const & attributes = graph->getConf().getEdgeSchema().getAttributes();
@@ -102,7 +102,8 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(
     // used to get a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
-    NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev, 1.0, vertices.size());
+    NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
+                           0, vertices.size()-1);
 
     std::cout << "random vertices" << std::endl;
     // Create 1 random query for each set of attributeNames
