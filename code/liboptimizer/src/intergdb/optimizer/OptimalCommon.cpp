@@ -94,9 +94,7 @@ double OptimalCommon::s(std::vector<Attribute> const & attributes, common::Schem
 
 int OptimalCommon::accesses(std::vector<QuerySummary> const & queries, int q, int a)
 {
-    std::cout << "OptimalCommon::accesses" << std::endl;        
     for (auto & attribute : queries[q].getAttributes()) {
-        std::cout << "attribute->getIndex()" << attribute->getIndex() << std::endl;
         if (attribute->getIndex() == a) return 1;
     }
     return 0;
