@@ -73,13 +73,6 @@ void QueryWorkload::addQuery(Query const & q)
         for (auto name : q.getAttributeNames()) {
             auto it = nameToAttribute_.find(name);
             assert(it != nameToAttribute_.end());
-            /*
-            std::cout << "*** QueryWorkload::addQuery "
-                      << it->first
-                      << " "
-                      << it->second->getIndex()
-                      << std::endl;
-            */
             attributes.push_back(it->second);
         }
         QuerySummary summary(attributes);

@@ -78,7 +78,7 @@ void VsBlockSize::setUp()
 #endif
         // Create the graph conf, one for each block size
         Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
-        conf.setBlockSize(blockSize * 1024);
+        conf.setBlockSize(blockSize);
         conf.setBlockBufferSize(blockBufferSize_);
         confs_.push_back(conf);
 
@@ -91,18 +91,10 @@ void VsBlockSize::setUp()
 
     cout << " done." << endl;
 
-#ifdef RECREATE
     cout << " populateGraphFromTweets..." << endl;
     ExpSetupHelper::populateGraphFromTweets(
         "data/tweets", graphs_, tsStart_, tsEnd_, vertices_);
     cout << " done." << endl;
-#else
-    tsStart_ = 2147483647; // Hard coded values for specific test instance
-    tsEnd_ = 1368491654000;
-#endif
-
-    tsStart_--;
-    tsEnd_++;
 
     std::cout << "start " << tsStart_ << std::endl;
     std::cout << "stop " << tsEnd_ << std::endl;
@@ -149,17 +141,18 @@ void VsBlockSize::runWorkload(
     std::vector<int> indices)
 {
     int count = 0;
+    int sizes = 0;
     for (int i : indices) {
         std::cout << queries[i].toString() << std::endl;
         for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
              iqIt.isValid(); iqIt.next()) {
+            sizes += iqIt.getEdgeData()->getFields().size();
             count += 1;
-            std::cout << "queries[i] " << queries[i].toString() << std::endl;
-            std::cout << "+= " << iqIt.getToVertex() << std::endl;
         }
-        std::cout << "count " << count << std::endl;
-        std::cout << "----" << std::endl;
     }
+    assert (count != 0);
+    assert (sizes != 0);
+
 }
 
 std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes)
@@ -169,8 +162,8 @@ std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes)
     queryGen_.setSeed(seed++);
     vector<int> indices;
     for (int i = 0; i < numQueries_; ++i) {
-        // indices.push_back(queryGen_.getRandomValue());
-        indices.push_back(0);
+        indices.push_back(queryGen_.getRandomValue());
+        // indices.push_back(0);
     }
     return indices;
 }
@@ -271,9 +264,10 @@ void VsBlockSize::process()
                 std::cout << "Summary size: "
                     << workloads[i].getQuerySummaries().size() << std::endl;
 
-                for (auto summary : workloads[i].getQuerySummaries())
+                /*for (auto summary : workloads[i].getQuerySummaries())
                     std::cout << "Summary: "
                               << summary.toString() << std::endl;
+                */
 
                 std::cout << "Solver: " <<  solver->getClassName() << std::endl;
 

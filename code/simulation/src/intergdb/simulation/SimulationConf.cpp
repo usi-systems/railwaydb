@@ -105,10 +105,8 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(
     NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
                            0, vertices.size()-1);
 
-    std::cout << "random vertices" << std::endl;
     // Create 1 random query for each set of attributeNames
     for (auto attributeNames : queryAttributeNames) {
-        std::cout << vertexList[vertexIdGen.getRandomValue()] << std::endl;
         queries.push_back(FocusedIntervalQuery(
             vertexList[vertexIdGen.getRandomValue()],
             tsStart, tsEnd, attributeNames));

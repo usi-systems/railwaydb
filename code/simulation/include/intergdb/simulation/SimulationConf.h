@@ -100,7 +100,7 @@ namespace intergdb { namespace simulation
         double attributeSizeZipfParam_ = 0.5;
         size_t queryLengthMean_ = 3;
         double queryLengthStdDev_ = 2.0;
-        size_t queryTypeCount_ = 5;
+        size_t queryTypeCount_ = 1;
         double queryTypeFrequencyZipfParam_ = 0.5;
         static const int numAttributeSizes_ = 7;
         static constexpr double const attributeSizes_[numAttributeSizes_] =
