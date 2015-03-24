@@ -76,9 +76,9 @@ void QueryWorkload::addQuery(Query const & q)
             std::cout << "*** QueryWorkload::addQuery "
                       << it->first
                       << " "
-                      << it->second.getIndex()
+                      << it->second->getIndex()
                       << std::endl;
-            attributes.push_back(&it->second);
+            attributes.push_back(it->second);
         }
         QuerySummary summary(attributes);
         queries_.push_back(summary);

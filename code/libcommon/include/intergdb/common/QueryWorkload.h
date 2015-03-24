@@ -20,7 +20,7 @@ namespace intergdb { namespace common
         {
             for (auto &attribute : attributes)
             {
-                nameToAttribute_[attribute.getName()] = attribute;
+                nameToAttribute_[attribute.getName()] = &attribute;
             }
         }
 
@@ -29,7 +29,7 @@ namespace intergdb { namespace common
             : attributes_(attributes), queries_(queries), totalQueries_(0)
         {
             for (auto &attribute : attributes)
-                nameToAttribute_[attribute.getName()] = attribute;
+                nameToAttribute_[attribute.getName()] = &attribute;
         }
 
         void addAttribute(Attribute const & attribute)
@@ -84,7 +84,7 @@ namespace intergdb { namespace common
         std::vector<QuerySummary> queries_;
         std::unordered_map<Query, QuerySummary> summaries_;
         std::unordered_map<QuerySummary, double> counts_;
-        std::unordered_map<std::string, Attribute> nameToAttribute_;
+        std::unordered_map<std::string, const Attribute *> nameToAttribute_;
         double totalQueries_;
     };
 } } /* namespace */
