@@ -136,8 +136,8 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
                    Tweet const& tweets)> visitor, uint64_t& tsStart, uint64_t& tsEnd)
 {
     using namespace boost::filesystem;
-    tsStart = std::numeric_limits<int>::max();
-    tsEnd = std::numeric_limits<int>::min();
+    tsStart = std::numeric_limits<uint64_t>::max();
+    tsEnd = std::numeric_limits<uint64_t>::min();
 
     path tweetDir(dirPath);
     vector<string> fileNames;
