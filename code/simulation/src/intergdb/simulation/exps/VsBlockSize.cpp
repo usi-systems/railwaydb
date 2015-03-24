@@ -154,8 +154,8 @@ void VsBlockSize::runWorkload(
         for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
              iqIt.isValid(); iqIt.next()) {
             count += 1;
-            // std::cout << "queries[i] " << queries[i] << std::endl;
-            //std::cout << "+= " << iqIt.getToVertex() << std::endl;
+            std::cout << "queries[i] " << queries[i].toString() << std::endl;
+            std::cout << "+= " << iqIt.getToVertex() << std::endl;
         }
         std::cout << "count " << count << std::endl;
         std::cout << "----" << std::endl;
@@ -235,8 +235,8 @@ void VsBlockSize::process()
     vector< shared_ptr<Solver> > solvers =
     {
         SolverFactory::instance().makeSinglePartition(),
-        SolverFactory::instance().makeOptimalNonOverlapping()
-        //SolverFactory::instance().makeHeuristicNonOverlapping()
+        SolverFactory::instance().makeOptimalNonOverlapping(),
+        SolverFactory::instance().makeHeuristicNonOverlapping()
     };
 
 
