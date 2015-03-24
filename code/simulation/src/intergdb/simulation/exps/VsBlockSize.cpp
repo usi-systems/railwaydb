@@ -162,8 +162,10 @@ std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes)
     queryGen_.setSeed(seed++);
     vector<int> indices;
     for (int i = 0; i < numQueries_; ++i) {
-        indices.push_back(queryGen_.getRandomValue());
-        // indices.push_back(0);
+        if (numQueryTypes > 1)
+            indices.push_back(queryGen_.getRandomValue());
+        else
+            indices.push_back(0);
     }
     return indices;
 }
