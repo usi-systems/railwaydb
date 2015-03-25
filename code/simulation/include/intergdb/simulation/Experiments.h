@@ -43,6 +43,36 @@ namespace intergdb { namespace simulation
         std::vector<int> blockSizes_ = { 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
     };
 
+  class VsNumQueryTemplates : public ExperimentalRun
+    {
+    public:
+        void process() override;
+        VsNumQueryTemplates() { }
+    private:
+        void makeEdgeIOCountExp(ExperimentalData * exp);
+        void makeEdgeWriteIOCountExp(ExperimentalData * exp);
+        void makeEdgeReadIOCountExp(ExperimentalData * exp);
+        void runWorkload(core::InteractionGraph * graph,
+                         std::vector<core::FocusedIntervalQuery> & queries,
+                         std::vector<int> indicies);
+        std::vector<int> genWorkload(size_t numQueryTypes);
+        std::unique_ptr<core::InteractionGraph> graph_;
+        uint64_t tsStart_;
+        uint64_t tsEnd_;
+        std::unordered_set<int64_t> vertices_;
+        int numRuns_ = 3;
+        int blockSize_ = 65536;
+        int blockBufferSize_ = 5 ; 
+        std::vector<int> queryTemplatesSizes_ = { 1, 2, 4, 8, 16, 32, 64 };
+        double queryZipfParam_ = 0.5;
+        int numQueries_ = 100;
+
+    protected:
+        void setUp() override ;
+        void tearDown() override { };
+    };
+
+
     class VsNumAttributes : public ExperimentalRun
     {
     public:
