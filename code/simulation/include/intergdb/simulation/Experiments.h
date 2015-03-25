@@ -56,6 +56,7 @@ namespace intergdb { namespace simulation
                          std::vector<core::FocusedIntervalQuery> & queries,
                          std::vector<int> indicies);
         std::vector<int> genWorkload(size_t numQueryTypes);
+        std::unique_ptr<core::Conf> conf_;
         std::unique_ptr<core::InteractionGraph> graph_;
         uint64_t tsStart_;
         uint64_t tsEnd_;
@@ -63,7 +64,7 @@ namespace intergdb { namespace simulation
         int numRuns_ = 3;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ; 
-        std::vector<int> queryTemplatesSizes_ = { 1, 2, 4, 8, 16, 32, 64 };
+        std::vector<int> queryTemplatesSizes_ = { 1, 2, 4, 8, 16 };
         double queryZipfParam_ = 0.5;
         int numQueries_ = 100;
 

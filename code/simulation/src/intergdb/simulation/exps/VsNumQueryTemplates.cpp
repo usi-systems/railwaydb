@@ -48,12 +48,12 @@ void VsNumQueryTemplates::setUp()
     }
     
     // Create the graph conf
-    Conf conf = ExpSetupHelper::createGraphConf(dbDirPath, expName);
-    conf.setBlockSize(blockSize_);
-    conf.setBlockBufferSize(blockBufferSize_);
+    conf_.reset(new Conf(ExpSetupHelper::createGraphConf(dbDirPath, expName)));
+    conf_->setBlockSize(blockSize_);
+    conf_->setBlockBufferSize(blockBufferSize_);
 
     // Create a graph 
-    graph_.reset(new InteractionGraph(conf));
+    graph_.reset(new InteractionGraph(*conf_));
    
     // // Create a vertex just so we can populate it with
     // // the same function.
@@ -64,6 +64,9 @@ void VsNumQueryTemplates::setUp()
     ExpSetupHelper::populateGraphFromTweets(
         "data/tweets", graphs, tsStart_, tsEnd_, vertices_);
     cout << " done." << endl;
+
+    graph_ = std::move(graphs.back());
+    graphs.pop_back();
 
     std::cout << "start " << tsStart_ << std::endl;
     std::cout << "stop " << tsEnd_ << std::endl;
@@ -107,11 +110,17 @@ void VsNumQueryTemplates::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     int count = 0;
     int sizes = 0;
     for (int i : indices) {
+        
         std::cout << queries[i].toString() << std::endl;
-        for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
-             iqIt.isValid(); iqIt.next()) {
-            sizes += iqIt.getEdgeData()->getFields().size();
-            count += 1;
+        try {
+            for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
+                 iqIt.isValid(); iqIt.next()) {
+                sizes += iqIt.getEdgeData()->getFields().size();
+                count += 1;
+            }
+        }
+        catch(runtime_error const & e) {
+            std::cout << "Error caught" << std::endl;
         }
     }
     assert (count != 0);
@@ -138,7 +147,9 @@ void VsNumQueryTemplates::process()
 {
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
-
+   
+    assert(graph_ != NULL);
+    //assert(graph_->getConf() != NULL);
     simConf.setAttributeCount(
         graph_->getConf().getEdgeSchema().getAttributes().size());
 
@@ -220,29 +231,36 @@ void VsNumQueryTemplates::process()
             queryTemplatesIndex++;        
             simConf.setQueryTypeCount(numQueryTemplates);
 
+
+            graph_->resetWorkloads();
+
             // generate a different workload with numQueryTemplates
             std::vector<core::FocusedIntervalQuery> queries =
                 simConf.getQueries(graph_.get(), tsStart_, tsEnd_, vertices_);
+            std::vector<int> indicies = genWorkload(queries.size()-1);
 
+            runWorkload(graph_.get(), queries, indicies);
+            //SchemaStats ss = graph_->getSchemaStats();
+            std::map<BucketId,common::QueryWorkload> ws =
+                graph_->getWorkloads();
+                // Make sure everything is in one bucket
+            assert(ws.size() == 1);
+            QueryWorkload workload = ws.begin()->second;
 
             solverIndex = -1;
             for (auto solver : solvers) {
                 solverIndex++;
+
                 auto & partIndex = graph_->getPartitionIndex();
                 auto origParting =
                     partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                 intergdb::common::Partitioning solverSolution =
                       solver->solve(workload, storageOverheadThreshold, stats);
                 std::vector<int> indicies = genWorkload(queries.size()-1);
-                graph_->resetWorkloads();
 
-                runWorkload(graph_.get(), queries, indicies);
-                SchemaStats ss = graph_->getSchemaStats();
-                std::map<BucketId,common::QueryWorkload> ws =
-                    graph_->getWorkloads();
-                // Make sure everything is in one bucket
-                assert(ws.size() == 1);
-                QueryWorkload workload = ws.begin()->second;
+
+
+
 
                 std::cout << "Workload: "
                           << workload.toString() << std::endl;
