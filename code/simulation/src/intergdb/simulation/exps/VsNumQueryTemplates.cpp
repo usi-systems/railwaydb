@@ -112,15 +112,11 @@ void VsNumQueryTemplates::runWorkload(
     for (int i : indices) {
         
         // std::cout << queries[i].toString() << std::endl;
-        try {
-            for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
-                 iqIt.isValid(); iqIt.next()) {
-                sizes += iqIt.getEdgeData()->getFields().size();
-                count += 1;
-            }
-        }
-        catch(runtime_error const & e) {
-            std::cout << "Error caught" << std::endl;
+
+        for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
+             iqIt.isValid(); iqIt.next()) {
+            sizes += iqIt.getEdgeData()->getFields().size();
+            count += 1;
         }
     }
     assert (count != 0);
@@ -194,24 +190,27 @@ void VsNumQueryTemplates::process()
     int queryTemplatesIndex = -1;
 
     SchemaStats stats = graph_->getSchemaStats();
-    QueryWorkload workload;
-
 
     for (auto numQueryTemplates : queryTemplatesSizes_) {
+
         queryTemplatesIndex++;        
         simConf.setQueryTypeCount(numQueryTemplates);
 
         for (int i = 0; i < numRuns_; i++) {
 
-            graph_->resetWorkloads();
+
 
             // generate a different workload with numQueryTemplates
             std::vector<core::FocusedIntervalQuery> queries =
                 simConf.getQueries(graph_.get(), tsStart_, tsEnd_, vertices_);
             std::vector<int> indicies = genWorkload(queries.size()-1);
 
+            assert(queries.size() == numQueryTemplates);
+
+            graph_->resetWorkloads();
+
             runWorkload(graph_.get(), queries, indicies);
-            //SchemaStats ss = graph_->getSchemaStats();
+
             std::map<BucketId,common::QueryWorkload> ws =
                 graph_->getWorkloads();
             // Make sure everything is in one bucket
@@ -228,21 +227,10 @@ void VsNumQueryTemplates::process()
                 intergdb::common::Partitioning solverSolution =
                     solver->solve(workload, storageOverheadThreshold, stats);
                 std::vector<int> indicies = genWorkload(queries.size()-1);
-
-
-                
-
-/*
-  std::cout << "Workload: "
-  << workload.toString() << std::endl;
-  std::cout << "Summary size: "
-  << workload.getQuerySummaries().size() << std::endl;
-*/
+               
                 std::cout << "Solver: " <<  solver->getClassName() << std::endl;
                 std::cout << "numRuns: " << i << std::endl;
-
                 std::cout << "numQueryTemplates: " << numQueryTemplates << std::endl;
-
 
                 std::cout << solverSolution.toString() << std::endl;
                 TimeSlicedPartitioning newParting{}; // -inf to inf
@@ -257,12 +245,12 @@ void VsNumQueryTemplates::process()
                 runWorkload(graph_.get(),queries, indicies);
 
 
-                std::cout <<
+                std::cout << "getEdgeIOCount: " << 
                     graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
-                std::cout <<
+                std::cout << "getEdgeReadIOCount: " << 
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
                           << std::endl;
-                std::cout <<
+                std::cout << "getEdgeWriteIOCount: " << 
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
                           << std::endl;
 

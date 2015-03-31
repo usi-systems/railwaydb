@@ -20,7 +20,7 @@ int simulation()
 
 int experiment()
 {
-    //(VsBlockSize()).run();
+    // (VsBlockSize()).run();
     (VsNumQueryTemplates()).run();
     return EXIT_SUCCESS;
 }
