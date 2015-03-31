@@ -29,10 +29,10 @@ void VsNumQueryTemplates::setUp()
 {
     cout << " VsNumQueryTemplates::setUp()..." << endl;
     
-     string dbDirPath = "data";
-     string expName = str(boost::format("tweetDB%08d") % blockSize_);
-     string pathAndName =
-         str(boost::format("data/tweetDB%08d") % blockSize_);
+    string dbDirPath = "data";
+    string expName = str(boost::format("tweetDB%08d") % blockSize_);
+    string pathAndName =
+        str(boost::format("data/tweetDB%08d") % blockSize_);
 
     // Create tweetDB if its not there
     if( !(boost::filesystem::exists(pathAndName))) {
@@ -75,7 +75,7 @@ void VsNumQueryTemplates::setUp()
 
 void VsNumQueryTemplates::makeEdgeIOCountExp(ExperimentalData * exp)
 {
-    exp->setDescription("Query IO Vs. EdgeIOCount");
+    exp->setDescription("NumQueryTemplates Vs. EdgeIOCount");
     exp->addField("solver");
     exp->addField("numQueryTemplates");
     exp->addField("edgeIO");
@@ -85,7 +85,7 @@ void VsNumQueryTemplates::makeEdgeIOCountExp(ExperimentalData * exp)
 
 void VsNumQueryTemplates::makeEdgeWriteIOCountExp(ExperimentalData * exp)
 {
-    exp->setDescription("Storage Overhead Vs. EdgeWriteIOCount");
+    exp->setDescription("NumQueryTemplates Vs. EdgeWriteIOCount");
     exp->addField("solver");
     exp->addField("numQueryTemplates");
     exp->addField("edgeWriteIO");
@@ -94,7 +94,7 @@ void VsNumQueryTemplates::makeEdgeWriteIOCountExp(ExperimentalData * exp)
 }
 
 void VsNumQueryTemplates::makeEdgeReadIOCountExp(ExperimentalData * exp) {
-    exp->setDescription("Running Time Vs. EdgeReadIOCount");
+    exp->setDescription("NumQueryTemplates Vs. EdgeReadIOCount");
     exp->addField("solver");
     exp->addField("numQueryTemplates");
     exp->addField("edgeReadIO");
@@ -102,8 +102,8 @@ void VsNumQueryTemplates::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     exp->setKeepValues(false);
 }
 
- void VsNumQueryTemplates::runWorkload(
-     InteractionGraph * graph,
+void VsNumQueryTemplates::runWorkload(
+    InteractionGraph * graph,
     std::vector<core::FocusedIntervalQuery> & queries,
     std::vector<int> indices)
 {
@@ -111,7 +111,7 @@ void VsNumQueryTemplates::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     int sizes = 0;
     for (int i : indices) {
         
-        std::cout << queries[i].toString() << std::endl;
+        // std::cout << queries[i].toString() << std::endl;
         try {
             for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
                  iqIt.isValid(); iqIt.next()) {
@@ -125,7 +125,7 @@ void VsNumQueryTemplates::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     }
     assert (count != 0);
     assert (sizes != 0);
- }
+}
 
 
 std::vector<int> VsNumQueryTemplates::genWorkload(size_t numQueryTypes)
@@ -149,38 +149,8 @@ void VsNumQueryTemplates::process()
     double storageOverheadThreshold = 1.0;
    
     assert(graph_ != NULL);
-    //assert(graph_->getConf() != NULL);
     simConf.setAttributeCount(
         graph_->getConf().getEdgeSchema().getAttributes().size());
-
-    // std::vector<std::vector<core::FocusedIntervalQuery>> queries;
-    // std::vector<std::vector<int>> indicies;
-    // std::vector<SchemaStats> stats;
-    // std::vector<QueryWorkload> workloads;
-
-    // std::cout << "Generating workload..." << std::endl;
-    // for (int i=0; i < numRuns_; i++) {
-    //     std::cout << "    " << i << "/" << numRuns_ << std::endl;
-    //     std::vector<core::FocusedIntervalQuery> qs =
-    //         simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
-    //     std::vector<int> inds = genWorkload(qs.size()-1);
-    //     runWorkload(graphs_[0].get(),qs, inds);
-    //     SchemaStats ss = graphs_[0]->getSchemaStats();
-    //     std::map<BucketId,common::QueryWorkload> ws =
-    //         graphs_[0]->getWorkloads();
-    //     // Make sure everything is in one bucket
-    //     assert(ws.size() == 1);
-    //     QueryWorkload w = ws.begin()->second;
-
-    //     // (queries, indices, stats, workload)
-    //     queries.push_back(qs);
-    //     indicies.push_back(inds);
-    //     stats.push_back(ss);
-    //     workloads.push_back(w);
-
-    //     graphs_[0]->resetWorkloads();
-    // }
-    // std::cout << "done." << std::endl;
 
     ExperimentalData edgeIOCountExp("EdgeIOCountVsNumQueryTemplates");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsNumQueryTemplates");
@@ -201,11 +171,11 @@ void VsNumQueryTemplates::process()
     vector<util::RunningStat> edgeReadIO;
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
-    {
-        SolverFactory::instance().makeSinglePartition(),
-        SolverFactory::instance().makeOptimalNonOverlapping(),
-        SolverFactory::instance().makeHeuristicNonOverlapping()
-    };
+        {
+            SolverFactory::instance().makeSinglePartition(),
+            SolverFactory::instance().makeOptimalNonOverlapping(),
+            SolverFactory::instance().makeHeuristicNonOverlapping()
+        };
 
     for (auto solver : solvers) {
         edgeIO.push_back(util::RunningStat());
@@ -226,11 +196,12 @@ void VsNumQueryTemplates::process()
     SchemaStats stats = graph_->getSchemaStats();
     QueryWorkload workload;
 
-    for (int i = 0; i < numRuns_; i++) {
-        for (auto numQueryTemplates : queryTemplatesSizes_) {
-            queryTemplatesIndex++;        
-            simConf.setQueryTypeCount(numQueryTemplates);
 
+    for (auto numQueryTemplates : queryTemplatesSizes_) {
+        queryTemplatesIndex++;        
+        simConf.setQueryTypeCount(numQueryTemplates);
+
+        for (int i = 0; i < numRuns_; i++) {
 
             graph_->resetWorkloads();
 
@@ -243,7 +214,7 @@ void VsNumQueryTemplates::process()
             //SchemaStats ss = graph_->getSchemaStats();
             std::map<BucketId,common::QueryWorkload> ws =
                 graph_->getWorkloads();
-                // Make sure everything is in one bucket
+            // Make sure everything is in one bucket
             assert(ws.size() == 1);
             QueryWorkload workload = ws.begin()->second;
 
@@ -255,19 +226,23 @@ void VsNumQueryTemplates::process()
                 auto origParting =
                     partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                 intergdb::common::Partitioning solverSolution =
-                      solver->solve(workload, storageOverheadThreshold, stats);
+                    solver->solve(workload, storageOverheadThreshold, stats);
                 std::vector<int> indicies = genWorkload(queries.size()-1);
 
 
+                
 
-
-
-                std::cout << "Workload: "
-                          << workload.toString() << std::endl;
-                std::cout << "Summary size: "
-                          << workload.getQuerySummaries().size() << std::endl;
-
+/*
+  std::cout << "Workload: "
+  << workload.toString() << std::endl;
+  std::cout << "Summary size: "
+  << workload.getQuerySummaries().size() << std::endl;
+*/
                 std::cout << "Solver: " <<  solver->getClassName() << std::endl;
+                std::cout << "numRuns: " << i << std::endl;
+
+                std::cout << "numQueryTemplates: " << numQueryTemplates << std::endl;
+
 
                 std::cout << solverSolution.toString() << std::endl;
                 TimeSlicedPartitioning newParting{}; // -inf to inf
@@ -276,7 +251,7 @@ void VsNumQueryTemplates::process()
                     origParting, {newParting});
 
                 prevEdgeIOCount = graph_->getEdgeIOCount();
-                            prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
+                prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 runWorkload(graph_.get(),queries, indicies);
@@ -286,10 +261,10 @@ void VsNumQueryTemplates::process()
                     graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
                 std::cout <<
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
-                    << std::endl;
+                          << std::endl;
                 std::cout <<
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
-                    << std::endl;
+                          << std::endl;
 
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
@@ -300,7 +275,7 @@ void VsNumQueryTemplates::process()
                 
             }
         }
-
+    
 
         for (int solverIndex = 0; solverIndex < solvers.size(); solverIndex++)
         {
@@ -321,7 +296,7 @@ void VsNumQueryTemplates::process()
             edgeWriteIOCountExp.setFieldValue(
                 "solver", solvers[solverIndex]->getClassName());
             edgeWriteIOCountExp.setFieldValue("numQueryTemplates",
-                boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
+                                              boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
             edgeWriteIOCountExp.setFieldValue(
                 "edgeWriteIO", edgeWriteIO[solverIndex].getMean());
             edgeWriteIOCountExp.setFieldValue(
