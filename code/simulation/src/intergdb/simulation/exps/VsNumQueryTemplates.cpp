@@ -191,6 +191,9 @@ void VsNumQueryTemplates::process()
 
     SchemaStats stats = graph_->getSchemaStats();
 
+    std::cout << stats.toString() << std::endl;
+
+
     for (auto numQueryTemplates : queryTemplatesSizes_) {
 
         queryTemplatesIndex++;        

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <sstream>      
 
 namespace intergdb { namespace common
 {
@@ -42,6 +43,15 @@ namespace intergdb { namespace common
         std::unordered_map<uint32_t, std::pair<uint32_t,double> > & getStats()
         {
             return indexToCountAndBytes_;
+        }
+
+        std::string toString() {
+            std::stringstream ss;
+            ss << "SchemaStats:" << std::endl;
+            for (auto it : indexToCountAndBytes_) {
+                ss << "\t" << it.first << "\t" << getAvgSize(it.first) << std::endl;
+            }
+            return ss.str();
         }
 
     private:
