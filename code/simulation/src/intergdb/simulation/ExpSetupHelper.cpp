@@ -256,12 +256,16 @@ std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<
     util::NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
                            0, vertices.size()-1);
 
+    int vertexIndex;
     int templateIndex;
     for (int i = 0; i < numQueries; i++) {
         templateIndex = numQueryTypes > 1 ? queryGen_.getRandomValue() : 0;
+        vertexIndex = vertexIdGen.getRandomValue();
+        VertexId vi = vertexList.at(vertexIndex);
+
+        std::cout << "start vertex: " <<  vi << std::endl;
         queries.push_back(FocusedIntervalQuery(
-                              vertexList[vertexIdGen.getRandomValue()],
-                              tsStart, tsEnd, templates[templateIndex]));
+                              vi, tsStart, tsEnd, templates[templateIndex]));
     }
     return queries;
 }
