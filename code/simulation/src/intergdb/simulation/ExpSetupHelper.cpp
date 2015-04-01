@@ -3,6 +3,9 @@
 #include <intergdb/core/InteractionGraph.h>
 #include <intergdb/common/Types.h>
 
+#include <intergdb/util/ZipfRand.h>
+#include <intergdb/util/NormalRand.h>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -229,3 +232,54 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
     }
 }
 
+std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<std::string> > templates,
+                                                             double queryZipfParam, 
+                                                             int numQueries,
+                                                             uint64_t& tsStart,
+                                                             uint64_t& tsEnd,
+                                                             std::unordered_set<int64_t> const & vertices)
+{
+    std::vector<core::FocusedIntervalQuery> queries;
+
+    std::vector<int64_t> vertexList;
+    std::copy(vertices.begin(), vertices.end(),
+               std::back_inserter(vertexList));
+
+    int numQueryTypes = templates.size();
+    util::ZipfRand queryGen_(queryZipfParam, numQueryTypes);
+    unsigned seed = time(NULL);
+    queryGen_.setSeed(seed++);
+
+    // use a random start node for the interval query
+    size_t vertexIdMean = (vertices.size()) / 2;
+    double vertexIdStdDev = vertexIdMean - 1;
+    util::NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
+                           0, vertices.size()-1);
+
+    int templateIndex;
+    for (int i = 0; i < numQueries; i++) {
+        templateIndex = numQueryTypes > 1 ? queryGen_.getRandomValue() : 0;
+        queries.push_back(FocusedIntervalQuery(
+                              vertexList[vertexIdGen.getRandomValue()],
+                              tsStart, tsEnd, templates[templateIndex]));
+    }
+    return queries;
+}
+
+void ExpSetupHelper::runWorkload(
+    InteractionGraph * graph,
+    std::vector<core::FocusedIntervalQuery> & queries) 
+{
+    int count = 0;
+    int sizes = 0;
+    for (auto q : queries) {
+        
+        for (auto iqIt = graph->processFocusedIntervalQuery(q);
+             iqIt.isValid(); iqIt.next()) {
+            sizes += iqIt.getEdgeData()->getFields().size();
+            count += 1;
+        }
+    }
+    assert (count != 0);
+    assert (sizes != 0);
+}

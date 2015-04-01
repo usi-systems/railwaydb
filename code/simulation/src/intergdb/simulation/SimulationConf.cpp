@@ -69,17 +69,13 @@ pair<common::QueryWorkload, common::SchemaStats>
     return std::make_pair(workload, stats);
 }
 
-std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(
-    InteractionGraph * graph,
-    uint64_t& tsStart,
-    uint64_t& tsEnd,
-    std::unordered_set<int64_t> const & vertices)
+std::vector<std::vector<std::string> > SimulationConf::getQueryTemplates(core::InteractionGraph * graph)
 {
     mt19937 rndGen(time(NULL));
     auto const & attributes = graph->getConf().getEdgeSchema().getAttributes();
-    vector<size_t> attributeIndices(attributes.size());
+    std::vector<size_t> attributeIndices(attributes.size());
     iota(attributeIndices.begin(), attributeIndices.end(), 0);
-    vector<std::vector<std::string> > queryAttributeNames;
+    std::vector<std::vector<std::string> > queryAttributeNames;
     for (size_t i=0, iu=getQueryTypeCount(); i<iu; ++i) {
         std::vector<std::string> attributeNames;
         size_t queryLength = std::min(static_cast<size_t>(
@@ -93,25 +89,5 @@ std::vector<core::FocusedIntervalQuery> SimulationConf::getQueries(
         }
         queryAttributeNames.push_back(attributeNames);
     }
-
-    std::vector<core::FocusedIntervalQuery> queries;
-    std::vector<int64_t> vertexList;
-    std::copy(vertices.begin(), vertices.end(),
-              std::back_inserter(vertexList));
-
-    // used to get a random start node for the interval query
-    size_t vertexIdMean = (vertices.size()) / 2;
-    double vertexIdStdDev = vertexIdMean - 1;
-    NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
-                           0, vertices.size()-1);
-
-    // Create 1 random query for each set of attributeNames
-    for (auto attributeNames : queryAttributeNames) {
-        queries.push_back(FocusedIntervalQuery(
-            vertexList[vertexIdGen.getRandomValue()],
-            tsStart, tsEnd, attributeNames));
-    }
-    std::cout << "done random vertices" << std::endl;
-
-    return queries;
+    return queryAttributeNames;
 }

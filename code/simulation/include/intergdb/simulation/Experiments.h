@@ -16,16 +16,8 @@ namespace intergdb { namespace simulation
 
     private:
         void makeEdgeIOCountExp(ExperimentalData * exp);
-
         void makeEdgeWriteIOCountExp(ExperimentalData * exp);
-
         void makeEdgeReadIOCountExp(ExperimentalData * exp);
-
-        void runWorkload(core::InteractionGraph * graph,
-                         std::vector<core::FocusedIntervalQuery> & queries,
-                         std::vector<int> indicies);
-
-        std::vector<int> genWorkload(size_t numQueryTypes);
 
     protected:
         void setUp() override;
@@ -52,10 +44,6 @@ namespace intergdb { namespace simulation
         void makeEdgeIOCountExp(ExperimentalData * exp);
         void makeEdgeWriteIOCountExp(ExperimentalData * exp);
         void makeEdgeReadIOCountExp(ExperimentalData * exp);
-        void runWorkload(core::InteractionGraph * graph,
-                         std::vector<core::FocusedIntervalQuery> & queries,
-                         std::vector<int> indicies);
-        std::vector<int> genWorkload(size_t numQueryTypes);
         std::unique_ptr<core::Conf> conf_;
         std::unique_ptr<core::InteractionGraph> graph_;
         uint64_t tsStart_;
@@ -64,7 +52,7 @@ namespace intergdb { namespace simulation
         int numRuns_ = 3;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ; 
-        std::vector<int> queryTemplatesSizes_ = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        std::vector<int> queryTemplatesSizes_ = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         //std::vector<int> queryTemplatesSizes_ = { 1, 2, 4 };
         double queryZipfParam_ = 0.5;
         int numQueries_ = 100;

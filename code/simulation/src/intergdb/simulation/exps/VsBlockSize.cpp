@@ -135,41 +135,6 @@ void VsBlockSize::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     exp->setKeepValues(false);
 }
 
-void VsBlockSize::runWorkload(
-    InteractionGraph * graph,
-    std::vector<core::FocusedIntervalQuery> & queries,
-    std::vector<int> indices)
-{
-    int count = 0;
-    int sizes = 0;
-    for (int i : indices) {
-        std::cout << queries[i].toString() << std::endl;
-        for (auto iqIt = graph->processFocusedIntervalQuery(queries[i]);
-             iqIt.isValid(); iqIt.next()) {
-            sizes += iqIt.getEdgeData()->getFields().size();
-            count += 1;
-        }
-    }
-    assert (count != 0);
-    assert (sizes != 0);
-
-}
-
-std::vector<int> VsBlockSize::genWorkload(size_t numQueryTypes)
-{
-    util::ZipfRand queryGen_(queryZipfParam_, numQueryTypes);
-    unsigned seed = time(NULL);
-    queryGen_.setSeed(seed++);
-    vector<int> indices;
-    for (int i = 0; i < numQueries_; ++i) {
-        if (numQueryTypes > 1)
-            indices.push_back(queryGen_.getRandomValue());
-        else
-            indices.push_back(0);
-    }
-    return indices;
-}
-
 void VsBlockSize::process()
 {
     SimulationConf simConf;
@@ -180,17 +145,25 @@ void VsBlockSize::process()
         graphs_[0]->getConf().getEdgeSchema().getAttributes().size());
 
     std::vector<std::vector<core::FocusedIntervalQuery>> queries;
-    std::vector<std::vector<int>> indicies;
     std::vector<SchemaStats> stats;
     std::vector<QueryWorkload> workloads;
 
     std::cout << "Generating workload..." << std::endl;
     for (int i=0; i < numRuns_; i++) {
         std::cout << "    " << i << "/" << numRuns_ << std::endl;
-        std::vector<core::FocusedIntervalQuery> qs =
-            simConf.getQueries(graphs_[0].get(), tsStart_, tsEnd_, vertices_);
-        std::vector<int> inds = genWorkload(qs.size()-1);
-        runWorkload(graphs_[0].get(),qs, inds);
+      
+         std::vector<std::vector<std::string> > templates =
+            simConf.getQueryTemplates(graphs_[0].get());
+     
+        std::vector<core::FocusedIntervalQuery> qs = 
+            ExpSetupHelper::genQueries(templates,
+                                       queryZipfParam_, 
+                                       numQueries_,
+                                       tsStart_,
+                                       tsEnd_, 
+                                       vertices_);
+
+        ExpSetupHelper::runWorkload(graphs_[0].get(),qs);
         SchemaStats ss = graphs_[0]->getSchemaStats();
         std::map<BucketId,common::QueryWorkload> ws =
             graphs_[0]->getWorkloads();
@@ -198,9 +171,8 @@ void VsBlockSize::process()
         assert(ws.size() == 1);
         QueryWorkload w = ws.begin()->second;
 
-        // (queries, indices, stats, workload)
+        // (queries, stats, workload)
         queries.push_back(qs);
-        indicies.push_back(inds);
         stats.push_back(ss);
         workloads.push_back(w);
 
@@ -285,7 +257,7 @@ void VsBlockSize::process()
                 prevEdgeReadIOCount = (*iter)->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
 
-                runWorkload((*iter).get(),queries[i], indicies[i]);
+                ExpSetupHelper::runWorkload((*iter).get(),queries[i]);
 
 
                 std::cout <<

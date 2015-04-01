@@ -89,11 +89,8 @@ namespace intergdb { namespace simulation
             getQueryWorkloadAndStats(
                 std::vector<std::unique_ptr<Attribute>> & attributes);
 
-        std::vector<core::FocusedIntervalQuery> getQueries(
-            core::InteractionGraph * graph,
-            uint64_t& tsStart,
-            uint64_t& tsEnd,
-            std::unordered_set<int64_t> const & vertices);
+        std::vector<std::vector<std::string> > getQueryTemplates(core::InteractionGraph * graph);
+
 
     private:
         size_t attributeCount_ = 10;

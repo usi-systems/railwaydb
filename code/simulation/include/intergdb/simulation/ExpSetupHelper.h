@@ -2,6 +2,7 @@
 
 #include <intergdb/core/Conf.h>
 #include <intergdb/core/InteractionGraph.h>
+#include <intergdb/core/Query.h>
 
 #include <string>
 #include <vector>
@@ -43,5 +44,18 @@ namespace intergdb { namespace simulation {
             uint64_t& tsStart,
             uint64_t& tsEnd,
             std::unordered_set<int64_t> & vertices);
+
+        static std::vector<core::FocusedIntervalQuery> genQueries(
+            std::vector<std::vector<std::string> > templates,
+            double queryZipfParam, 
+            int numQueries,
+            uint64_t& tsStart,
+            uint64_t& tsEnd,
+            std::unordered_set<int64_t> const & vertices);
+        
+        static void runWorkload(
+            core::InteractionGraph * graph,
+            std::vector<core::FocusedIntervalQuery> & queries);
+
     };
 } }
