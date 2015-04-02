@@ -85,9 +85,12 @@ shared_ptr<AttributeData> HistoricalGraph::EdgeIterator::getEdgeData()
 {
     Schema const & schema = bman_->getEdgeSchema();
     shared_ptr<AttributeData> data(schema.newAttributeData(queryAttributes_));
-    Block const & masterBlock = bman_->getBlock(it_->getBlockId());
+    Block masterBlock = bman_->getBlock(it_->getBlockId());
+    assert(masterBlock.partition_ == -1);
+    assert(masterBlock.getSubBlockIds().size() > 0);
     auto const & subBlocks = masterBlock.getSubBlockIds();
     for (auto const & index : partitionIndices_) {
+        assert(index < subBlocks.size());
         auto const & nlist = bman_->getBlock(subBlocks[index])
             .getNeighborLists().find(it_->getVertex())->second;
         data->setAttributes(
@@ -121,7 +124,7 @@ void HistoricalGraph::EdgeIterator::recomputePartitionIndices()
     unordered_set<size_t> unusedPartitions;
     for (size_t i=0; i<parting.size(); ++i)
         unusedPartitions.insert(i);
-    while (selectedAttributes.size()!=queryAttributes_.size()) {
+    while (selectedAttributes.size() != queryAttributes_.size()) {
         auto bestPartitionIdx = parting.size();
         double bestPartitionScore = -1.0;
         for (auto const & partitionIdx : unusedPartitions) {
@@ -194,6 +197,7 @@ void HistoricalGraph::addBlock(Block const & block)
 {
     vector<Block> newBlocks = block.partitionBlock(
         conf_.getEdgeSchema(), partIndex_);
+    assert(newBlocks.size()>1);
     for (size_t i=1, iu=newBlocks.size(); i<iu; ++i) {
         bman_.addBlock(newBlocks[i]); // sets the block id
         newBlocks[0].addSubBlockId(newBlocks[i].id());

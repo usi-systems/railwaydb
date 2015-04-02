@@ -53,7 +53,7 @@ Block const & BlockManager::getBlock(BlockId id)
         std::string value;
         leveldb::Status status = db_->Get(leveldb::ReadOptions(), key, &value);
         if (status.IsNotFound())
-            throw vertex_not_found_exception(id);
+            throw block_not_found_exception(id);
         else if (!status.ok())
             throw std::runtime_error(status.ToString());
         NetworkByteBuffer dataBuf(

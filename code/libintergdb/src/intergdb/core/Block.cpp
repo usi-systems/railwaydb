@@ -295,6 +295,7 @@ NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
             }
         }
     }
+    assert(partition_ != -1 || subBlocks_.size()>0);
     return sbuf;
 }
 
@@ -342,6 +343,7 @@ NetworkByteBuffer & Block::deserialize(NetworkByteBuffer & sbuf,
             addEdge(headVertex, toVertex, tm, sdata);
         }
     }
+    assert(partition_ != -1 || subBlocks_.size()>0);
     return sbuf;
 }
 } }

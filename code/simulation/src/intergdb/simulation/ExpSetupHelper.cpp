@@ -233,7 +233,7 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
 }
 
 std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<std::string> > templates,
-                                                             double queryZipfParam, 
+                                                             double queryZipfParam,
                                                              int numQueries,
                                                              uint64_t& tsStart,
                                                              uint64_t& tsEnd,
@@ -262,8 +262,6 @@ std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<
         templateIndex = numQueryTypes > 1 ? queryGen_.getRandomValue() : 0;
         vertexIndex = vertexIdGen.getRandomValue();
         VertexId vi = vertexList.at(vertexIndex);
-
-        std::cout << "start vertex: " <<  vi << std::endl;
         queries.push_back(FocusedIntervalQuery(
                               vi, tsStart, tsEnd, templates[templateIndex]));
     }
@@ -272,12 +270,12 @@ std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<
 
 void ExpSetupHelper::runWorkload(
     InteractionGraph * graph,
-    std::vector<core::FocusedIntervalQuery> & queries) 
+    std::vector<core::FocusedIntervalQuery> & queries)
 {
     int count = 0;
     int sizes = 0;
     for (auto q : queries) {
-        
+
         for (auto iqIt = graph->processFocusedIntervalQuery(q);
              iqIt.isValid(); iqIt.next()) {
             sizes += iqIt.getEdgeData()->getFields().size();

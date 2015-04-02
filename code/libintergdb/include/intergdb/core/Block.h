@@ -84,6 +84,7 @@ namespace intergdb { namespace core
         size_t serializedSize_;
         std::vector<BlockId> subBlocks_;
         std::unordered_map<VertexId, NeighborList> neigs_;
+friend class HistoricalGraph;
     };
 
     std::ostream & operator<<(std::ostream & out, Block const & block);
