@@ -288,6 +288,8 @@ NetworkByteBuffer & Block::serialize(NetworkByteBuffer & sbuf) const
             auto const & edge = *nit;
             sbuf << edge.getToVertex();
             sbuf << edge.getTime();
+            if (partition_ == -1)
+                continue;
             EdgeTriplet etrip(headVertex, edge.getToVertex(), edge.getTime());
             if (written.count(etrip)==0) {
                 sbuf << *edge.getData();

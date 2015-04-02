@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"  
+#include "gtest/gtest.h"
 
 #include <intergdb/core/InteractionGraph.h>
 
@@ -10,33 +10,36 @@
 using namespace std;
 using namespace intergdb::core;
 
-class SchemaTest : public ::testing::Test 
+class SchemaTest : public ::testing::Test
 {
 public:
     SchemaTest() {}
+
 protected:
-    virtual void SetUp() 
+    virtual void SetUp()
     {
         auto storageDir = boost::filesystem::unique_path("/tmp/mydb_%%%%");
-        conf.reset(new Conf("test", "/tmp/st_igdb", 
-                            {{"vertex-label", DataType::STRING}}, 
-                            {{"a", DataType::INT64}, {"b", DataType::INT64}}));  
+        conf.reset(new Conf("test", "/tmp/st_igdb",
+                            {{"vertex-label", DataType::STRING}},
+                            {{"a", DataType::INT64}, {"b", DataType::INT64}}));
 
         if (boost::filesystem::exists(conf->getStorageDir()))
             boost::filesystem::remove_all(conf->getStorageDir());
-        boost::filesystem::create_directories(conf->getStorageDir());   
+        boost::filesystem::create_directories(conf->getStorageDir());
         graph.reset(new InteractionGraph(*conf));
     }
-    virtual void TearDown() 
-    { 
+
+    virtual void TearDown()
+    {
         boost::filesystem::remove_all(graph->getConf().getStorageDir());
     }
+
 protected:
     std::unique_ptr<Conf> conf;
     std::unique_ptr<InteractionGraph> graph;
 };
 
-TEST_F(SchemaTest, WriteReadTest) 
+TEST_F(SchemaTest, WriteReadTest)
 {
 
     graph->createVertex(2, "v2");
@@ -45,11 +48,11 @@ TEST_F(SchemaTest, WriteReadTest)
 
     EXPECT_NO_THROW(graph->addEdge(2, 4, ts, 1LL, 2LL));
 
-    EXPECT_ANY_THROW(graph->addEdge(2, 4, ts, 1LL, 2LL, 3LL));
+    EXPECT_ANY_THROW(graph->addEdge(2, 4, ts+1, 1LL, 2LL, 3LL));
 /*
     caughtError = false;
     try {
-        graph->addEdge(2, 4, ts, "1", "2");            
+        graph->addEdge(2, 4, ts, "1", "2");
     } catch(runtime_error const & e) {
         caughtError = true;
     }
