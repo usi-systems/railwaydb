@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 namespace intergdb { namespace simulation {
 
@@ -56,6 +57,21 @@ namespace intergdb { namespace simulation {
         static void runWorkload(
             core::InteractionGraph * graph,
             std::vector<core::FocusedIntervalQuery> & queries);
+
+        static void dfs(
+            core::InteractionGraph * graph,
+            VertexId v, 
+            uint64_t& tsStart,
+            uint64_t& tsEnd,
+            std::vector<std::string> const & attributes,
+            std::set<VertexId> & visited );
+
+        static void bfs(
+            core::InteractionGraph * graph,
+            VertexId v, 
+            uint64_t& tsStart,
+            uint64_t& tsEnd,
+            std::vector<std::string> const & attributes );
 
     };
 } }

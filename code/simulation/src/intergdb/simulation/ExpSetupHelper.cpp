@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <unordered_set>
+#include <queue>
 
 using namespace std;
 using namespace intergdb::core;
@@ -284,4 +285,57 @@ void ExpSetupHelper::runWorkload(
     }
     assert (count != 0);
     assert (sizes != 0);
+}
+
+void ExpSetupHelper::dfs(
+    InteractionGraph * graph,
+    VertexId v, 
+    uint64_t& tsStart,
+    uint64_t& tsEnd,
+    vector<string> const & attributes,
+    std::set<VertexId> & visited )
+{
+    VertexId u;
+    visited.insert(v);
+    FocusedIntervalQuery query(v, tsStart, tsEnd, attributes);
+    for (auto iqIt = graph->processFocusedIntervalQuery(query);
+         iqIt.isValid(); iqIt.next()) {
+        u = iqIt.getToVertex();
+        auto search = visited.find(u);
+        if(search != visited.end()) {
+            dfs(graph,u,tsStart, tsEnd, attributes, visited);
+        }
+    }
+}
+
+void ExpSetupHelper::bfs(
+    InteractionGraph * graph,
+    VertexId v, 
+    uint64_t& tsStart,
+    uint64_t& tsEnd,
+    vector<string> const & attributes )
+{
+
+    std::queue<VertexId> q;
+    std::set<VertexId> visited ;
+    VertexId u,t;
+
+    q.push(v);
+    visited.insert(v);
+
+    while (!q.empty()) {
+        u = q.front();
+        q.pop();
+        FocusedIntervalQuery query(u, tsStart, tsEnd, attributes);
+        for (auto iqIt = graph->processFocusedIntervalQuery(query);
+             iqIt.isValid(); iqIt.next()) {
+            t = iqIt.getToVertex();
+            auto search = visited.find(t);
+            if(search != visited.end()) {
+                q.push(t);
+                visited.insert(t);                        
+            }
+        }
+    }
+   
 }
