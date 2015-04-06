@@ -124,26 +124,26 @@ void VsTimeDeltaDFS::process()
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsTimeDeltaDFS");
     ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsTimeDeltaDFS");
 
-     auto expData =
-         { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp };
+    auto expData =
+        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp };
 
-     makeEdgeIOCountExp(&edgeIOCountExp);
-     makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
-     makeEdgeReadIOCountExp(&edgeReadIOCountExp);
+    makeEdgeIOCountExp(&edgeIOCountExp);
+    makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
+    makeEdgeReadIOCountExp(&edgeReadIOCountExp);
      
-     for (auto exp : expData)
-         exp->open();
+    for (auto exp : expData)
+        exp->open();
 
     vector<util::RunningStat> edgeIO;
     vector<util::RunningStat> edgeWriteIO;
     vector<util::RunningStat> edgeReadIO;
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
-    {
-        SolverFactory::instance().makeSinglePartition(),
-        SolverFactory::instance().makeOptimalNonOverlapping(),
-        SolverFactory::instance().makeHeuristicNonOverlapping()
-    };
+        {
+            SolverFactory::instance().makeSinglePartition(),
+            SolverFactory::instance().makeOptimalNonOverlapping(),
+            SolverFactory::instance().makeHeuristicNonOverlapping()
+        };
 
     for (auto solver : solvers) {
         edgeIO.push_back(util::RunningStat());
@@ -159,13 +159,14 @@ void VsTimeDeltaDFS::process()
     
     std::cout << "Running experiments..." << std::endl;
   
-    int queryTemplatesIndex = -1;
+    int deltaIndex = -1;
 
     SchemaStats stats = graph_->getSchemaStats();
 
     std::cout << stats.toString() << std::endl;
 
-    for (auto timeDelta : timeDeltas_) {
+    for (auto delta : timeDeltas_) {
+        deltaIndex++;
         for (int i = 0; i < numRuns_; i++) {
             
             // For each run with a different delta, generate a different set of queries:
@@ -180,13 +181,109 @@ void VsTimeDeltaDFS::process()
                                                  numQueries_,
                                                  tsStart_,
                                                  tsEnd_, 
-                                                 timeDelta, 
+                                                 delta, 
                                                  vertices_);
+
+            graph_->resetWorkloads();
+
+            ExpSetupHelper::runDFS(graph_.get(), queries);
+            
+            std::map<BucketId,common::QueryWorkload> ws =
+                graph_->getWorkloads();
+            // Make sure everything is in one bucket
+            assert(ws.size() == 1);
+            QueryWorkload workload = ws.begin()->second;
+            
+            solverIndex = -1;
+            for (auto solver : solvers) {
+                solverIndex++;
+
+                auto & partIndex = graph_->getPartitionIndex();
+                auto origParting =
+                    partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
+                intergdb::common::Partitioning solverSolution =
+                    solver->solve(workload, storageOverheadThreshold, stats);
+                
+                std::cout << "Solver: " <<  solver->getClassName() << std::endl;
+                std::cout << "numRuns: " << i << std::endl;
+                std::cout << "delta: " << delta << std::endl;
+                
+                std::cout << solverSolution.toString() << std::endl;
+                TimeSlicedPartitioning newParting{}; // -inf to inf
+                newParting.getPartitioning() = solverSolution.toStringSet();
+                partIndex.replaceTimeSlicedPartitioning(
+                    origParting, {newParting});
+                
+                prevEdgeIOCount = graph_->getEdgeIOCount();
+                prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
+                prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
+                
+                ExpSetupHelper::runDFS(graph_.get(),queries);
+
+
+                std::cout << "getEdgeIOCount: " << 
+                    graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
+                std::cout << "getEdgeReadIOCount: " << 
+                    graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
+                          << std::endl;
+                std::cout << "getEdgeWriteIOCount: " << 
+                    graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
+                          << std::endl;
+
+                edgeIO[solverIndex].push(
+                    graph_->getEdgeIOCount() - prevEdgeIOCount);
+                edgeReadIO[solverIndex].push(
+                    graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
+                edgeWriteIO[solverIndex].push(
+                    graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
+                
+            }
+        }
+    
+
+        for (int solverIndex = 0; solverIndex < solvers.size(); solverIndex++)
+        {
+
+            edgeIOCountExp.addRecord();
+            edgeIOCountExp.setFieldValue(
+                "solver", solvers[solverIndex]->getClassName());
+            edgeIOCountExp.setFieldValue(
+                "delta",
+                boost::lexical_cast<std::string>(timeDeltas_[deltaIndex]));
+            edgeIOCountExp.setFieldValue(
+                "edgeIO", edgeIO[solverIndex].getMean());
+            edgeIOCountExp.setFieldValue(
+                "deviation", edgeIO[solverIndex].getStandardDeviation());
+            edgeIO[solverIndex].clear();
+
+            edgeWriteIOCountExp.addRecord();
+            edgeWriteIOCountExp.setFieldValue(
+                "solver", solvers[solverIndex]->getClassName());
+            edgeWriteIOCountExp.setFieldValue("delta",
+                                              boost::lexical_cast<std::string>(timeDeltas_[deltaIndex]));
+            edgeWriteIOCountExp.setFieldValue(
+                "edgeWriteIO", edgeWriteIO[solverIndex].getMean());
+            edgeWriteIOCountExp.setFieldValue(
+                "deviation", edgeWriteIO[solverIndex].getStandardDeviation());
+            edgeWriteIO[solverIndex].clear();
+
+            edgeReadIOCountExp.addRecord();
+            edgeReadIOCountExp.setFieldValue(
+                "solver", solvers[solverIndex]->getClassName());
+            edgeReadIOCountExp.setFieldValue(
+                "delta",
+                boost::lexical_cast<std::string>(timeDeltas_[deltaIndex]));
+            edgeReadIOCountExp.setFieldValue(
+                "edgeReadIO", edgeReadIO[solverIndex].getMean());
+            edgeReadIOCountExp.setFieldValue(
+                "deviation", edgeReadIO[solverIndex].getStandardDeviation());
+            edgeReadIO[solverIndex].clear();
         }
     }
 
-     std::cout << "done." << std::endl;
+    // std::cout << "done." << std::endl;
+
      
-     for (auto exp : expData)
-         exp->close();
+    for (auto exp : expData)
+        exp->close();
 };
