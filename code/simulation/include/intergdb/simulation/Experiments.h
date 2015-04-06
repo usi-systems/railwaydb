@@ -93,6 +93,35 @@ namespace intergdb { namespace simulation
         std::vector<double> timeDeltas_ = { 0.20, 0.40, 0.60, 0.80, 1.00 };
     };
 
+ class VsTimeDeltaBFS : public ExperimentalRun
+    {
+    public:
+        void process() override;
+
+        VsTimeDeltaBFS();
+
+    private:
+        void makeEdgeIOCountExp(ExperimentalData * exp);
+        void makeEdgeWriteIOCountExp(ExperimentalData * exp);
+        void makeEdgeReadIOCountExp(ExperimentalData * exp);
+
+    protected:
+        void setUp() override;
+        void tearDown() override;       
+        std::unique_ptr<core::Conf> conf_;
+        std::unique_ptr<core::InteractionGraph> graph_;
+        uint64_t tsStart_;
+        uint64_t tsEnd_;
+        std::unordered_set<int64_t> vertices_;
+        int numRuns_ = 3;
+        int blockSize_ = 65536;
+        int blockBufferSize_ = 5 ; 
+        int numQueries_ = 100;
+        int numQueryTemplates_ = 3;
+        double queryZipfParam_ = 0.5;
+        std::vector<double> timeDeltas_ = { 0.20, 0.40, 0.60, 0.80, 1.00 };
+    };
+
 
     class VsNumAttributes : public ExperimentalRun
     {

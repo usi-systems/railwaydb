@@ -424,6 +424,6 @@ void ExpSetupHelper::bfs(
             }
         }
     }
-    assert (count != 0);
-    assert (sizes != 0);   
+    std::cout << "count " << count << std::endl;
+    std::cout << "sizes " << sizes << std::endl;
 }
