@@ -233,6 +233,19 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
     }
 }
 
+std::vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(vector<std::vector<std::string> > templates,
+                                                                   double queryZipfParam,
+                                                                   int numQueries,
+                                                                   uint64_t& tsStart,
+                                                                   uint64_t& tsEnd,
+                                                                   double delta,
+                                                                   std::unordered_set<int64_t> const & vertices)
+{
+    std::vector<core::FocusedIntervalQuery> queries;
+    return queries;
+}
+
+
 std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<std::string> > templates,
                                                              double queryZipfParam,
                                                              int numQueries,

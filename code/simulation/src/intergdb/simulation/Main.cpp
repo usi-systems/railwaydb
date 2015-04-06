@@ -21,7 +21,8 @@ int simulation()
 int experiment()
 {
     // (VsBlockSize()).run();
-    (VsNumQueryTemplates()).run();
+    // (VsNumQueryTemplates()).run();
+    (VsTimeDeltaDFS()).run();
     return EXIT_SUCCESS;
 }
 
