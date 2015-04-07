@@ -5,10 +5,11 @@ import re
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as pp
+import matplotlib
 
 EXPERIMENT_NAME = "EdgeIOCountVsTimeDeltaDFS"
-X_LABEL         = "Time Delta (%)"
-Y_LABEL         = "Read I/O Count (bytes)"
+X_LABEL         = "Time Delta (% of total graph time span)"
+Y_LABEL         = "Read I/O Count (MB)"
             
 def main(dirn, fname): 
   (xs, ysPerSolver, ydevsPerSolver) = CommonViz.parseData(dirn, fname)
@@ -29,6 +30,12 @@ def main(dirn, fname):
   ax.set_ylabel(Y_LABEL);
   ax.legend(loc='best', fancybox=True)
 
+  ax.get_yaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x/1000000), ',')))
+
+  ax.get_xaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x * 100), ',')))
+  
   pp.savefig(dirn+"/"+fname+".pdf")
   pp.show()
 

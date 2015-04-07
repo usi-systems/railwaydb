@@ -29,7 +29,7 @@ namespace intergdb { namespace simulation
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
         double queryZipfParam_ = 0.5;
-        int numRuns_ = 3;
+        int numRuns_ = 10;
         int numQueries_ = 100;
         int blockBufferSize_ = 5 ; /* 5 blocks */
         std::vector<int> blockSizes_ = { 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
@@ -49,11 +49,10 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 3;
+        int numRuns_ = 10;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ; 
         std::vector<int> queryTemplatesSizes_ = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        //std::vector<int> queryTemplatesSizes_ = { 1, 2, 4 };
         double queryZipfParam_ = 0.5;
         int numQueries_ = 100;
 
@@ -84,13 +83,13 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 3;
+        int numRuns_ = 10;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ; 
         int numQueries_ = 100;
         int numQueryTemplates_ = 3;
         double queryZipfParam_ = 0.5;
-        std::vector<double> timeDeltas_ = { 0.20, 0.40, 0.60, 0.80, 1.00 };
+        std::vector<double> timeDeltas_ = { 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00 };
     };
 
  class VsTimeDeltaBFS : public ExperimentalRun
@@ -113,13 +112,13 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 3;
+        int numRuns_ = 10;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ; 
         int numQueries_ = 100;
         int numQueryTemplates_ = 3;
         double queryZipfParam_ = 0.5;
-        std::vector<double> timeDeltas_ = { 0.20, 0.40, 0.60, 0.80, 1.00 };
+        std::vector<double> timeDeltas_ = { 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00 };        
     };
 
 
