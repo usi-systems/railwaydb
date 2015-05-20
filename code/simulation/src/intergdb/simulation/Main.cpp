@@ -4,24 +4,22 @@
 using namespace std;
 using namespace intergdb::simulation;
 
-
-
 int simulation()
 {
-    (VsStorageOverheadThreshold()).run();
-    (VsNumAttributes()).run();
-    (VsNumQueryKinds()).run();
+    // (VsStorageOverheadThreshold()).run();
+    // (VsNumAttributes()).run();
+    // (VsNumQueryKinds()).run();
     // (VsQueryLength()).run();
     // (VsAttributeSizeSkew()).run();
-    // (VsQueryFreqSkew()).run();    
+    // (VsQueryFreqSkew()).run();
     return EXIT_SUCCESS;
 }
-
 
 int experiment()
 {
     // (VsBlockSize()).run();
-    (VsNumQueryTemplates()).run();
+    //(VsNumQueryTemplates()).run();
+    (VsInteractionCount()).run();
     return EXIT_SUCCESS;
 }
 

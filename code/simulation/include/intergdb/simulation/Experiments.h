@@ -35,7 +35,7 @@ namespace intergdb { namespace simulation
         std::vector<int> blockSizes_ = { 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
     };
 
-  class VsNumQueryTemplates : public ExperimentalRun
+    class VsNumQueryTemplates : public ExperimentalRun
     {
     public:
         void process() override;
@@ -51,7 +51,7 @@ namespace intergdb { namespace simulation
         std::unordered_set<int64_t> vertices_;
         int numRuns_ = 3;
         int blockSize_ = 65536;
-        int blockBufferSize_ = 5 ; 
+        int blockBufferSize_ = 5 ;
         std::vector<int> queryTemplatesSizes_ = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         //std::vector<int> queryTemplatesSizes_ = { 1, 2, 4 };
         double queryZipfParam_ = 0.5;
@@ -141,4 +141,11 @@ namespace intergdb { namespace simulation
 
         void makeRunningTimeExp(ExperimentalData * exp);
     };
+
+    class VsInteractionCount : public ExperimentalRun
+    {
+    public:
+        void process() override;
+    };
+
 } } /* namespace */
