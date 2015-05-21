@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <unordered_set>
+#include <queue>
 
 using namespace std;
 using namespace intergdb::core;
@@ -232,6 +233,68 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
     }
 }
 
+std::vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(vector<std::vector<std::string> > templates,
+                                                                   double queryZipfParam,
+                                                                   int numQueries,
+                                                                   uint64_t& tsStart,
+                                                                   uint64_t& tsEnd,
+                                                                   double delta,
+                                                                   std::unordered_set<int64_t> const & vertices)
+{
+    std::vector<core::FocusedIntervalQuery> queries;
+
+    std::vector<int64_t> vertexList;
+    std::copy(vertices.begin(), vertices.end(),
+               std::back_inserter(vertexList));
+
+    int numQueryTypes = templates.size();
+    util::ZipfRand queryGen_(queryZipfParam, numQueryTypes);
+    unsigned seed = time(NULL);
+    queryGen_.setSeed(seed++);
+
+    // use a random start node for the interval query
+    size_t vertexIdMean = (vertices.size()) / 2;
+    double vertexIdStdDev = vertexIdMean - 1;
+    util::NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
+                           0, vertices.size()-1);
+
+
+    // use a random start time for the interval query
+    double offset = (delta * (tsEnd - tsStart));
+
+    size_t timeMean = tsStart + (((tsEnd - offset) - tsStart) / 2);
+
+    double timeStdDev = timeMean - 1;
+    util::NormalRand timeGen(timeMean, timeStdDev,
+                           tsStart, tsStart+offset);
+
+
+
+    std::cout << "tsStart " << tsStart << std::endl;
+    std::cout << "tsEnd " << tsEnd << std::endl;
+    std::cout << "timeMean " << timeMean << std::endl;
+    std::cout << "offset " << offset << std::endl;
+
+    int vertexIndex;
+    int templateIndex;
+    uint64_t start;
+    uint64_t end;
+
+    VertexId vi;
+    for (int i = 0; i < numQueries; i++) {
+        templateIndex = numQueryTypes > 1 ? queryGen_.getRandomValue() : 0;
+        vertexIndex = vertexIdGen.getRandomValue();
+        start = timeGen.getRandomValue();
+        end = start + offset;
+        vi = vertexList.at(vertexIndex);
+        std::cout << "start " << start << std::endl;
+        queries.push_back(FocusedIntervalQuery(
+                              vi, start, end, templates[templateIndex]));
+    }
+    return queries;
+}
+
+
 std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<std::string> > templates,
                                                              double queryZipfParam,
                                                              int numQueries,
@@ -284,4 +347,83 @@ void ExpSetupHelper::runWorkload(
     }
     assert (count != 0);
     assert (sizes != 0);
+}
+
+
+void ExpSetupHelper::runDFS(
+    InteractionGraph * graph,
+    std::vector<core::FocusedIntervalQuery> & queries)
+{
+    for (auto q : queries) {
+        std::set<VertexId> visited;
+        dfs(graph, q, visited);
+    }
+}
+
+void ExpSetupHelper::runBFS(
+    InteractionGraph * graph,
+    std::vector<core::FocusedIntervalQuery> & queries)
+{
+    for (auto q : queries) {
+        bfs(graph, q);
+    }
+}
+
+void ExpSetupHelper::dfs(
+    InteractionGraph * graph,
+    FocusedIntervalQuery query, 
+    std::set<VertexId> & visited )
+{
+    int count = 0;
+    int sizes = 0;
+    VertexId u;
+    visited.insert(query.getHeadVertex());
+    for (auto iqIt = graph->processFocusedIntervalQuery(query);
+         iqIt.isValid(); iqIt.next()) {
+        u = iqIt.getToVertex();
+        sizes += iqIt.getEdgeData()->getFields().size();
+        count += 1;
+        auto search = visited.find(u);
+        if(search != visited.end()) {
+            FocusedIntervalQuery next(u, query.getStartTime(), query.getEndTime(), query.getAttributeNames());
+            dfs(graph, next, visited);
+        }
+    }
+    std::cout << "count " << count << std::endl;
+    std::cout << "sizes " << sizes << std::endl;
+    //assert (count != 0);
+    //assert (sizes != 0);
+}
+
+void ExpSetupHelper::bfs(
+    InteractionGraph * graph,
+    FocusedIntervalQuery query )
+{
+    int count = 0;
+    int sizes = 0;
+    std::queue<VertexId> q;
+    std::set<VertexId> visited ;
+    VertexId u,t;
+
+    q.push(query.getHeadVertex());
+    visited.insert(query.getHeadVertex());
+
+    while (!q.empty()) {
+        u = q.front();
+        q.pop();
+        FocusedIntervalQuery next(u, query.getStartTime(), query.getEndTime(), query.getAttributeNames());
+        for (auto iqIt = graph->processFocusedIntervalQuery(query);
+             iqIt.isValid(); iqIt.next()) {
+            sizes += iqIt.getEdgeData()->getFields().size();
+            count += 1;
+            t = iqIt.getToVertex();
+            auto search = visited.find(t);
+            if(search != visited.end()) {
+                q.push(t);
+                visited.insert(t);                        
+            }
+        }
+    }
+    std::cout << "count " << count << std::endl;
+    std::cout << "sizes " << sizes << std::endl;
 }

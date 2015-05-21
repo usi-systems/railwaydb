@@ -7,8 +7,8 @@ import numpy as np
 import matplotlib.pyplot as pp
 import matplotlib
 
-EXPERIMENT_NAME = "EdgeReadIOCountVsBlockSize"
-X_LABEL         = "Block Size (bytes)"
+EXPERIMENT_NAME = "EdgeIOCountVsTimeDeltaDFS"
+X_LABEL         = "Time Delta (% of total graph time span)"
 Y_LABEL         = "Read I/O Count (MB)"
             
 def main(dirn, fname): 
@@ -19,7 +19,7 @@ def main(dirn, fname):
   mrkrs = CommonConf.getLineMarkers()
   fig = pp.figure()
   ax = fig.add_subplot(111)
-  ax.set_xscale("log", basex=2)
+  # ax.set_xscale("log", basex=2)
 
   index = 0
   for (solver, ys), (solver, ydevs) in zip(ysPerSolver.iteritems(),ydevsPerSolver.iteritems()) : 
@@ -33,6 +33,9 @@ def main(dirn, fname):
   ax.get_yaxis().set_major_formatter(
     matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x/1000000), ',')))
 
+  ax.get_xaxis().set_major_formatter(
+    matplotlib.ticker.FuncFormatter(lambda x, p: format(int(x * 100), ',')))
+  
   pp.savefig(dirn+"/"+fname+".pdf")
   pp.show()
 
