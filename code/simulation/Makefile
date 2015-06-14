@@ -19,18 +19,18 @@ LDFLAGS = \
 	-L $(THISDIR)/../libintergdb/bin \
 	-L $(THISDIR)/../liboptimizer/bin \
 	-L /opt/local/libcpp-software/lib \
-	-lboost_chrono-mt \
-	-lboost_context-mt \
-	-lboost_coroutine-mt \
-	-lboost_date_time-mt \
 	-lboost_filesystem-mt \
 	-lboost_iostreams-mt \
-	-lboost_system-mt \
+	-lboost_coroutine-mt \
+	-lboost_context-mt \
+	-lboost_date_time-mt \
+	-lboost_chrono-mt \
 	-lboost_thread-mt \
-	-lcommon \
+	-lboost_system-mt \
 	-lintergdb \
-	-lleveldb \
 	-loptimizer \
+	-lcommon \
+	-lleveldb \
 	-lspatialindex
 
 include ../Makefile.exe
