@@ -39,13 +39,13 @@ cd ext/src
 
 6. Build leveldb
 <br/><br/><pre><code>cd leveldb
-CC=clang CXX=clang++ make -j 4
+CC=clang CXX=clang++ CXXFLAGS="-std=c++11 -stdlib=libc++" make -j 4
 cd ..
 </code></pre>
 
 7. Build libspatialindex
 <br/><br/><pre><code>cd libspatialindex
-CC=clang CXX=clang++ ./configure --prefix $(cd ../..; pwd)
+CC=clang CXX=clang++  CXXFLAGS="-std=c++11 -stdlib=libc++" ./configure --prefix $(cd ../..; pwd)
 make -j 4
 make install
 cd ..
@@ -53,7 +53,7 @@ cd ..
 
 8. Build gtest
 <br/><br/><pre><code>cd gtest
-CC=clang CXX=clang++ ./configure --prefix $(cd ../..; pwd)
+CC=clang CXX=clang++  CXXFLAGS="-std=c++11 -stdlib=libc++" ./configure --prefix $(cd ../..; pwd)
 make
 cp -fr include/gtest ../../include
 cp lib/.libs/libgtest* ../../lib/
