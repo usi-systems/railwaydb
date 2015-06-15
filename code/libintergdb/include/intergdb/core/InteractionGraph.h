@@ -187,7 +187,7 @@ namespace intergdb { namespace core
     {
       static void add(AttributeData * data, int index, T1&& t1, TN&&... tn)
       {
-        data->setAttribute(index, t1);
+        data->setAttribute(index, std::forward<T1>(t1));
         AttributeCollector<TN...>::add(data, index+1, std::forward<TN>(tn)...);
       }
     };
@@ -197,7 +197,7 @@ namespace intergdb { namespace core
     {
       static void add(AttributeData * data, int index, T&& t)
       {
-        data->setAttribute(index, t);
+        data->setAttribute(index, std::forward<T>(t));
       }
     };
 
