@@ -52,7 +52,7 @@ cd ..
 </code></pre>
 
 8. Build gtest
-<br/><br/><p.re><code>cd gtest
+<br/><br/><pre><code>cd gtest
 CC=clang CXX=clang++ ./configure --prefix $(cd ../..; pwd)
 make
 cp -fr include/gtest ../../include
