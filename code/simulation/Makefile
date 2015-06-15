@@ -2,6 +2,8 @@ THISDIR := $(realpath .)
 
 EXECUTABLE = simulation
 
+UNAME    := $(shell uname)
+
 CPPFLAGS = 
 
 INCLUDES = \
@@ -32,5 +34,16 @@ LDFLAGS = \
 	-lcommon \
 	-lleveldb \
 	-lspatialindex
+
+ifeq ($(UNAME), Linux)
+LDFLAGS += \
+	-Wl,-rpath,$(THISDIR)/../ext/lib \
+	-Wl,-rpath,$(THISDIR)/../ext/src/leveldb \
+	-Wl,-rpath,$(THISDIR)/../libcommon/bin \
+	-Wl,-rpath,$(THISDIR)/../libintergdb/bin \
+	-Wl,-rpath,$(THISDIR)/../liboptimizer/bin \
+	-Wl,-rpath,/opt/local/libcpp-software/lib
+endif
+
 
 include ../Makefile.exe
