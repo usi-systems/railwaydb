@@ -102,11 +102,22 @@ void VsNumQueryTemplates::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     exp->setKeepValues(false);
 }
 
+void VsNumQueryTemplates::makeRunningTimeExp(ExperimentalData * exp)
+{
+    exp->setDescription("NumQueryTemplates Vs. RunningTime");
+    exp->addField("solver");
+    exp->addField("numQueryTemplates");
+    exp->addField("time");
+    exp->addField("deviation");
+    exp->setKeepValues(false);
+}
+
 void VsNumQueryTemplates::process()
 {
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
-   
+    util::AutoTimer timer;
+    
     assert(graph_ != NULL);
     simConf.setAttributeCount(
         graph_->getConf().getEdgeSchema().getAttributes().size());
@@ -114,13 +125,15 @@ void VsNumQueryTemplates::process()
     ExperimentalData edgeIOCountExp("EdgeIOCountVsNumQueryTemplates");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsNumQueryTemplates");
     ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsNumQueryTemplates");
+    ExperimentalData runningTimeExp("RunningTimeVsNumQueryTemplates");
 
     auto expData =
-        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp };
+        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp, &runningTimeExp };
 
     makeEdgeIOCountExp(&edgeIOCountExp);
     makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
     makeEdgeReadIOCountExp(&edgeReadIOCountExp);
+    makeRunningTimeExp(&runningTimeExp);
 
     for (auto exp : expData)
         exp->open();
@@ -128,6 +141,8 @@ void VsNumQueryTemplates::process()
     vector<util::RunningStat> edgeIO;
     vector<util::RunningStat> edgeWriteIO;
     vector<util::RunningStat> edgeReadIO;
+    vector<util::RunningStat> times;
+
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
         {
@@ -140,6 +155,7 @@ void VsNumQueryTemplates::process()
         edgeIO.push_back(util::RunningStat());
         edgeWriteIO.push_back(util::RunningStat());
         edgeReadIO.push_back(util::RunningStat());
+        times.push_back(util::RunningStat());
         names.push_back(solver->getClassName());
     }
 
@@ -210,7 +226,9 @@ void VsNumQueryTemplates::process()
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
+                timer.start();
                 ExpSetupHelper::runWorkload(graph_.get(),queries);
+                timer.stop();
 
 
                 std::cout << "getEdgeIOCount: " << 
@@ -228,7 +246,8 @@ void VsNumQueryTemplates::process()
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                
+                times[solverIndex].push( timer.getRealTimeInSeconds());
+
             }
         }
     
@@ -270,6 +289,16 @@ void VsNumQueryTemplates::process()
             edgeReadIOCountExp.setFieldValue(
                 "deviation", edgeReadIO[solverIndex].getStandardDeviation());
             edgeReadIO[solverIndex].clear();
+
+            runningTimeExp.addRecord();
+            runningTimeExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
+            runningTimeExp.setFieldValue(
+                "numQueryTemplates",
+                boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
+            runningTimeExp.setFieldValue("time", times[solverIndex].getMean());
+            runningTimeExp.setFieldValue(
+                "deviation", times[solverIndex].getStandardDeviation());
+            times[solverIndex].clear();
         }
     }
 
