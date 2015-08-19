@@ -17,11 +17,11 @@ int simulation()
 
 int experiment()
 {
-    (VsInteractionCount()).run();
-    //(VsBlockSize()).run();
-    //(VsNumQueryTemplates()).run();
-    //(VsTimeDeltaDFS()).run();
-    //(VsTimeDeltaBFS()).run();
+    //(VsInteractionCount()).run();
+    (VsBlockSize()).run();
+    (VsNumQueryTemplates()).run();
+    (VsTimeDeltaDFS()).run();
+    // (VsTimeDeltaBFS()).run();
     return EXIT_SUCCESS;
 }
 
