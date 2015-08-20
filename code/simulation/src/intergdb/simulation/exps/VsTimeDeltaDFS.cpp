@@ -113,7 +113,7 @@ void VsTimeDeltaDFS::makeRunningTimeExp(ExperimentalData * exp)
 {
     exp->setDescription("Time Delta Vs. RunningTime");
     exp->addField("solver");
-    exp->addField("blockSize");
+    exp->addField("delta");
     exp->addField("time");
     exp->addField("deviation");
     exp->setKeepValues(false);
