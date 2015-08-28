@@ -31,6 +31,8 @@ namespace intergdb { namespace simulation {
         static core::Conf createGraphConf(
             std::string const& dbDirPath, std::string const& dbName);
 
+        static void purge();
+        
         static void scanTweets(
             std::string const & dirPath,
             std::function<void (uint64_t time, int64_t from,

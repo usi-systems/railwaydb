@@ -18,15 +18,15 @@ int simulation()
 int experiment()
 {
     //(VsInteractionCount()).run();
-    (VsBlockSize()).run();
+    // (VsBlockSize()).run();
     (VsNumQueryTemplates()).run();
-    (VsTimeDeltaDFS()).run();
+    // (VsTimeDeltaDFS()).run();
     // (VsTimeDeltaBFS()).run();
     return EXIT_SUCCESS;
 }
 
 int main()
 {
-    return simulation();
+    return experiment();
 }
 

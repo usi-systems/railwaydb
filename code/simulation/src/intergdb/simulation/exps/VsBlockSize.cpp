@@ -266,13 +266,16 @@ void VsBlockSize::process()
                 newParting.getPartitioning() = solverSolution.toStringSet();
                 partIndex.replaceTimeSlicedPartitioning(
                     origParting, {newParting});
-                // to flush the filesystem cache
-                //system(“purge”);
+
+
+
 
                 prevEdgeIOCount = (*iter)->getEdgeIOCount();
                 prevEdgeReadIOCount = (*iter)->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
 
+                // to flush the filesystem cache
+                ExpSetupHelper::purge();               
                 timer.start();
                 ExpSetupHelper::runWorkload((*iter).get(),queries[i]);
                 timer.stop();

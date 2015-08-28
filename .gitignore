@@ -9,6 +9,8 @@
 *.la
 .deps
 .libs
+code/*expData*
+code/data
 code/libcommon/bin/
 code/libexpcommon/bin/
 code/libintergdb/bin/

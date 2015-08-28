@@ -234,6 +234,7 @@ void VsTimeDeltaDFS::process()
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
+                ExpSetupHelper::purge();
                 timer.start();
                 ExpSetupHelper::runDFS(graph_.get(),queries);
                 timer.stop();
