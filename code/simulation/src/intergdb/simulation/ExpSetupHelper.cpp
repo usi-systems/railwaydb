@@ -39,7 +39,7 @@ ostream& operator<<(ostream& ostr, Tweet const& tweet)
 
 void ExpSetupHelper::purge() {
 #ifdef __MACH__
-    system("purge");
+    system("sudo purge");
 #else
     cerr << "purge not supported on linux" << endl;
 #endif

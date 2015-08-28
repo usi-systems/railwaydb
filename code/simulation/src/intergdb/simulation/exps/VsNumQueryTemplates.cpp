@@ -227,6 +227,7 @@ void VsNumQueryTemplates::process()
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 ExpSetupHelper::purge();
+                graph_.reset();
                 graph_.reset(new InteractionGraph(*conf_));
                 timer.start();
                 ExpSetupHelper::runWorkload(graph_.get(),queries);

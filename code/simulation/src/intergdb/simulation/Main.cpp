@@ -18,7 +18,7 @@ int simulation()
 int experiment()
 {
     //(VsInteractionCount()).run();
-    (VsBlockSize()).run();
+    // (VsBlockSize()).run();
     (VsNumQueryTemplates()).run();
     (VsTimeDeltaDFS()).run();
     // (VsTimeDeltaBFS()).run();
