@@ -235,6 +235,7 @@ void VsTimeDeltaDFS::process()
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 ExpSetupHelper::purge();
+                graph_.reset(new InteractionGraph(*conf_));
                 timer.start();
                 ExpSetupHelper::runDFS(graph_.get(),queries);
                 timer.stop();
