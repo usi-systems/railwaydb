@@ -46,9 +46,9 @@ TEST_F(SchemaTest, WriteReadTest)
     graph->createVertex(4, "v4");
     Timestamp ts = 7.0;
 
-    EXPECT_NO_THROW(graph->addEdge(2, 4, ts, 1LL, 2LL));
+    EXPECT_NO_THROW(graph->addEdge(2, 4, ts, INT64_C(1), INT64_C(2)));
 
-    EXPECT_ANY_THROW(graph->addEdge(2, 4, ts+1, 1LL, 2LL, 3LL));
+    EXPECT_ANY_THROW(graph->addEdge(2, 4, ts+1, INT64_C(1), INT64_C(2), INT64_C(3)));
 /*
     caughtError = false;
     try {
