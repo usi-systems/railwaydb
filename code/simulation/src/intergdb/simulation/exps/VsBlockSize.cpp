@@ -108,7 +108,7 @@ void VsBlockSize::tearDown()
 
 void VsBlockSize::makeEdgeIOCountExp(ExperimentalData * exp)
 {
-    exp->setDescription("Query IO Vs. EdgeIOCount");
+    exp->setDescription("BlockSize IO Vs. EdgeIOCount");
     exp->addField("solver");
     exp->addField("blockSize");
     exp->addField("edgeIO");
@@ -118,7 +118,7 @@ void VsBlockSize::makeEdgeIOCountExp(ExperimentalData * exp)
 
 void VsBlockSize::makeEdgeWriteIOCountExp(ExperimentalData * exp)
 {
-    exp->setDescription("Storage Overhead Vs. EdgeWriteIOCount");
+    exp->setDescription("BlockSize Vs. EdgeWriteIOCount");
     exp->addField("solver");
     exp->addField("blockSize");
     exp->addField("edgeWriteIO");
@@ -127,10 +127,20 @@ void VsBlockSize::makeEdgeWriteIOCountExp(ExperimentalData * exp)
 }
 
 void VsBlockSize::makeEdgeReadIOCountExp(ExperimentalData * exp) {
-    exp->setDescription("Running Time Vs. EdgeReadIOCount");
+    exp->setDescription("BlockSize Vs. EdgeReadIOCount");
     exp->addField("solver");
     exp->addField("blockSize");
     exp->addField("edgeReadIO");
+    exp->addField("deviation");
+    exp->setKeepValues(false);
+}
+
+void VsBlockSize::makeRunningTimeExp(ExperimentalData * exp)
+{
+    exp->setDescription("BlockSize Vs. RunningTime");
+    exp->addField("solver");
+    exp->addField("blockSize");
+    exp->addField("time");
     exp->addField("deviation");
     exp->setKeepValues(false);
 }
@@ -139,7 +149,8 @@ void VsBlockSize::process()
 {
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
-
+    util::AutoTimer timer;
+    
     assert(graphs_.size() >= 1);
     simConf.setAttributeCount(
         graphs_[0]->getConf().getEdgeSchema().getAttributes().size());
@@ -183,13 +194,15 @@ void VsBlockSize::process()
     ExperimentalData edgeIOCountExp("EdgeIOCountVsBlockSize");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
     ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsBlockSize");
-
+    ExperimentalData runningTimeExp("RunningTimeVsBlockSize");
+    
     auto expData =
-        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp };
+        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp, &runningTimeExp };
 
     makeEdgeIOCountExp(&edgeIOCountExp);
     makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
     makeEdgeReadIOCountExp(&edgeReadIOCountExp);
+    makeRunningTimeExp(&runningTimeExp);
 
     for (auto exp : expData)
         exp->open();
@@ -197,6 +210,8 @@ void VsBlockSize::process()
     vector<util::RunningStat> edgeIO;
     vector<util::RunningStat> edgeWriteIO;
     vector<util::RunningStat> edgeReadIO;
+    vector<util::RunningStat> times;
+
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
     {
@@ -209,6 +224,7 @@ void VsBlockSize::process()
         edgeIO.push_back(util::RunningStat());
         edgeWriteIO.push_back(util::RunningStat());
         edgeReadIO.push_back(util::RunningStat());
+        times.push_back(util::RunningStat());
         names.push_back(solver->getClassName());
     }
 
@@ -250,14 +266,19 @@ void VsBlockSize::process()
                 newParting.getPartitioning() = solverSolution.toStringSet();
                 partIndex.replaceTimeSlicedPartitioning(
                     origParting, {newParting});
-                // to flush the filesystem cache
-                //system(“purge”);
+
+
+
 
                 prevEdgeIOCount = (*iter)->getEdgeIOCount();
                 prevEdgeReadIOCount = (*iter)->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
 
+                // to flush the filesystem cache
+                ExpSetupHelper::purge();               
+                timer.start();
                 ExpSetupHelper::runWorkload((*iter).get(),queries[i]);
+                timer.stop();
 
 
                 std::cout <<
@@ -275,6 +296,8 @@ void VsBlockSize::process()
                     (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
+                times[solverIndex].push( timer.getRealTimeInSeconds());
+                
                 x++;
                 std::cout << "    " << x << "/" << total << std::endl;
             }
@@ -317,6 +340,18 @@ void VsBlockSize::process()
             edgeReadIOCountExp.setFieldValue(
                 "deviation", edgeReadIO[solverIndex].getStandardDeviation());
             edgeReadIO[solverIndex].clear();
+
+
+            runningTimeExp.addRecord();
+            runningTimeExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
+            runningTimeExp.setFieldValue(
+                "blockSize",
+                boost::lexical_cast<std::string>(blockSizes_[blockSizeIndex]));
+            runningTimeExp.setFieldValue("time", times[solverIndex].getMean());
+            runningTimeExp.setFieldValue(
+                "deviation", times[solverIndex].getStandardDeviation());
+            times[solverIndex].clear();
+            
         }
     }
 

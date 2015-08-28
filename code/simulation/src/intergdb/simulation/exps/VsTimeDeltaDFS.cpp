@@ -109,11 +109,22 @@ void VsTimeDeltaDFS::makeEdgeReadIOCountExp(ExperimentalData * exp) {
     exp->setKeepValues(false);
 }
 
+void VsTimeDeltaDFS::makeRunningTimeExp(ExperimentalData * exp)
+{
+    exp->setDescription("Time Delta Vs. RunningTime");
+    exp->addField("solver");
+    exp->addField("delta");
+    exp->addField("time");
+    exp->addField("deviation");
+    exp->setKeepValues(false);
+}
+
 void VsTimeDeltaDFS::process()
 {
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
-   
+    util::AutoTimer timer;
+
     assert(graph_ != NULL);
     simConf.setAttributeCount(
         graph_->getConf().getEdgeSchema().getAttributes().size());
@@ -123,20 +134,24 @@ void VsTimeDeltaDFS::process()
     ExperimentalData edgeIOCountExp("EdgeIOCountVsTimeDeltaDFS");
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsTimeDeltaDFS");
     ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsTimeDeltaDFS");
+    ExperimentalData runningTimeExp("RunningTimeVsTimeDeltaDFS");
 
     auto expData =
-        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp };
+        { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp, &runningTimeExp };
 
     makeEdgeIOCountExp(&edgeIOCountExp);
     makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
     makeEdgeReadIOCountExp(&edgeReadIOCountExp);
-     
+    makeRunningTimeExp(&runningTimeExp);
+
     for (auto exp : expData)
         exp->open();
 
     vector<util::RunningStat> edgeIO;
     vector<util::RunningStat> edgeWriteIO;
     vector<util::RunningStat> edgeReadIO;
+    vector<util::RunningStat> times;
+        
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
         {
@@ -149,6 +164,7 @@ void VsTimeDeltaDFS::process()
         edgeIO.push_back(util::RunningStat());
         edgeWriteIO.push_back(util::RunningStat());
         edgeReadIO.push_back(util::RunningStat());
+        times.push_back(util::RunningStat());
         names.push_back(solver->getClassName());
     }
 
@@ -217,8 +233,13 @@ void VsTimeDeltaDFS::process()
                 prevEdgeIOCount = graph_->getEdgeIOCount();
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
-                
+
+                ExpSetupHelper::purge();
+                graph_.reset();
+                graph_.reset(new InteractionGraph(*conf_));
+                timer.start();
                 ExpSetupHelper::runDFS(graph_.get(),queries);
+                timer.stop();
 
 
                 std::cout << "getEdgeIOCount: " << 
@@ -236,7 +257,7 @@ void VsTimeDeltaDFS::process()
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                
+                times[solverIndex].push( timer.getRealTimeInSeconds());
             }
         }
     
@@ -278,6 +299,16 @@ void VsTimeDeltaDFS::process()
             edgeReadIOCountExp.setFieldValue(
                 "deviation", edgeReadIO[solverIndex].getStandardDeviation());
             edgeReadIO[solverIndex].clear();
+
+            runningTimeExp.addRecord();
+            runningTimeExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
+            runningTimeExp.setFieldValue(
+                "delta",
+                boost::lexical_cast<std::string>(timeDeltas_[deltaIndex]));                      
+            runningTimeExp.setFieldValue("time", times[solverIndex].getMean());
+            runningTimeExp.setFieldValue(
+                "deviation", times[solverIndex].getStandardDeviation());
+            times[solverIndex].clear();
         }
     }
 

@@ -18,6 +18,7 @@ namespace intergdb { namespace simulation
         void makeEdgeIOCountExp(ExperimentalData * exp);
         void makeEdgeWriteIOCountExp(ExperimentalData * exp);
         void makeEdgeReadIOCountExp(ExperimentalData * exp);
+        void makeRunningTimeExp(ExperimentalData * exp);
 
     protected:
         void setUp() override;
@@ -44,6 +45,7 @@ namespace intergdb { namespace simulation
         void makeEdgeIOCountExp(ExperimentalData * exp);
         void makeEdgeWriteIOCountExp(ExperimentalData * exp);
         void makeEdgeReadIOCountExp(ExperimentalData * exp);
+        void makeRunningTimeExp(ExperimentalData * exp);
         std::unique_ptr<core::Conf> conf_;
         std::unique_ptr<core::InteractionGraph> graph_;
         uint64_t tsStart_;
@@ -74,6 +76,7 @@ namespace intergdb { namespace simulation
         void makeEdgeIOCountExp(ExperimentalData * exp);
         void makeEdgeWriteIOCountExp(ExperimentalData * exp);
         void makeEdgeReadIOCountExp(ExperimentalData * exp);
+        void makeRunningTimeExp(ExperimentalData * exp);
 
     protected:
         void setUp() override;
@@ -103,6 +106,7 @@ namespace intergdb { namespace simulation
         void makeEdgeIOCountExp(ExperimentalData * exp);
         void makeEdgeWriteIOCountExp(ExperimentalData * exp);
         void makeEdgeReadIOCountExp(ExperimentalData * exp);
+        void makeRunningTimeExp(ExperimentalData * exp);
 
     protected:
         void setUp() override;

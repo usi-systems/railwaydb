@@ -7,8 +7,8 @@ using namespace intergdb::simulation;
 int simulation()
 {
     // (VsStorageOverheadThreshold()).run();
-    // (VsNumAttributes()).run();
-    // (VsNumQueryKinds()).run();
+    (VsNumAttributes()).run();
+    (VsNumQueryKinds()).run();
     // (VsQueryLength()).run();
     // (VsAttributeSizeSkew()).run();
     // (VsQueryFreqSkew()).run();
@@ -17,11 +17,11 @@ int simulation()
 
 int experiment()
 {
-    (VsInteractionCount()).run();
-    //(VsBlockSize()).run();
-    //(VsNumQueryTemplates()).run();
-    //(VsTimeDeltaDFS()).run();
-    //(VsTimeDeltaBFS()).run();
+    //(VsInteractionCount()).run();
+    // (VsBlockSize()).run();
+    (VsNumQueryTemplates()).run();
+    (VsTimeDeltaDFS()).run();
+    // (VsTimeDeltaBFS()).run();
     return EXIT_SUCCESS;
 }
 

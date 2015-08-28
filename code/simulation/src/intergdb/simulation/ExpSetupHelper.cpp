@@ -37,6 +37,14 @@ ostream& operator<<(ostream& ostr, Tweet const& tweet)
 }
 } }
 
+void ExpSetupHelper::purge() {
+#ifdef __MACH__
+    system("sudo purge");
+#else
+    cerr << "purge not supported on linux" << endl;
+#endif
+}
+
 Conf ExpSetupHelper::createGraphConf(string const& dbDirPath,
                                      string const& expName)
 {
