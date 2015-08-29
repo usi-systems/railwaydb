@@ -117,6 +117,12 @@ namespace intergdb { namespace core
         EdgeIterator processFocusedIntervalQuery(
             FocusedIntervalQuery const & q);
 
+
+        void clearBlockBuffer()
+        {
+            return hisg_.clearBlockBuffer();
+        }
+
         BlockStats const & getBlockStats() const
         {
             return memg_.getBlockStats();

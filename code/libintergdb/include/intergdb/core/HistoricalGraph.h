@@ -84,6 +84,12 @@ namespace intergdb { namespace core
         std::shared_ptr<EdgeIterator> focusedIntervalQuery(
             FocusedIntervalQuery const &  query);
 
+
+        void clearBlockBuffer()
+        {
+            return bman_.clear();
+        }
+
         PartitionIndex & getPartitionIndex()
         {
             return partIndex_;

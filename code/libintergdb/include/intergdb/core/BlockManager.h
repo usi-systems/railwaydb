@@ -30,6 +30,12 @@ namespace intergdb { namespace core
                      PartitionIndex & partitionIndex,
                      MetaDataManager & meta);
 
+        void clear()
+        {
+            lruList_.clear();
+            cache_.clear();
+        }
+
         Block const & getBlock(BlockId id);
 
         Schema const & getEdgeSchema() const
