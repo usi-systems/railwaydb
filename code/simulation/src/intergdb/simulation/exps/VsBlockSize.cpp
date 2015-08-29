@@ -150,7 +150,7 @@ void VsBlockSize::process()
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
     util::AutoTimer timer;
-    
+
     assert(graphs_.size() >= 1);
     simConf.setAttributeCount(
         graphs_[0]->getConf().getEdgeSchema().getAttributes().size());
@@ -162,16 +162,16 @@ void VsBlockSize::process()
     std::cout << "Generating workload..." << std::endl;
     for (int i=0; i < numRuns_; i++) {
         std::cout << "    " << i << "/" << numRuns_ << std::endl;
-      
+
          std::vector<std::vector<std::string> > templates =
             simConf.getQueryTemplates(graphs_[0].get());
-     
-        std::vector<core::FocusedIntervalQuery> qs = 
+
+        std::vector<core::FocusedIntervalQuery> qs =
             ExpSetupHelper::genQueries(templates,
-                                       queryZipfParam_, 
+                                       queryZipfParam_,
                                        numQueries_,
                                        tsStart_,
-                                       tsEnd_, 
+                                       tsEnd_,
                                        vertices_);
 
         ExpSetupHelper::runWorkload(graphs_[0].get(),qs);
@@ -195,7 +195,7 @@ void VsBlockSize::process()
     ExperimentalData edgeWriteIOCountExp("EdgeWriteIOCountVsBlockSize");
     ExperimentalData edgeReadIOCountExp("EdgeReadIOCountVsBlockSize");
     ExperimentalData runningTimeExp("RunningTimeVsBlockSize");
-    
+
     auto expData =
         { &edgeIOCountExp, &edgeWriteIOCountExp, &edgeReadIOCountExp, &runningTimeExp };
 
@@ -275,7 +275,7 @@ void VsBlockSize::process()
                 prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
 
                 // to flush the filesystem cache
-                ExpSetupHelper::purge();               
+                ExpSetupHelper::purge();
                 timer.start();
                 ExpSetupHelper::runWorkload((*iter).get(),queries[i]);
                 timer.stop();
@@ -297,7 +297,7 @@ void VsBlockSize::process()
                 edgeWriteIO[solverIndex].push(
                     (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
                 times[solverIndex].push( timer.getRealTimeInSeconds());
-                
+
                 x++;
                 std::cout << "    " << x << "/" << total << std::endl;
             }
@@ -351,7 +351,7 @@ void VsBlockSize::process()
             runningTimeExp.setFieldValue(
                 "deviation", times[solverIndex].getStandardDeviation());
             times[solverIndex].clear();
-            
+
         }
     }
 

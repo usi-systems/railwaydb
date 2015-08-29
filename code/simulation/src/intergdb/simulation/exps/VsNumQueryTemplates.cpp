@@ -28,7 +28,7 @@ using namespace intergdb::simulation;
 void VsNumQueryTemplates::setUp()
 {
     cout << " VsNumQueryTemplates::setUp()..." << endl;
-    
+
     string dbDirPath = "data";
     string expName = str(boost::format("tweetDB%08d") % blockSize_);
     string pathAndName =
@@ -38,7 +38,7 @@ void VsNumQueryTemplates::setUp()
     if( !(boost::filesystem::exists(pathAndName))) {
         boost::filesystem::create_directory(pathAndName);
     }
-    
+
     // Clean up anything that is in the directory
     boost::filesystem::path path_to_remove(pathAndName);
     for (boost::filesystem::directory_iterator end_dir_it,
@@ -46,15 +46,15 @@ void VsNumQueryTemplates::setUp()
     {
         remove_all(it->path());
     }
-    
+
     // Create the graph conf
     conf_.reset(new Conf(ExpSetupHelper::createGraphConf(dbDirPath, expName)));
     conf_->setBlockSize(blockSize_);
     conf_->setBlockBufferSize(blockBufferSize_);
 
-    // Create a graph 
+    // Create a graph
     graph_.reset(new InteractionGraph(*conf_));
-   
+
     // // Create a vertex just so we can populate it with
     // // the same function.
     std::vector< std::unique_ptr<core::InteractionGraph> > graphs;
@@ -117,7 +117,7 @@ void VsNumQueryTemplates::process()
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
     util::AutoTimer timer;
-    
+
     assert(graph_ != NULL);
     simConf.setAttributeCount(
         graph_->getConf().getEdgeSchema().getAttributes().size());
@@ -163,9 +163,9 @@ void VsNumQueryTemplates::process()
     size_t prevEdgeIOCount;
     size_t prevEdgeReadIOCount;
     size_t prevEdgeWriteIOCount;
-    
+
     std::cout << "Running experiments..." << std::endl;
-  
+
     int queryTemplatesIndex = -1;
 
     SchemaStats stats = graph_->getSchemaStats();
@@ -175,7 +175,7 @@ void VsNumQueryTemplates::process()
 
     for (auto numQueryTemplates : queryTemplatesSizes_) {
 
-        queryTemplatesIndex++;        
+        queryTemplatesIndex++;
         simConf.setQueryTypeCount(numQueryTemplates);
 
         for (int i = 0; i < numRuns_; i++) {
@@ -184,12 +184,12 @@ void VsNumQueryTemplates::process()
              std::vector<std::vector<std::string> > templates =
                 simConf.getQueryTemplates(graph_.get());
 
-            std::vector<core::FocusedIntervalQuery> queries = 
+            std::vector<core::FocusedIntervalQuery> queries =
                 ExpSetupHelper::genQueries(templates,
-                                           queryZipfParam_, 
+                                           queryZipfParam_,
                                            numQueries_,
                                            tsStart_,
-                                           tsEnd_, 
+                                           tsEnd_,
                                            vertices_);
 
             graph_->resetWorkloads();
@@ -211,7 +211,7 @@ void VsNumQueryTemplates::process()
                     partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                 intergdb::common::Partitioning solverSolution =
                     solver->solve(workload, storageOverheadThreshold, stats);
-               
+
                 std::cout << "Solver: " <<  solver->getClassName() << std::endl;
                 std::cout << "numRuns: " << i << std::endl;
                 std::cout << "numQueryTemplates: " << numQueryTemplates << std::endl;
@@ -227,19 +227,18 @@ void VsNumQueryTemplates::process()
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 ExpSetupHelper::purge();
-                graph_.reset();
-                graph_.reset(new InteractionGraph(*conf_));
+                graph_.clearBlockBuffer();
                 timer.start();
                 ExpSetupHelper::runWorkload(graph_.get(),queries);
                 timer.stop();
 
 
-                std::cout << "getEdgeIOCount: " << 
+                std::cout << "getEdgeIOCount: " <<
                     graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
-                std::cout << "getEdgeReadIOCount: " << 
+                std::cout << "getEdgeReadIOCount: " <<
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
                           << std::endl;
-                std::cout << "getEdgeWriteIOCount: " << 
+                std::cout << "getEdgeWriteIOCount: " <<
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
                           << std::endl;
 
@@ -253,7 +252,7 @@ void VsNumQueryTemplates::process()
 
             }
         }
-    
+
 
         for (int solverIndex = 0; solverIndex < solvers.size(); solverIndex++)
         {
