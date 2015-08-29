@@ -235,7 +235,7 @@ void VsTimeDeltaDFS::process()
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 ExpSetupHelper::purge();
-                graph_.clearBlockBuffer();
+                graph_->clearBlockBuffer();
                 timer.start();
                 ExpSetupHelper::runDFS(graph_.get(),queries);
                 timer.stop();
