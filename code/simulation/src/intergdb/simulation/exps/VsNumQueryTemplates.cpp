@@ -227,7 +227,7 @@ void VsNumQueryTemplates::process()
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 ExpSetupHelper::purge();
-                graph_.clearBlockBuffer();
+                graph_->clearBlockBuffer();
                 timer.start();
                 ExpSetupHelper::runWorkload(graph_.get(),queries);
                 timer.stop();
