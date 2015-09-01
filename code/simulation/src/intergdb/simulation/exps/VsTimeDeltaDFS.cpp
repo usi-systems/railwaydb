@@ -180,7 +180,7 @@ void VsTimeDeltaDFS::process()
     SchemaStats stats = graph_->getSchemaStats();
 
     std::cout << stats.toString() << std::endl;
-
+    double duration;
     for (auto delta : timeDeltas_) {
         deltaIndex++;
         for (int i = 0; i < numRuns_; i++) {
@@ -234,29 +234,15 @@ void VsTimeDeltaDFS::process()
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
-                ExpSetupHelper::purge();
-                graph_->clearBlockBuffer();
-                timer.start();
-                ExpSetupHelper::runDFS(graph_.get(),queries);
-                timer.stop();
-
-
-                std::cout << "getEdgeIOCount: " <<
-                    graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
-                std::cout << "getEdgeReadIOCount: " <<
-                    graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
-                          << std::endl;
-                std::cout << "getEdgeWriteIOCount: " <<
-                    graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
-                          << std::endl;
-
+                duration = ExpSetupHelper::runDFS(graph_.get(),queries);
+              
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
                 edgeReadIO[solverIndex].push(
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                times[solverIndex].push( timer.getRealTimeInSeconds());
+                times[solverIndex].push(duration);
             }
         }
 

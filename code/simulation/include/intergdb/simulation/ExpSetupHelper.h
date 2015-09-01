@@ -65,25 +65,24 @@ namespace intergdb { namespace simulation {
             double delta,
             std::unordered_set<int64_t> const & vertices);
         
-        static void runWorkload(
+        static double runWorkload(
             core::InteractionGraph * graph,
             std::vector<core::FocusedIntervalQuery> & queries);
 
-        static void runDFS(
+        static double runDFS(
             core::InteractionGraph * graph,
             std::vector<core::FocusedIntervalQuery> & queries);
 
-        static void runBFS(
+        static double runBFS(
             core::InteractionGraph * graph,
             std::vector<core::FocusedIntervalQuery> & queries);
 
-        static void dfs(
+        static double dfs(
             core::InteractionGraph * graph,
             core::FocusedIntervalQuery query, 
             std::set<VertexId> & visited );
 
-
-        static void bfs(
+        static double bfs(
             core::InteractionGraph * graph,
             core::FocusedIntervalQuery query );
 

@@ -15,6 +15,8 @@
 #include <unordered_set>
 #include <queue>
 
+#include <intergdb/util/AutoTimer.h>
+
 using namespace std;
 using namespace intergdb::core;
 using namespace intergdb::simulation;
@@ -339,45 +341,59 @@ std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<
     return queries;
 }
 
-void ExpSetupHelper::runWorkload(
+double ExpSetupHelper::runWorkload(
     InteractionGraph * graph,
     std::vector<core::FocusedIntervalQuery> & queries)
 {
     int count = 0;
     int sizes = 0;
+    util::AutoTimer timer;
+    double duration = 0.0;
+
     for (auto q : queries) {
 
-        for (auto iqIt = graph->processFocusedIntervalQuery(q);
-             iqIt.isValid(); iqIt.next()) {
-            sizes += iqIt.getEdgeData()->getFields().size();
-            count += 1;
+      ExpSetupHelper::purge();
+      graph->clearBlockBuffer();
+      timer.start();
+      auto iqIt = graph->processFocusedIntervalQuery(q);
+      timer.stop();
+      duration += timer.getRealTimeInSeconds();
+	
+      for (; iqIt.isValid(); iqIt.next()) {
+	  sizes += iqIt.getEdgeData()->getFields().size();
+	  count += 1;
         }
     }
     assert (count != 0);
     assert (sizes != 0);
+    return duration;
 }
 
 
-void ExpSetupHelper::runDFS(
+double ExpSetupHelper::runDFS(
     InteractionGraph * graph,
     std::vector<core::FocusedIntervalQuery> & queries)
 {
-    for (auto q : queries) {
-        std::set<VertexId> visited;
-        dfs(graph, q, visited);
-    }
+  double duration = 0.0;
+  for (auto q : queries) {
+    std::set<VertexId> visited;
+    duration += dfs(graph, q, visited);
+  }
+  return duration;
 }
 
-void ExpSetupHelper::runBFS(
+double ExpSetupHelper::runBFS(
     InteractionGraph * graph,
     std::vector<core::FocusedIntervalQuery> & queries)
 {
-    for (auto q : queries) {
-        bfs(graph, q);
-    }
+  double duration = 0.0;  
+  for (auto q : queries) {
+    duration += bfs(graph, q);
+  }
+  return duration;
 }
 
-void ExpSetupHelper::dfs(
+double ExpSetupHelper::dfs(
     InteractionGraph * graph,
     FocusedIntervalQuery query, 
     std::set<VertexId> & visited )
@@ -385,9 +401,19 @@ void ExpSetupHelper::dfs(
     int count = 0;
     int sizes = 0;
     VertexId u;
+    double duration = 0.0;
+    util::AutoTimer timer;
+
     visited.insert(query.getHeadVertex());
-    for (auto iqIt = graph->processFocusedIntervalQuery(query);
-         iqIt.isValid(); iqIt.next()) {
+
+    ExpSetupHelper::purge();
+    graph->clearBlockBuffer();
+    timer.start();
+    auto iqIt = graph->processFocusedIntervalQuery(query);
+    timer.stop();
+    duration += timer.getRealTimeInSeconds();
+      
+    for (; iqIt.isValid(); iqIt.next()) {
         u = iqIt.getToVertex();
         sizes += iqIt.getEdgeData()->getFields().size();
         count += 1;
@@ -397,13 +423,11 @@ void ExpSetupHelper::dfs(
             dfs(graph, next, visited);
         }
     }
-    std::cout << "count " << count << std::endl;
-    std::cout << "sizes " << sizes << std::endl;
-    //assert (count != 0);
-    //assert (sizes != 0);
+    
+    return duration;
 }
 
-void ExpSetupHelper::bfs(
+double ExpSetupHelper::bfs(
     InteractionGraph * graph,
     FocusedIntervalQuery query )
 {
@@ -412,6 +436,9 @@ void ExpSetupHelper::bfs(
     std::queue<VertexId> q;
     std::set<VertexId> visited ;
     VertexId u,t;
+    double duration = 0.0;
+    util::AutoTimer timer;
+
 
     q.push(query.getHeadVertex());
     visited.insert(query.getHeadVertex());
@@ -420,8 +447,15 @@ void ExpSetupHelper::bfs(
         u = q.front();
         q.pop();
         FocusedIntervalQuery next(u, query.getStartTime(), query.getEndTime(), query.getAttributeNames());
-        for (auto iqIt = graph->processFocusedIntervalQuery(query);
-             iqIt.isValid(); iqIt.next()) {
+
+	ExpSetupHelper::purge();
+	graph->clearBlockBuffer();
+	timer.start();
+	auto iqIt = graph->processFocusedIntervalQuery(query);
+	timer.stop();
+	duration += timer.getRealTimeInSeconds();
+	
+        for (; iqIt.isValid(); iqIt.next()) {
             sizes += iqIt.getEdgeData()->getFields().size();
             count += 1;
             t = iqIt.getToVertex();
@@ -432,6 +466,5 @@ void ExpSetupHelper::bfs(
             }
         }
     }
-    std::cout << "count " << count << std::endl;
-    std::cout << "sizes " << sizes << std::endl;
+    return duration;
 }

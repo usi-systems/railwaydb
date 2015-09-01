@@ -209,7 +209,7 @@ void VsTimeDeltaBFS::process()
             // Make sure everything is in one bucket
             assert(ws.size() == 1);
             QueryWorkload workload = ws.begin()->second;
-            
+            double duration;
             solverIndex = -1;
             for (auto solver : solvers) {
                 solverIndex++;
@@ -234,27 +234,15 @@ void VsTimeDeltaBFS::process()
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
-                timer.start();
-                ExpSetupHelper::runBFS(graph_.get(),queries);
-                timer.stop();
-
-
-                std::cout << "getEdgeIOCount: " << 
-                    graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
-                std::cout << "getEdgeReadIOCount: " << 
-                    graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
-                          << std::endl;
-                std::cout << "getEdgeWriteIOCount: " << 
-                    graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
-                          << std::endl;
-
+                duration = ExpSetupHelper::runBFS(graph_.get(),queries);
+		
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
                 edgeReadIO[solverIndex].push(
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                times[solverIndex].push( timer.getRealTimeInSeconds());
+                times[solverIndex].push( duration );
                 
             }
         }

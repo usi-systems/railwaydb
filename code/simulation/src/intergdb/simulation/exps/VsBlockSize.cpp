@@ -237,6 +237,7 @@ void VsBlockSize::process()
 
     std::cout << "Running experiments..." << std::endl;
     int blockSizeIndex = -1;
+    double duration;
     for (auto iter = graphs_.begin(); iter != graphs_.end(); ++iter) {
         blockSizeIndex++;
         for (int i = 0; i < numRuns_; i++) {
@@ -249,46 +250,17 @@ void VsBlockSize::process()
                 intergdb::common::Partitioning solverSolution =
                      solver->solve(workloads[i], storageOverheadThreshold,
                                    stats[i]);
-                std::cout << "Workload: "
-                    << workloads[i].toString() << std::endl;
-                std::cout << "Summary size: "
-                    << workloads[i].getQuerySummaries().size() << std::endl;
 
-                /*for (auto summary : workloads[i].getQuerySummaries())
-                    std::cout << "Summary: "
-                              << summary.toString() << std::endl;
-                */
-
-                std::cout << "Solver: " <<  solver->getClassName() << std::endl;
-
-                std::cout << solverSolution.toString() << std::endl;
                 TimeSlicedPartitioning newParting{}; // -inf to inf
                 newParting.getPartitioning() = solverSolution.toStringSet();
                 partIndex.replaceTimeSlicedPartitioning(
                     origParting, {newParting});
 
-
-
-
                 prevEdgeIOCount = (*iter)->getEdgeIOCount();
                 prevEdgeReadIOCount = (*iter)->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = (*iter)->getEdgeWriteIOCount();
 
-                // to flush the filesystem cache
-                ExpSetupHelper::purge();
-                timer.start();
-                ExpSetupHelper::runWorkload((*iter).get(),queries[i]);
-                timer.stop();
-
-
-                std::cout <<
-                    (*iter)->getEdgeIOCount() - prevEdgeIOCount << std::endl;
-                std::cout <<
-                    (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount
-                    << std::endl;
-                std::cout <<
-                    (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount
-                    << std::endl;
+                duration = ExpSetupHelper::runWorkload((*iter).get(),queries[i]);
 
                 edgeIO[solverIndex].push(
                     (*iter)->getEdgeIOCount() - prevEdgeIOCount);
@@ -296,7 +268,7 @@ void VsBlockSize::process()
                     (*iter)->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     (*iter)->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                times[solverIndex].push( timer.getRealTimeInSeconds());
+                times[solverIndex].push(duration);
 
                 x++;
                 std::cout << "    " << x << "/" << total << std::endl;

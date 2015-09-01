@@ -203,6 +203,7 @@ void VsNumQueryTemplates::process()
             QueryWorkload workload = ws.begin()->second;
 
             solverIndex = -1;
+	    double duration;
             for (auto solver : solvers) {
                 solverIndex++;
 
@@ -225,30 +226,16 @@ void VsNumQueryTemplates::process()
                 prevEdgeIOCount = graph_->getEdgeIOCount();
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
-
-                ExpSetupHelper::purge();
-                graph_->clearBlockBuffer();
-                timer.start();
-                ExpSetupHelper::runWorkload(graph_.get(),queries);
-                timer.stop();
-
-
-                std::cout << "getEdgeIOCount: " <<
-                    graph_->getEdgeIOCount() - prevEdgeIOCount << std::endl;
-                std::cout << "getEdgeReadIOCount: " <<
-                    graph_->getEdgeReadIOCount() - prevEdgeReadIOCount
-                          << std::endl;
-                std::cout << "getEdgeWriteIOCount: " <<
-                    graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount
-                          << std::endl;
-
+               
+                duration = ExpSetupHelper::runWorkload(graph_.get(),queries);
+               
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
                 edgeReadIO[solverIndex].push(
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                times[solverIndex].push( timer.getRealTimeInSeconds());
+                times[solverIndex].push( duration);
 
             }
         }
