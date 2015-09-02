@@ -77,12 +77,12 @@ namespace intergdb { namespace simulation {
             core::InteractionGraph * graph,
             std::vector<core::FocusedIntervalQuery> & queries);
 
-        static double dfs(
+        static void dfs(
             core::InteractionGraph * graph,
             core::FocusedIntervalQuery query, 
             std::set<VertexId> & visited );
 
-        static double bfs(
+        static void bfs(
             core::InteractionGraph * graph,
             core::FocusedIntervalQuery query );
 

@@ -355,14 +355,13 @@ double ExpSetupHelper::runWorkload(
       ExpSetupHelper::purge();
       graph->clearBlockBuffer();
       timer.start();
-      auto iqIt = graph->processFocusedIntervalQuery(q);
-      timer.stop();
-      duration += timer.getRealTimeInSeconds();
-	
-      for (; iqIt.isValid(); iqIt.next()) {
+      for (auto iqIt = graph->processFocusedIntervalQuery(q);  iqIt.isValid(); iqIt.next()) {
 	  sizes += iqIt.getEdgeData()->getFields().size();
 	  count += 1;
-        }
+      }
+      timer.stop();
+      duration += timer.getRealTimeInSeconds();
+
     }
     assert (count != 0);
     assert (sizes != 0);
@@ -374,26 +373,34 @@ double ExpSetupHelper::runDFS(
     InteractionGraph * graph,
     std::vector<core::FocusedIntervalQuery> & queries)
 {
-  double duration = 0.0;
+  util::AutoTimer timer;
+  ExpSetupHelper::purge();
+  graph->clearBlockBuffer();
+  timer.start();
   for (auto q : queries) {
     std::set<VertexId> visited;
-    duration += dfs(graph, q, visited);
+    dfs(graph, q, visited);
   }
-  return duration;
+  timer.stop();
+  return timer.getRealTimeInSeconds();          
 }
 
 double ExpSetupHelper::runBFS(
     InteractionGraph * graph,
     std::vector<core::FocusedIntervalQuery> & queries)
 {
-  double duration = 0.0;  
+  util::AutoTimer timer;
+  ExpSetupHelper::purge();
+  graph->clearBlockBuffer();
+  timer.start();
   for (auto q : queries) {
-    duration += bfs(graph, q);
+    bfs(graph, q);
   }
-  return duration;
+  timer.stop();
+  return timer.getRealTimeInSeconds();          
 }
 
-double ExpSetupHelper::dfs(
+void ExpSetupHelper::dfs(
     InteractionGraph * graph,
     FocusedIntervalQuery query, 
     std::set<VertexId> & visited )
@@ -401,19 +408,8 @@ double ExpSetupHelper::dfs(
     int count = 0;
     int sizes = 0;
     VertexId u;
-    double duration = 0.0;
-    util::AutoTimer timer;
-
     visited.insert(query.getHeadVertex());
-
-    ExpSetupHelper::purge();
-    graph->clearBlockBuffer();
-    timer.start();
-    auto iqIt = graph->processFocusedIntervalQuery(query);
-    timer.stop();
-    duration += timer.getRealTimeInSeconds();
-      
-    for (; iqIt.isValid(); iqIt.next()) {
+    for (auto iqIt = graph->processFocusedIntervalQuery(query);  iqIt.isValid(); iqIt.next()) {
         u = iqIt.getToVertex();
         sizes += iqIt.getEdgeData()->getFields().size();
         count += 1;
@@ -423,11 +419,9 @@ double ExpSetupHelper::dfs(
             dfs(graph, next, visited);
         }
     }
-    
-    return duration;
 }
 
-double ExpSetupHelper::bfs(
+void ExpSetupHelper::bfs(
     InteractionGraph * graph,
     FocusedIntervalQuery query )
 {
@@ -436,9 +430,6 @@ double ExpSetupHelper::bfs(
     std::queue<VertexId> q;
     std::set<VertexId> visited ;
     VertexId u,t;
-    double duration = 0.0;
-    util::AutoTimer timer;
-
 
     q.push(query.getHeadVertex());
     visited.insert(query.getHeadVertex());
@@ -447,15 +438,7 @@ double ExpSetupHelper::bfs(
         u = q.front();
         q.pop();
         FocusedIntervalQuery next(u, query.getStartTime(), query.getEndTime(), query.getAttributeNames());
-
-	ExpSetupHelper::purge();
-	graph->clearBlockBuffer();
-	timer.start();
-	auto iqIt = graph->processFocusedIntervalQuery(query);
-	timer.stop();
-	duration += timer.getRealTimeInSeconds();
-	
-        for (; iqIt.isValid(); iqIt.next()) {
+	for (auto iqIt = graph->processFocusedIntervalQuery(query); iqIt.isValid(); iqIt.next()) {
             sizes += iqIt.getEdgeData()->getFields().size();
             count += 1;
             t = iqIt.getToVertex();
@@ -466,5 +449,4 @@ double ExpSetupHelper::bfs(
             }
         }
     }
-    return duration;
 }
