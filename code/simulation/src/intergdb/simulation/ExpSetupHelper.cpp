@@ -352,7 +352,6 @@ double ExpSetupHelper::runWorkload(
 
     for (auto q : queries) {
 
-      ExpSetupHelper::purge();
       graph->clearBlockBuffer();
       timer.start();
       for (auto iqIt = graph->processFocusedIntervalQuery(q);  iqIt.isValid(); iqIt.next()) {
@@ -374,7 +373,6 @@ double ExpSetupHelper::runDFS(
     std::vector<core::FocusedIntervalQuery> & queries)
 {
   util::AutoTimer timer;
-  ExpSetupHelper::purge();
   graph->clearBlockBuffer();
   timer.start();
   for (auto q : queries) {
@@ -390,7 +388,6 @@ double ExpSetupHelper::runBFS(
     std::vector<core::FocusedIntervalQuery> & queries)
 {
   util::AutoTimer timer;
-  ExpSetupHelper::purge();
   graph->clearBlockBuffer();
   timer.start();
   for (auto q : queries) {
