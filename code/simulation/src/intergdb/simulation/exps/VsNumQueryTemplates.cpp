@@ -144,7 +144,7 @@ void VsNumQueryTemplates::process()
     vector<util::RunningStat> times;
 
     vector<std::string> names;
-    vector< shared_ptr<Solver> > solvers =
+    vector<shared_ptr<Solver>> solvers =
         {
             SolverFactory::instance().makeSinglePartition(),
             SolverFactory::instance().makeOptimalNonOverlapping(),
@@ -181,7 +181,7 @@ void VsNumQueryTemplates::process()
         for (int i = 0; i < numRuns_; i++) {
 
             // generate a different workload with numQueryTemplates
-             std::vector<std::vector<std::string> > templates =
+            std::vector<std::vector<std::string> > templates =
                 simConf.getQueryTemplates(graph_.get());
 
             std::vector<core::FocusedIntervalQuery> queries =
@@ -203,7 +203,6 @@ void VsNumQueryTemplates::process()
             QueryWorkload workload = ws.begin()->second;
 
             solverIndex = -1;
-	    double duration;
             for (auto solver : solvers) {
                 solverIndex++;
 
@@ -226,20 +225,19 @@ void VsNumQueryTemplates::process()
                 prevEdgeIOCount = graph_->getEdgeIOCount();
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
-               
-                duration = ExpSetupHelper::runWorkload(graph_.get(),queries);
-               
+
+                double const duration = ExpSetupHelper::runWorkload(
+                    graph_.get(), queries);
+
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
                 edgeReadIO[solverIndex].push(
                     graph_->getEdgeReadIOCount() - prevEdgeReadIOCount);
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
-                times[solverIndex].push( duration);
-
+                times[solverIndex].push(duration);
             }
         }
-
 
         for (int solverIndex = 0; solverIndex < solvers.size(); solverIndex++)
         {

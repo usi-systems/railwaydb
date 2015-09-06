@@ -32,7 +32,7 @@ namespace intergdb { namespace simulation {
             std::string const& dbDirPath, std::string const& dbName);
 
         static void purge();
-        
+
         static void scanTweets(
             std::string const & dirPath,
             std::function<void (uint64_t time, int64_t from,
@@ -49,42 +49,42 @@ namespace intergdb { namespace simulation {
             std::unordered_set<int64_t> & vertices);
 
         static std::vector<core::FocusedIntervalQuery> genQueries(
-            std::vector<std::vector<std::string> > templates,
-            double queryZipfParam, 
+            std::vector<std::vector<std::string>> const & templates,
+            double queryZipfParam,
             int numQueries,
             uint64_t& tsStart,
             uint64_t& tsEnd,
             std::unordered_set<int64_t> const & vertices);
 
         static std::vector<core::FocusedIntervalQuery> genSearchQueries(
-            std::vector<std::vector<std::string> > templates,
-            double queryZipfParam, 
+            std::vector<std::vector<std::string>> const & templates,
+            double queryZipfParam,
             int numQueries,
             uint64_t& tsStart,
             uint64_t& tsEnd,
             double delta,
             std::unordered_set<int64_t> const & vertices);
-        
+
         static double runWorkload(
             core::InteractionGraph * graph,
-            std::vector<core::FocusedIntervalQuery> & queries);
+            std::vector<core::FocusedIntervalQuery> const & queries);
 
         static double runDFS(
             core::InteractionGraph * graph,
-            std::vector<core::FocusedIntervalQuery> & queries);
+            std::vector<core::FocusedIntervalQuery> const & queries);
 
         static double runBFS(
             core::InteractionGraph * graph,
-            std::vector<core::FocusedIntervalQuery> & queries);
+            std::vector<core::FocusedIntervalQuery> const & queries);
 
         static void dfs(
             core::InteractionGraph * graph,
-            core::FocusedIntervalQuery query, 
+            core::FocusedIntervalQuery const & query,
             std::set<VertexId> & visited );
 
         static void bfs(
             core::InteractionGraph * graph,
-            core::FocusedIntervalQuery query );
+            core::FocusedIntervalQuery const & query );
 
     };
 } }

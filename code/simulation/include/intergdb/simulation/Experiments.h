@@ -30,7 +30,7 @@ namespace intergdb { namespace simulation
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
         double queryZipfParam_ = 0.5;
-        int numRuns_ = 10;
+        int numRuns_ = 50; // Increase by 5 times
         int numQueries_ = 100;
         int blockBufferSize_ = 5 ; /* 5 blocks */
         std::vector<int> blockSizes_ = { 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
@@ -80,7 +80,7 @@ namespace intergdb { namespace simulation
 
     protected:
         void setUp() override;
-        void tearDown() override;       
+        void tearDown() override;
         std::unique_ptr<core::Conf> conf_;
         std::unique_ptr<core::InteractionGraph> graph_;
         uint64_t tsStart_;
@@ -88,7 +88,7 @@ namespace intergdb { namespace simulation
         std::unordered_set<int64_t> vertices_;
         int numRuns_ = 10;
         int blockSize_ = 65536;
-        int blockBufferSize_ = 5 ; 
+        int blockBufferSize_ = 5 ;
         int numQueries_ = 100;
         int numQueryTemplates_ = 3;
         double queryZipfParam_ = 0.5;
@@ -110,7 +110,7 @@ namespace intergdb { namespace simulation
 
     protected:
         void setUp() override;
-        void tearDown() override;       
+        void tearDown() override;
         std::unique_ptr<core::Conf> conf_;
         std::unique_ptr<core::InteractionGraph> graph_;
         uint64_t tsStart_;
@@ -118,11 +118,11 @@ namespace intergdb { namespace simulation
         std::unordered_set<int64_t> vertices_;
         int numRuns_ = 10;
         int blockSize_ = 65536;
-        int blockBufferSize_ = 5 ; 
+        int blockBufferSize_ = 5 ;
         int numQueries_ = 100;
         int numQueryTemplates_ = 3;
         double queryZipfParam_ = 0.5;
-        std::vector<double> timeDeltas_ = { 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00 };        
+        std::vector<double> timeDeltas_ = { 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00 };
     };
 
 

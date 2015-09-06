@@ -147,8 +147,8 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
                    uint64_t& tsEnd)
 {
     using namespace boost::filesystem;
-    tsStart = std::numeric_limits<uint64_t>::max();
-    tsEnd = std::numeric_limits<uint64_t>::min();
+    tsStart = numeric_limits<uint64_t>::max();
+    tsEnd = numeric_limits<uint64_t>::min();
 
     path tweetDir(dirPath);
     vector<string> fileNames;
@@ -190,10 +190,10 @@ void ExpSetupHelper::scanTweets(string const & dirPath,
 }
 
 void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
-    std::vector< std::unique_ptr<core::InteractionGraph>> & graphs,
+    vector<unique_ptr<core::InteractionGraph>> & graphs,
     uint64_t& tsStart,
     uint64_t& tsEnd,
-    std::unordered_set<int64_t> & vertices)
+    unordered_set<int64_t> & vertices)
 {
     using namespace boost;
     {
@@ -243,24 +243,25 @@ void ExpSetupHelper::populateGraphFromTweets(string const& dirPath,
     }
 }
 
-std::vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(vector<std::vector<std::string> > templates,
-                                                                   double queryZipfParam,
-                                                                   int numQueries,
-                                                                   uint64_t& tsStart,
-                                                                   uint64_t& tsEnd,
-                                                                   double delta,
-                                                                   std::unordered_set<int64_t> const & vertices)
+vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
+    vector<vector<string>> const & templates,
+    double queryZipfParam,
+    int numQueries,
+    uint64_t& tsStart,
+    uint64_t& tsEnd,
+    double delta,
+    unordered_set<int64_t> const & vertices)
 {
-    std::vector<core::FocusedIntervalQuery> queries;
+    vector<core::FocusedIntervalQuery> queries;
 
-    std::vector<int64_t> vertexList;
-    std::copy(vertices.begin(), vertices.end(),
-               std::back_inserter(vertexList));
+    vector<int64_t> vertexList;
+    copy(vertices.begin(), vertices.end(),
+               back_inserter(vertexList));
 
     int numQueryTypes = templates.size();
-    util::ZipfRand queryGen_(queryZipfParam, numQueryTypes);
+    util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
     unsigned seed = time(NULL);
-    queryGen_.setSeed(seed++);
+    queryGen.setSeed(seed++);
 
     // use a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
@@ -278,12 +279,10 @@ std::vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(vector<std::v
     util::NormalRand timeGen(timeMean, timeStdDev,
                            tsStart, tsStart+offset);
 
-
-
-    std::cout << "tsStart " << tsStart << std::endl;
-    std::cout << "tsEnd " << tsEnd << std::endl;
-    std::cout << "timeMean " << timeMean << std::endl;
-    std::cout << "offset " << offset << std::endl;
+    cout << "tsStart " << tsStart << endl;
+    cout << "tsEnd " << tsEnd << endl;
+    cout << "timeMean " << timeMean << endl;
+    cout << "offset " << offset << endl;
 
     int vertexIndex;
     int templateIndex;
@@ -292,58 +291,58 @@ std::vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(vector<std::v
 
     VertexId vi;
     for (int i = 0; i < numQueries; i++) {
-        templateIndex = numQueryTypes > 1 ? queryGen_.getRandomValue() : 0;
+        templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
         vertexIndex = vertexIdGen.getRandomValue();
         start = timeGen.getRandomValue();
         end = start + offset;
         vi = vertexList.at(vertexIndex);
-        std::cout << "start " << start << std::endl;
+        cout << "start " << start << endl;
         queries.push_back(FocusedIntervalQuery(
                               vi, start, end, templates[templateIndex]));
     }
     return queries;
 }
 
-
-std::vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(vector<std::vector<std::string> > templates,
-                                                             double queryZipfParam,
-                                                             int numQueries,
-                                                             uint64_t& tsStart,
-                                                             uint64_t& tsEnd,
-                                                             std::unordered_set<int64_t> const & vertices)
+vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(
+    vector<vector<string>> const & templates,
+    double queryZipfParam,
+    int numQueries,
+    uint64_t& tsStart,
+    uint64_t& tsEnd,
+    unordered_set<int64_t> const & vertices)
 {
-    std::vector<core::FocusedIntervalQuery> queries;
+    vector<core::FocusedIntervalQuery> queries;
 
-    std::vector<int64_t> vertexList;
-    std::copy(vertices.begin(), vertices.end(),
-               std::back_inserter(vertexList));
+    vector<int64_t> vertexList;
+    copy(vertices.begin(), vertices.end(),
+              back_inserter(vertexList));
 
     int numQueryTypes = templates.size();
-    util::ZipfRand queryGen_(queryZipfParam, numQueryTypes);
+    util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
     unsigned seed = time(NULL);
-    queryGen_.setSeed(seed++);
+    queryGen.setSeed(seed++);
 
     // use a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
-    util::NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
-                           0, vertices.size()-1);
+    util::NormalRand vertexIdGen(
+    vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
 
     int vertexIndex;
     int templateIndex;
     for (int i = 0; i < numQueries; i++) {
-        templateIndex = numQueryTypes > 1 ? queryGen_.getRandomValue() : 0;
+        templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
         vertexIndex = vertexIdGen.getRandomValue();
         VertexId vi = vertexList.at(vertexIndex);
         queries.push_back(FocusedIntervalQuery(
-                              vi, tsStart, tsEnd, templates[templateIndex]));
+            vi, tsStart, tsEnd, templates[templateIndex]));
     }
     return queries;
 }
 
 double ExpSetupHelper::runWorkload(
     InteractionGraph * graph,
-    std::vector<core::FocusedIntervalQuery> & queries)
+    vector<core::FocusedIntervalQuery> const & queries)
 {
     int count = 0;
     int sizes = 0;
@@ -351,56 +350,54 @@ double ExpSetupHelper::runWorkload(
     double duration = 0.0;
 
     for (auto q : queries) {
-
-      graph->clearBlockBuffer();
-      timer.start();
-      for (auto iqIt = graph->processFocusedIntervalQuery(q);  iqIt.isValid(); iqIt.next()) {
-	  sizes += iqIt.getEdgeData()->getFields().size();
-	  count += 1;
-      }
-      timer.stop();
-      duration += timer.getRealTimeInSeconds();
-
+        graph->clearBlockBuffer();
+        timer.start();
+        for (auto iqIt = graph->processFocusedIntervalQuery(q);
+             iqIt.isValid(); iqIt.next()) {
+            sizes += iqIt.getEdgeData()->getFields().size();
+            count += 1;
+        }
+        timer.stop();
+        duration += timer.getRealTimeInSeconds();
     }
     assert (count != 0);
     assert (sizes != 0);
     return duration;
 }
 
-
 double ExpSetupHelper::runDFS(
     InteractionGraph * graph,
-    std::vector<core::FocusedIntervalQuery> & queries)
+    vector<core::FocusedIntervalQuery> const & queries)
 {
-  util::AutoTimer timer;
-  graph->clearBlockBuffer();
-  timer.start();
-  for (auto q : queries) {
-    std::set<VertexId> visited;
-    dfs(graph, q, visited);
-  }
-  timer.stop();
-  return timer.getRealTimeInSeconds();          
+    util::AutoTimer timer;
+    graph->clearBlockBuffer();
+    timer.start();
+    for (auto q : queries) {
+        set<VertexId> visited;
+        dfs(graph, q, visited);
+    }
+    timer.stop();
+    return timer.getRealTimeInSeconds();
 }
 
 double ExpSetupHelper::runBFS(
     InteractionGraph * graph,
-    std::vector<core::FocusedIntervalQuery> & queries)
+    vector<core::FocusedIntervalQuery> const & queries)
 {
-  util::AutoTimer timer;
-  graph->clearBlockBuffer();
-  timer.start();
-  for (auto q : queries) {
-    bfs(graph, q);
-  }
-  timer.stop();
-  return timer.getRealTimeInSeconds();          
+    util::AutoTimer timer;
+    graph->clearBlockBuffer();
+    timer.start();
+    for (auto q : queries) {
+        bfs(graph, q);
+    }
+    timer.stop();
+    return timer.getRealTimeInSeconds();
 }
 
 void ExpSetupHelper::dfs(
     InteractionGraph * graph,
-    FocusedIntervalQuery query, 
-    std::set<VertexId> & visited )
+    FocusedIntervalQuery const & query,
+    set<VertexId> & visited)
 {
     int count = 0;
     int sizes = 0;
@@ -420,12 +417,12 @@ void ExpSetupHelper::dfs(
 
 void ExpSetupHelper::bfs(
     InteractionGraph * graph,
-    FocusedIntervalQuery query )
+    FocusedIntervalQuery const & query )
 {
     int count = 0;
     int sizes = 0;
-    std::queue<VertexId> q;
-    std::set<VertexId> visited ;
+    queue<VertexId> q;
+    set<VertexId> visited ;
     VertexId u,t;
 
     q.push(query.getHeadVertex());
@@ -442,7 +439,7 @@ void ExpSetupHelper::bfs(
             auto search = visited.find(t);
             if(search != visited.end()) {
                 q.push(t);
-                visited.insert(t);                        
+                visited.insert(t);
             }
         }
     }
