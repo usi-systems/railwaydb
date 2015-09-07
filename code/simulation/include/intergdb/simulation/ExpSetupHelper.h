@@ -4,6 +4,7 @@
 #include <intergdb/core/InteractionGraph.h>
 #include <intergdb/core/Query.h>
 
+#include <random>
 #include <string>
 #include <vector>
 #include <set>
@@ -86,5 +87,10 @@ namespace intergdb { namespace simulation {
             core::InteractionGraph * graph,
             core::FocusedIntervalQuery const & query );
 
+    private:
+
+        static std::random_device randomDevice_;
+        static std::mt19937 randomGen_;
+        static std::uniform_int_distribution<int> seedDist_;
     };
 } }

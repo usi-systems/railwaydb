@@ -22,6 +22,11 @@ using namespace intergdb::core;
 using namespace intergdb::simulation;
 
 namespace intergdb { namespace simulation {
+
+random_device ExpSetupHelper::randomDevice_;
+mt19937 ExpSetupHelper::randomGen_(randomDevice_());
+uniform_int_distribution<int> ExpSetupHelper::seedDist_(1, 1000);
+
 ostream& operator<<(ostream& ostr, Tweet const& tweet)
 {
     ostr << "<";
@@ -259,15 +264,14 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
 
     int numQueryTypes = templates.size();
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
-    unsigned seed = time(NULL);
-    queryGen.setSeed(seed++);
+    queryGen.setSeed(seedDist_(randomGen_));
 
     // use a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
     util::NormalRand vertexIdGen(
         vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
-    vertexIdGen.setSeed(seed++);
+    vertexIdGen.setSeed(seedDist_(randomGen_));
 
     // use a random start time for the interval query
     double offset = (delta * (tsEnd - tsStart));
@@ -316,15 +320,14 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(
 
     int numQueryTypes = templates.size();
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
-    unsigned seed = time(NULL);
-    queryGen.setSeed(seed++);
+    queryGen.setSeed(seedDist_(randomGen_));
 
     // use a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
     util::NormalRand vertexIdGen(
         vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
-    vertexIdGen.setSeed(seed++);
+    vertexIdGen.setSeed(seedDist_(randomGen_));
 
     int vertexIndex;
     int templateIndex;
