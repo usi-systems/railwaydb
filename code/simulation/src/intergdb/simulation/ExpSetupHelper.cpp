@@ -247,16 +247,15 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     vector<vector<string>> const & templates,
     double queryZipfParam,
     int numQueries,
-    uint64_t& tsStart,
-    uint64_t& tsEnd,
+    uint64_t tsStart,
+    uint64_t tsEnd,
     double delta,
     unordered_set<int64_t> const & vertices)
 {
     vector<core::FocusedIntervalQuery> queries;
 
     vector<int64_t> vertexList;
-    copy(vertices.begin(), vertices.end(),
-               back_inserter(vertexList));
+    copy(vertices.begin(), vertices.end(), back_inserter(vertexList));
 
     int numQueryTypes = templates.size();
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
@@ -306,15 +305,14 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(
     vector<vector<string>> const & templates,
     double queryZipfParam,
     int numQueries,
-    uint64_t& tsStart,
-    uint64_t& tsEnd,
+    uint64_t tsStart,
+    uint64_t tsEnd,
     unordered_set<int64_t> const & vertices)
 {
     vector<core::FocusedIntervalQuery> queries;
 
     vector<int64_t> vertexList;
-    copy(vertices.begin(), vertices.end(),
-              back_inserter(vertexList));
+    copy(vertices.begin(), vertices.end(), back_inserter(vertexList));
 
     int numQueryTypes = templates.size();
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
@@ -325,7 +323,8 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
     util::NormalRand vertexIdGen(
-    vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
+        vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
+    vertexIdGen.setSeed(seed++);
 
     int vertexIndex;
     int templateIndex;

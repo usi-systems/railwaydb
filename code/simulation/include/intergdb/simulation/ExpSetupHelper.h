@@ -52,16 +52,16 @@ namespace intergdb { namespace simulation {
             std::vector<std::vector<std::string>> const & templates,
             double queryZipfParam,
             int numQueries,
-            uint64_t& tsStart,
-            uint64_t& tsEnd,
+            uint64_t tsStart,
+            uint64_t tsEnd,
             std::unordered_set<int64_t> const & vertices);
 
         static std::vector<core::FocusedIntervalQuery> genSearchQueries(
             std::vector<std::vector<std::string>> const & templates,
             double queryZipfParam,
             int numQueries,
-            uint64_t& tsStart,
-            uint64_t& tsEnd,
+            uint64_t tsStart,
+            uint64_t tsEnd,
             double delta,
             std::unordered_set<int64_t> const & vertices);
 

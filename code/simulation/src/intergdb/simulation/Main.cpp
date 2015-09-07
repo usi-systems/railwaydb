@@ -20,7 +20,7 @@ int experiment()
     //(VsInteractionCount()).run();
     // (VsBlockSize()).run();
     (VsNumQueryTemplates()).run();
-    (VsTimeDeltaDFS()).run();
+    // (VsTimeDeltaDFS()).run();
     // (VsTimeDeltaBFS()).run();
     return EXIT_SUCCESS;
 }
