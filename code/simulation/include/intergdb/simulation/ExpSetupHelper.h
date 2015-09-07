@@ -88,7 +88,6 @@ namespace intergdb { namespace simulation {
             core::FocusedIntervalQuery const & query );
 
     private:
-
         static std::random_device randomDevice_;
         static std::mt19937 randomGen_;
         static std::uniform_int_distribution<int> seedDist_;
