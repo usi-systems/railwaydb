@@ -57,7 +57,7 @@ void VsNumQueryTemplates::setUp()
 
     // // Create a vertex just so we can populate it with
     // // the same function.
-    std::vector< std::unique_ptr<core::InteractionGraph> > graphs;
+    vector< unique_ptr<core::InteractionGraph> > graphs;
     graphs.push_back(std::move(graph_));
 
     cout << " populateGraphFromTweets..." << endl;
@@ -68,8 +68,8 @@ void VsNumQueryTemplates::setUp()
     graph_ = std::move(graphs.back());
     graphs.pop_back();
 
-    std::cout << "start " << tsStart_ << std::endl;
-    std::cout << "stop " << tsEnd_ << std::endl;
+    cout << "start " << tsStart_ << endl;
+    cout << "stop " << tsEnd_ << endl;
 
 }
 
@@ -143,7 +143,7 @@ void VsNumQueryTemplates::process()
     vector<util::RunningStat> edgeReadIO;
     vector<util::RunningStat> times;
 
-    vector<std::string> names;
+    vector<string> names;
     vector<shared_ptr<Solver>> solvers =
         {
             SolverFactory::instance().makeSinglePartition(),
@@ -164,14 +164,13 @@ void VsNumQueryTemplates::process()
     size_t prevEdgeReadIOCount;
     size_t prevEdgeWriteIOCount;
 
-    std::cout << "Running experiments..." << std::endl;
+    cout << "Running experiments..." << endl;
 
     int queryTemplatesIndex = -1;
 
     SchemaStats stats = graph_->getSchemaStats();
 
-    std::cout << stats.toString() << std::endl;
-
+    cout << stats.toString() << endl;
 
     for (auto numQueryTemplates : queryTemplatesSizes_) {
 
@@ -181,10 +180,17 @@ void VsNumQueryTemplates::process()
         for (int i = 0; i < numRuns_; i++) {
 
             // generate a different workload with numQueryTemplates
-            std::vector<std::vector<std::string> > templates =
+            vector<vector<string> > templates =
                 simConf.getQueryTemplates(graph_.get());
+            cerr << "Num templates: " << templates.size() << endl;
+            for (auto const& queryTemplate : templates)
+            {
+                for (auto const& attribute : queryTemplate)
+                    cerr << attribute << ", ";
+                cerr << endl;
+            }
 
-            std::vector<core::FocusedIntervalQuery> queries =
+            vector<core::FocusedIntervalQuery> queries =
                 ExpSetupHelper::genQueries(templates,
                                            queryZipfParam_,
                                            numQueries_,
@@ -196,7 +202,7 @@ void VsNumQueryTemplates::process()
 
             ExpSetupHelper::runWorkload(graph_.get(), queries);
 
-            std::map<BucketId,common::QueryWorkload> ws =
+            map<BucketId,common::QueryWorkload> ws =
                 graph_->getWorkloads();
             // Make sure everything is in one bucket
             assert(ws.size() == 1);
@@ -212,11 +218,11 @@ void VsNumQueryTemplates::process()
                 intergdb::common::Partitioning solverSolution =
                     solver->solve(workload, storageOverheadThreshold, stats);
 
-                std::cout << "Solver: " <<  solver->getClassName() << std::endl;
-                std::cout << "numRuns: " << i << std::endl;
-                std::cout << "numQueryTemplates: " << numQueryTemplates << std::endl;
+                cout << "Solver: " <<  solver->getClassName() << endl;
+                cout << "numRuns: " << i << endl;
+                cout << "numQueryTemplates: " << numQueryTemplates << endl;
 
-                std::cout << solverSolution.toString() << std::endl;
+                cout << solverSolution.toString() << endl;
                 TimeSlicedPartitioning newParting{}; // -inf to inf
                 newParting.getPartitioning() = solverSolution.toStringSet();
                 partIndex.replaceTimeSlicedPartitioning(
@@ -247,7 +253,7 @@ void VsNumQueryTemplates::process()
                 "solver", solvers[solverIndex]->getClassName());
             edgeIOCountExp.setFieldValue(
                 "numQueryTemplates",
-                boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
+                boost::lexical_cast<string>(queryTemplatesSizes_[queryTemplatesIndex]));
             edgeIOCountExp.setFieldValue(
                 "edgeIO", edgeIO[solverIndex].getMean());
             edgeIOCountExp.setFieldValue(
@@ -258,7 +264,7 @@ void VsNumQueryTemplates::process()
             edgeWriteIOCountExp.setFieldValue(
                 "solver", solvers[solverIndex]->getClassName());
             edgeWriteIOCountExp.setFieldValue("numQueryTemplates",
-                                              boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
+                                              boost::lexical_cast<string>(queryTemplatesSizes_[queryTemplatesIndex]));
             edgeWriteIOCountExp.setFieldValue(
                 "edgeWriteIO", edgeWriteIO[solverIndex].getMean());
             edgeWriteIOCountExp.setFieldValue(
@@ -270,7 +276,7 @@ void VsNumQueryTemplates::process()
                 "solver", solvers[solverIndex]->getClassName());
             edgeReadIOCountExp.setFieldValue(
                 "numQueryTemplates",
-                boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
+                boost::lexical_cast<string>(queryTemplatesSizes_[queryTemplatesIndex]));
             edgeReadIOCountExp.setFieldValue(
                 "edgeReadIO", edgeReadIO[solverIndex].getMean());
             edgeReadIOCountExp.setFieldValue(
@@ -281,15 +287,13 @@ void VsNumQueryTemplates::process()
             runningTimeExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
             runningTimeExp.setFieldValue(
                 "numQueryTemplates",
-                boost::lexical_cast<std::string>(queryTemplatesSizes_[queryTemplatesIndex]));
+                boost::lexical_cast<string>(queryTemplatesSizes_[queryTemplatesIndex]));
             runningTimeExp.setFieldValue("time", times[solverIndex].getMean());
             runningTimeExp.setFieldValue(
                 "deviation", times[solverIndex].getStandardDeviation());
             times[solverIndex].clear();
         }
     }
-
-    // std::cout << "done." << std::endl;
 
     for (auto exp : expData)
         exp->close();

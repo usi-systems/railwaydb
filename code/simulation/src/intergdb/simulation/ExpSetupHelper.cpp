@@ -349,6 +349,7 @@ double ExpSetupHelper::runWorkload(
     double duration = 0.0;
 
     for (auto q : queries) {
+        graph->clearBlockBuffer();
         timer.start();
         for (auto iqIt = graph->processFocusedIntervalQuery(q);
              iqIt.isValid(); iqIt.next()) {
@@ -368,6 +369,7 @@ double ExpSetupHelper::runDFS(
     vector<core::FocusedIntervalQuery> const & queries)
 {
     util::AutoTimer timer;
+    graph->clearBlockBuffer();
     timer.start();
     for (auto q : queries) {
         set<VertexId> visited;
@@ -382,6 +384,7 @@ double ExpSetupHelper::runBFS(
     vector<core::FocusedIntervalQuery> const & queries)
 {
     util::AutoTimer timer;
+    graph->clearBlockBuffer();
     timer.start();
     for (auto q : queries) {
         bfs(graph, q);
