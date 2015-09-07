@@ -281,27 +281,22 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
 
     double timeStdDev = timeMean - 1;
     util::NormalRand timeGen(timeMean, timeStdDev,
-                           tsStart, tsStart+offset);
+        tsStart, tsStart+offset);
+    timeGen.setSeed(seedDist_(randomGen_));
 
     cout << "tsStart " << tsStart << endl;
     cout << "tsEnd " << tsEnd << endl;
     cout << "timeMean " << timeMean << endl;
     cout << "offset " << offset << endl;
 
-    int vertexIndex;
-    int templateIndex;
-    uint64_t start;
-    uint64_t end;
-
-    VertexId vi;
     for (int i = 0; i < numQueries; i++) {
-        templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
-        vertexIndex = vertexIdGen.getRandomValue();
-        start = timeGen.getRandomValue();
-        end = start + offset;
-        vi = vertexList.at(vertexIndex);
+        int templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
+        int vertexIndex = vertexIdGen.getRandomValue();
+        uint64_t start = timeGen.getRandomValue();
+        uint64_t end = start + offset;
+        VertexId vi = vertexList.at(vertexIndex);
         queries.push_back(FocusedIntervalQuery(
-                              vi, start, end, templates[templateIndex]));
+            vi, start, end, templates[templateIndex]));
     }
     return queries;
 }
@@ -330,11 +325,9 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(
         vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
     vertexIdGen.setSeed(seedDist_(randomGen_));
 
-    int vertexIndex;
-    int templateIndex;
     for (int i = 0; i < numQueries; i++) {
-        templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
-        vertexIndex = vertexIdGen.getRandomValue();
+        int templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
+        int vertexIndex = vertexIdGen.getRandomValue();
         VertexId vi = vertexList.at(vertexIndex);
         queries.push_back(FocusedIntervalQuery(
             vi, tsStart, tsEnd, templates[templateIndex]));
