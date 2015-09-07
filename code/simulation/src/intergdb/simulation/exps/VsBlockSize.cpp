@@ -166,13 +166,11 @@ void VsBlockSize::process()
          std::vector<std::vector<std::string> > templates =
             simConf.getQueryTemplates(graphs_[0].get());
 
+        double const delta = 0.1; // one tenth of the data set
         std::vector<core::FocusedIntervalQuery> qs =
-            ExpSetupHelper::genQueries(templates,
-                                       queryZipfParam_,
-                                       numQueries_,
-                                       tsStart_,
-                                       tsEnd_,
-                                       vertices_);
+            ExpSetupHelper::genSearchQueries(
+                templates, delta, queryZipfParam_,
+                numQueries_, tsStart_, tsEnd_, vertices_);
 
         ExpSetupHelper::runWorkload(graphs_[0].get(),qs);
         SchemaStats ss = graphs_[0]->getSchemaStats();

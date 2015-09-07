@@ -183,13 +183,11 @@ void VsNumQueryTemplates::process()
             vector<vector<string> > templates =
                 simConf.getQueryTemplates(graph_.get());
 
+            double const delta = 0.1; // one tenth of the data set
             vector<core::FocusedIntervalQuery> queries =
-                ExpSetupHelper::genQueries(templates,
-                                           queryZipfParam_,
-                                           numQueries_,
-                                           tsStart_,
-                                           tsEnd_,
-                                           vertices_);
+                ExpSetupHelper::genSearchQueries(
+                    templates, queryZipfParam_, numQueries_,
+                    tsStart_, tsEnd_, delta, vertices_);
 
             graph_->resetWorkloads();
 
