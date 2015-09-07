@@ -192,13 +192,9 @@ void VsTimeDeltaDFS::process()
                 simConf.getQueryTemplates(graph_.get());
 
             std::vector<core::FocusedIntervalQuery> queries =
-                ExpSetupHelper::genSearchQueries(templates,
-                                                 queryZipfParam_,
-                                                 numQueries_,
-                                                 tsStart_,
-                                                 tsEnd_,
-                                                 delta,
-                                                 vertices_);
+                ExpSetupHelper::genSearchQueries(
+                    templates, queryZipfParam_, numQueries_,
+                    tsStart_, tsEnd_, delta, graph_.get());
 
             graph_->resetWorkloads();
 
@@ -235,7 +231,7 @@ void VsTimeDeltaDFS::process()
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 duration = ExpSetupHelper::runDFS(graph_.get(),queries);
-              
+
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
                 edgeReadIO[solverIndex].push(

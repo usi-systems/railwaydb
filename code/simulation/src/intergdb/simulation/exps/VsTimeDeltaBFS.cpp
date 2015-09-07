@@ -30,7 +30,7 @@ VsTimeDeltaBFS::VsTimeDeltaBFS() { }
 void VsTimeDeltaBFS::setUp()
 {
     cout << " VsTimeDeltaBFS::setUp()..." << endl;
-    
+
     string dbDirPath = "data";
     string expName = str(boost::format("tweetDB%08d") % blockSize_);
     string pathAndName =
@@ -40,7 +40,7 @@ void VsTimeDeltaBFS::setUp()
     if( !(boost::filesystem::exists(pathAndName))) {
         boost::filesystem::create_directory(pathAndName);
     }
-    
+
     // Clean up anything that is in the directory
     boost::filesystem::path path_to_remove(pathAndName);
     for (boost::filesystem::directory_iterator end_dir_it,
@@ -48,15 +48,15 @@ void VsTimeDeltaBFS::setUp()
     {
         remove_all(it->path());
     }
-    
+
     // Create the graph conf
     conf_.reset(new Conf(ExpSetupHelper::createGraphConf(dbDirPath, expName)));
     conf_->setBlockSize(blockSize_);
     conf_->setBlockBufferSize(blockBufferSize_);
 
-    // Create a graph 
+    // Create a graph
     graph_.reset(new InteractionGraph(*conf_));
-   
+
     // // Create a vertex just so we can populate it with
     // // the same function.
     std::vector< std::unique_ptr<core::InteractionGraph> > graphs;
@@ -124,7 +124,7 @@ void VsTimeDeltaBFS::process()
     SimulationConf simConf;
     double storageOverheadThreshold = 1.0;
     util::AutoTimer timer;
-    
+
     assert(graph_ != NULL);
     simConf.setAttributeCount(
         graph_->getConf().getEdgeSchema().getAttributes().size());
@@ -143,7 +143,7 @@ void VsTimeDeltaBFS::process()
     makeEdgeWriteIOCountExp(&edgeWriteIOCountExp);
     makeEdgeReadIOCountExp(&edgeReadIOCountExp);
     makeRunningTimeExp(&runningTimeExp);
-     
+
     for (auto exp : expData)
         exp->open();
 
@@ -151,7 +151,7 @@ void VsTimeDeltaBFS::process()
     vector<util::RunningStat> edgeWriteIO;
     vector<util::RunningStat> edgeReadIO;
     vector<util::RunningStat> times;
-    
+
     vector<std::string> names;
     vector< shared_ptr<Solver> > solvers =
         {
@@ -172,9 +172,9 @@ void VsTimeDeltaBFS::process()
     size_t prevEdgeIOCount;
     size_t prevEdgeReadIOCount;
     size_t prevEdgeWriteIOCount;
-    
+
     std::cout << "Running experiments..." << std::endl;
-  
+
     int deltaIndex = -1;
 
     SchemaStats stats = graph_->getSchemaStats();
@@ -184,26 +184,22 @@ void VsTimeDeltaBFS::process()
     for (auto delta : timeDeltas_) {
         deltaIndex++;
         for (int i = 0; i < numRuns_; i++) {
-            
+
             // For each run with a different delta, generate a different set of queries:
-            
+
             // generate a different workload with numQueryTemplates
             std::vector<std::vector<std::string> > templates =
                 simConf.getQueryTemplates(graph_.get());
 
-            std::vector<core::FocusedIntervalQuery> queries = 
-                ExpSetupHelper::genSearchQueries(templates,
-                                                 queryZipfParam_, 
-                                                 numQueries_,
-                                                 tsStart_,
-                                                 tsEnd_, 
-                                                 delta, 
-                                                 vertices_);
+            std::vector<core::FocusedIntervalQuery> queries =
+                ExpSetupHelper::genSearchQueries(
+                    templates, queryZipfParam_, numQueries_,
+                    tsStart_, tsEnd_, delta, graph_.get());
 
             graph_->resetWorkloads();
 
             ExpSetupHelper::runBFS(graph_.get(), queries);
-            
+
             std::map<BucketId,common::QueryWorkload> ws =
                 graph_->getWorkloads();
             // Make sure everything is in one bucket
@@ -219,23 +215,23 @@ void VsTimeDeltaBFS::process()
                     partIndex.getTimeSlicedPartitioning(Timestamp(0.0));
                 intergdb::common::Partitioning solverSolution =
                     solver->solve(workload, storageOverheadThreshold, stats);
-                
+
                 std::cout << "Solver: " <<  solver->getClassName() << std::endl;
                 std::cout << "numRuns: " << i << std::endl;
                 std::cout << "delta: " << delta << std::endl;
-                
+
                 std::cout << solverSolution.toString() << std::endl;
                 TimeSlicedPartitioning newParting{}; // -inf to inf
                 newParting.getPartitioning() = solverSolution.toStringSet();
                 partIndex.replaceTimeSlicedPartitioning(
                     origParting, {newParting});
-                
+
                 prevEdgeIOCount = graph_->getEdgeIOCount();
                 prevEdgeReadIOCount = graph_->getEdgeReadIOCount();
                 prevEdgeWriteIOCount = graph_->getEdgeWriteIOCount();
 
                 duration = ExpSetupHelper::runBFS(graph_.get(),queries);
-		
+
                 edgeIO[solverIndex].push(
                     graph_->getEdgeIOCount() - prevEdgeIOCount);
                 edgeReadIO[solverIndex].push(
@@ -243,10 +239,10 @@ void VsTimeDeltaBFS::process()
                 edgeWriteIO[solverIndex].push(
                     graph_->getEdgeWriteIOCount() - prevEdgeWriteIOCount);
                 times[solverIndex].push( duration );
-                
+
             }
         }
-    
+
 
         for (int solverIndex = 0; solverIndex < solvers.size(); solverIndex++)
         {
@@ -285,12 +281,12 @@ void VsTimeDeltaBFS::process()
             edgeReadIOCountExp.setFieldValue(
                 "deviation", edgeReadIO[solverIndex].getStandardDeviation());
             edgeReadIO[solverIndex].clear();
-            
+
             runningTimeExp.addRecord();
             runningTimeExp.setFieldValue("solver", solvers[solverIndex]->getClassName());
             runningTimeExp.setFieldValue(
                 "delta",
-                boost::lexical_cast<std::string>(timeDeltas_[deltaIndex]));                      
+                boost::lexical_cast<std::string>(timeDeltas_[deltaIndex]));
             runningTimeExp.setFieldValue("time", times[solverIndex].getMean());
             runningTimeExp.setFieldValue(
                 "deviation", times[solverIndex].getStandardDeviation());
@@ -300,7 +296,7 @@ void VsTimeDeltaBFS::process()
 
     // std::cout << "done." << std::endl;
 
-     
+
     for (auto exp : expData)
         exp->close();
 };
