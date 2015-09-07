@@ -25,7 +25,8 @@ namespace intergdb { namespace simulation {
 
 random_device ExpSetupHelper::randomDevice_;
 mt19937 ExpSetupHelper::randomGen_(randomDevice_());
-uniform_int_distribution<int> ExpSetupHelper::seedDist_(1, 1000);
+uniform_int_distribution<int> ExpSetupHelper::seedDist_(
+    1, numeric_limits<int>::max());
 
 ostream& operator<<(ostream& ostr, Tweet const& tweet)
 {
