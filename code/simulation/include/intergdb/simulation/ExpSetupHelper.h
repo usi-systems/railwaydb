@@ -49,14 +49,6 @@ namespace intergdb { namespace simulation {
             uint64_t& tsEnd,
             std::unordered_set<int64_t> & vertices);
 
-        static std::vector<core::FocusedIntervalQuery> genQueries(
-            std::vector<std::vector<std::string>> const & templates,
-            double queryZipfParam,
-            int numQueries,
-            uint64_t tsStart,
-            uint64_t tsEnd,
-            std::unordered_set<int64_t> const & vertices);
-
         static std::vector<core::FocusedIntervalQuery> genSearchQueries(
             std::vector<std::vector<std::string>> const & templates,
             double queryZipfParam,
@@ -64,7 +56,7 @@ namespace intergdb { namespace simulation {
             uint64_t tsStart,
             uint64_t tsEnd,
             double delta,
-            std::unordered_set<int64_t> const & vertices);
+            core::InteractionGraph * graph);
 
         static double runWorkload(
             core::InteractionGraph * graph,

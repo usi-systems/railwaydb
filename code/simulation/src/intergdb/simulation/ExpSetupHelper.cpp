@@ -256,78 +256,30 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     uint64_t tsStart,
     uint64_t tsEnd,
     double delta,
-    unordered_set<int64_t> const & vertices)
+    InteractionGraph * graph)
 {
     vector<core::FocusedIntervalQuery> queries;
-
-    vector<int64_t> vertexList;
-    copy(vertices.begin(), vertices.end(), back_inserter(vertexList));
 
     int numQueryTypes = templates.size();
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
     queryGen.setSeed(seedDist_(randomGen_));
-
-    // use a random start node for the interval query
-    size_t vertexIdMean = (vertices.size()) / 2;
-    double vertexIdStdDev = vertexIdMean - 1;
-    util::NormalRand vertexIdGen(
-        vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
-    vertexIdGen.setSeed(seedDist_(randomGen_));
 
     // use a random start time for the interval query
-    double offset = (delta * (tsEnd - tsStart));
+    double const duration = (delta * (tsEnd - tsStart));
+    uniform_real_distribution<double> timeDist(tsStart, tsEnd - duration);
+    tsStart = timeDist(randomGen_);
+    tsEnd = tsStart + duration;
 
-    size_t timeMean = tsStart + (((tsEnd - offset) - tsStart) / 2);
-
-    double timeStdDev = timeMean - 1;
-    util::NormalRand timeGen(timeMean, timeStdDev,
-        tsStart, tsStart+offset);
-    timeGen.setSeed(seedDist_(randomGen_));
-
-    cout << "tsStart " << tsStart << endl;
-    cout << "tsEnd " << tsEnd << endl;
-    cout << "timeMean " << timeMean << endl;
-    cout << "offset " << offset << endl;
-
-    for (int i = 0; i < numQueries; i++) {
-        int templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
-        int vertexIndex = vertexIdGen.getRandomValue();
-        uint64_t start = timeGen.getRandomValue();
-        uint64_t end = start + offset;
-        VertexId vi = vertexList.at(vertexIndex);
-        queries.push_back(FocusedIntervalQuery(
-            vi, start, end, templates[templateIndex]));
-    }
-    return queries;
-}
-
-vector<FocusedIntervalQuery> ExpSetupHelper::genQueries(
-    vector<vector<string>> const & templates,
-    double queryZipfParam,
-    int numQueries,
-    uint64_t tsStart,
-    uint64_t tsEnd,
-    unordered_set<int64_t> const & vertices)
-{
-    vector<core::FocusedIntervalQuery> queries;
-
-    vector<int64_t> vertexList;
-    copy(vertices.begin(), vertices.end(), back_inserter(vertexList));
-
-    int numQueryTypes = templates.size();
-    util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
-    queryGen.setSeed(seedDist_(randomGen_));
-
+    // find out the vertices that have interactions in the time range
+    std::vector<VertexId> vertexList;
+    graph->processIntervalQueryBatch(
+        IntervalQuery(tsStart, tsEnd), vertexList);
     // use a random start node for the interval query
-    size_t vertexIdMean = (vertices.size()) / 2;
-    double vertexIdStdDev = vertexIdMean - 1;
-    util::NormalRand vertexIdGen(
-        vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
-    vertexIdGen.setSeed(seedDist_(randomGen_));
+    uniform_int_distribution<int> vertexDist(0, vertexList.size() - 1);
 
     for (int i = 0; i < numQueries; i++) {
         int templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
-        int vertexIndex = vertexIdGen.getRandomValue();
+        int vertexIndex = vertexDist(randomGen_);
         VertexId vi = vertexList.at(vertexIndex);
         queries.push_back(FocusedIntervalQuery(
             vi, tsStart, tsEnd, templates[templateIndex]));

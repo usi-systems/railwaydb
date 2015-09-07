@@ -187,7 +187,7 @@ void VsNumQueryTemplates::process()
             vector<core::FocusedIntervalQuery> queries =
                 ExpSetupHelper::genSearchQueries(
                     templates, queryZipfParam_, numQueries_,
-                    tsStart_, tsEnd_, delta, vertices_);
+                    tsStart_, tsEnd_, delta, graph_.get());
 
             graph_->resetWorkloads();
 

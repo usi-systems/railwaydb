@@ -170,7 +170,7 @@ void VsBlockSize::process()
         std::vector<core::FocusedIntervalQuery> qs =
             ExpSetupHelper::genSearchQueries(
                 templates, delta, queryZipfParam_,
-                numQueries_, tsStart_, tsEnd_, vertices_);
+                numQueries_, tsStart_, tsEnd_, graphs_[0].get());
 
         ExpSetupHelper::runWorkload(graphs_[0].get(),qs);
         SchemaStats ss = graphs_[0]->getSchemaStats();
