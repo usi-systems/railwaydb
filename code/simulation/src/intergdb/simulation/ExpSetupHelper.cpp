@@ -265,9 +265,9 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     // use a random start node for the interval query
     size_t vertexIdMean = (vertices.size()) / 2;
     double vertexIdStdDev = vertexIdMean - 1;
-    util::NormalRand vertexIdGen(vertexIdMean, vertexIdStdDev,
-                           0, vertices.size()-1);
-
+    util::NormalRand vertexIdGen(
+        vertexIdMean, vertexIdStdDev, 0, vertices.size()-1);
+    vertexIdGen.setSeed(seed++);
 
     // use a random start time for the interval query
     double offset = (delta * (tsEnd - tsStart));
