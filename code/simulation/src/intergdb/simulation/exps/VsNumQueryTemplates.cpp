@@ -182,13 +182,6 @@ void VsNumQueryTemplates::process()
             // generate a different workload with numQueryTemplates
             vector<vector<string> > templates =
                 simConf.getQueryTemplates(graph_.get());
-            cerr << "Num templates: " << templates.size() << endl;
-            for (auto const& queryTemplate : templates)
-            {
-                for (auto const& attribute : queryTemplate)
-                    cerr << attribute << ", ";
-                cerr << endl;
-            }
 
             vector<core::FocusedIntervalQuery> queries =
                 ExpSetupHelper::genQueries(templates,
