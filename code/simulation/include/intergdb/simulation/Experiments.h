@@ -30,7 +30,7 @@ namespace intergdb { namespace simulation
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
         double queryZipfParam_ = 0.5;
-        int numRuns_ = 10;
+        int numRuns_ = 100;
         int numQueries_ = 100;
         int blockBufferSize_ = 5 ; /* 5 blocks */
         std::vector<int> blockSizes_ = { 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
@@ -51,7 +51,7 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 10;
+        int numRuns_ = 100;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ;
         std::vector<int> queryTemplatesSizes_ = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -86,7 +86,7 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 10;
+        int numRuns_ = 100;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ;
         int numQueries_ = 100;
@@ -116,7 +116,7 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 10;
+        int numRuns_ = 100;
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ;
         int numQueries_ = 100;
