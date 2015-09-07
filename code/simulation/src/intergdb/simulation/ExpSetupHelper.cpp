@@ -264,16 +264,17 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
     queryGen.setSeed(seedDist_(randomGen_));
 
-    double startTime, endTime;
-    double const duration = (delta * (tsEnd - tsStart));
+    uint64_t startTime, endTime;
+    uint64_t const duration = static_cast<uint64_t>(
+        delta * static_cast<double>(tsEnd - tsStart));
     // use a random start time for the interval query
-    uniform_real_distribution<double> timeDist(tsStart, tsEnd - duration);
+    uniform_int_distribution<uint64_t> timeDist(tsStart, tsEnd - duration);
 
     std::vector<VertexId> vertexList;
     while (vertexList.empty())
     {
         startTime = timeDist(randomGen_);
-        endTime = tsStart + duration;
+        endTime = startTime + duration;
         // find out the vertices that have interactions in the time range
         graph->processIntervalQueryBatch(
             IntervalQuery(startTime, endTime), vertexList);
