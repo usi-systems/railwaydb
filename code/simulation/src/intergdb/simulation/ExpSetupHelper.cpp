@@ -264,16 +264,21 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     util::ZipfRand queryGen(queryZipfParam, numQueryTypes);
     queryGen.setSeed(seedDist_(randomGen_));
 
-    // use a random start time for the interval query
+    double startTime, endTime;
     double const duration = (delta * (tsEnd - tsStart));
+    // use a random start time for the interval query
     uniform_real_distribution<double> timeDist(tsStart, tsEnd - duration);
-    tsStart = timeDist(randomGen_);
-    tsEnd = tsStart + duration;
 
-    // find out the vertices that have interactions in the time range
     std::vector<VertexId> vertexList;
-    graph->processIntervalQueryBatch(
-        IntervalQuery(tsStart, tsEnd), vertexList);
+    while (vertexList.empty())
+    {
+        startTime = timeDist(randomGen_);
+        endTime = tsStart + duration;
+        // find out the vertices that have interactions in the time range
+        graph->processIntervalQueryBatch(
+            IntervalQuery(startTime, endTime), vertexList);
+    }
+
     // use a random start node for the interval query
     uniform_int_distribution<int> vertexDist(0, vertexList.size() - 1);
 
@@ -282,7 +287,7 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
         int vertexIndex = vertexDist(randomGen_);
         VertexId vi = vertexList.at(vertexIndex);
         queries.push_back(FocusedIntervalQuery(
-            vi, tsStart, tsEnd, templates[templateIndex]));
+            vi, startTime, endTime, templates[templateIndex]));
     }
     return queries;
 }
