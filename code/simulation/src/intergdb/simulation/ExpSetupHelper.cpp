@@ -296,7 +296,6 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
         start = timeGen.getRandomValue();
         end = start + offset;
         vi = vertexList.at(vertexIndex);
-        cout << "start " << start << endl;
         queries.push_back(FocusedIntervalQuery(
                               vi, start, end, templates[templateIndex]));
     }
