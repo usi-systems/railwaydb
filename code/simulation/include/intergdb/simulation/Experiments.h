@@ -86,7 +86,7 @@ namespace intergdb { namespace simulation
         uint64_t tsStart_;
         uint64_t tsEnd_;
         std::unordered_set<int64_t> vertices_;
-        int numRuns_ = 100;
+        int numRuns_ = 2; // 100
         int blockSize_ = 65536;
         int blockBufferSize_ = 5 ;
         int numQueries_ = 100;

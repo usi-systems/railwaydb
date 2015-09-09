@@ -270,14 +270,23 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     // use a random start time for the interval query
     uniform_int_distribution<uint64_t> timeDist(tsStart, tsEnd - duration);
 
-    std::vector<VertexId> vertexList;
-    while (vertexList.empty())
+    vector<VertexId> vertices;
+    while (vertices.empty())
     {
         startTime = timeDist(randomGen_);
         endTime = startTime + duration;
         // find out the vertices that have interactions in the time range
         graph->processIntervalQueryBatch(
-            IntervalQuery(startTime, endTime), vertexList);
+            IntervalQuery(startTime, endTime), vertices);
+    }
+    vector<VertexId> vertexList;
+    for (auto const& vertex : vertices)
+    {
+        if (static_cast<make_signed<VertexId>::type>(vertex) < 0)
+        {
+            continue;
+        }
+        vertexList.push_back(vertex);
     }
 
     // use a random start node for the interval query
@@ -323,9 +332,9 @@ double ExpSetupHelper::runDFS(
     vector<core::FocusedIntervalQuery> const & queries)
 {
     util::AutoTimer timer;
-    graph->clearBlockBuffer();
     timer.start();
     for (auto q : queries) {
+        graph->clearBlockBuffer();
         set<VertexId> visited;
         dfs(graph, q, visited);
     }
@@ -354,15 +363,16 @@ void ExpSetupHelper::dfs(
 {
     int count = 0;
     int sizes = 0;
-    VertexId u;
     visited.insert(query.getHeadVertex());
-    for (auto iqIt = graph->processFocusedIntervalQuery(query);  iqIt.isValid(); iqIt.next()) {
-        u = iqIt.getToVertex();
+    for (auto iqIt = graph->processFocusedIntervalQuery(query);
+         iqIt.isValid(); iqIt.next()) {
+        VertexId u = iqIt.getToVertex();
         sizes += iqIt.getEdgeData()->getFields().size();
-        count += 1;
+        count++;
         auto search = visited.find(u);
         if(search != visited.end()) {
-            FocusedIntervalQuery next(u, query.getStartTime(), query.getEndTime(), query.getAttributeNames());
+            FocusedIntervalQuery next(u, query.getStartTime(),
+                query.getEndTime(), query.getAttributeNames());
             dfs(graph, next, visited);
         }
     }

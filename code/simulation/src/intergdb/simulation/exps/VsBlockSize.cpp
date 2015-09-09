@@ -28,7 +28,7 @@ using namespace intergdb::simulation;
 #define RECREATE
 //#undef RECREATE
 
-VsBlockSize::VsBlockSize() { }
+VsBlockSize::VsBlockSize() {}
 
 void VsBlockSize::printTweets()
 {
