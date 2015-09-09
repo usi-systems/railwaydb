@@ -347,9 +347,9 @@ double ExpSetupHelper::runBFS(
     vector<core::FocusedIntervalQuery> const & queries)
 {
     util::AutoTimer timer;
-    graph->clearBlockBuffer();
     timer.start();
     for (auto q : queries) {
+        graph->clearBlockBuffer();
         bfs(graph, q);
     }
     timer.stop();
