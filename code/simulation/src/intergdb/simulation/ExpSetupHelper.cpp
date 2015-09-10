@@ -302,7 +302,6 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
                 mostProlificVertex = vertex;
             }
         }
-        cerr << "XXX " << maxOccurances << endl;
     }
 
     // use a random start node for the interval query
