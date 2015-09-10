@@ -6,29 +6,24 @@
 #include <iostream>
 
 using namespace std;
-using namespace google;
 using namespace intergdb;
 using namespace intergdb::common;
 
 vector<Partition const *> Cost::getUsedPartitions(
     vector<Partition> const & partitions,
-    dense_hash_set<Attribute const *> const & attributes,
+    unordered_set<Attribute const *> const & attributes,
     QuerySummary const & query)
 {
     // attributes that appear in queries that we have to cover
-    dense_hash_set<Attribute const *> effectiveAttributes;
-    effectiveAttributes.set_empty_key(nullptr);
+    unordered_set<Attribute const *> effectiveAttributes;
     for (Attribute const * attribute : query.getAttributes())
         if (attributes.count(attribute)>0)
             effectiveAttributes.insert(attribute);
     // attributes we have covered so far
-    dense_hash_set<Attribute const *> selectedAttributes;
-    selectedAttributes.set_empty_key(nullptr);
+    unordered_set<Attribute const *> selectedAttributes;
 
     vector<Partition const *> usedPartitions;
-    dense_hash_set<Partition const *> unusedPartitions;
-    unusedPartitions.set_empty_key(nullptr);
-    unusedPartitions.set_deleted_key(reinterpret_cast<Partition const *>(-1));
+    unordered_set<Partition const *> unusedPartitions;
     for (Partition const& partition : partitions)
         unusedPartitions.insert(&partition);
 
@@ -64,8 +59,7 @@ double Cost::getIOCost(Partitioning const & partitioning,
                        QueryWorkload const & workload)
 {
     auto const& attributeList = workload.getAttributes();
-    dense_hash_set<Attribute const *> attributes;
-    attributes.set_empty_key(nullptr);
+    unordered_set<Attribute const *> attributes;
     for (auto const attribute : attributeList)
         attributes.insert(attribute);
     return getIOCost(partitioning.getPartitions(), workload, attributes);
@@ -73,7 +67,7 @@ double Cost::getIOCost(Partitioning const & partitioning,
 
 double Cost::getIOCost(vector<Partition> const & partitions,
                        QueryWorkload const & workload,
-                       dense_hash_set<Attribute const *> const & attributes)
+                       unordered_set<Attribute const *> const & attributes)
 {
     double totalIOCost = 0.0;
     auto const & summaries = workload.getQuerySummaries();

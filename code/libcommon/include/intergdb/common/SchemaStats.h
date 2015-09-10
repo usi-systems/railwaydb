@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sparsehash/dense_hash_map>
+#include <unordered_map>
 
 #include <string>
 #include <sstream>
@@ -11,9 +11,7 @@ namespace intergdb { namespace common
     {
     public:
         SchemaStats()
-        {
-            indexToCountAndBytes_.set_empty_key(-1);
-        }
+        {}
 
         double getAvgSize(uint32_t index) const
         {
@@ -38,12 +36,12 @@ namespace intergdb { namespace common
             }
         }
 
-        google::dense_hash_map<uint32_t, std::pair<uint32_t,double> > const & getStats() const
+        std::unordered_map<uint32_t, std::pair<uint32_t,double> > const & getStats() const
         {
             return indexToCountAndBytes_;
         }
 
-        google::dense_hash_map<uint32_t, std::pair<uint32_t,double> > & getStats()
+        std::unordered_map<uint32_t, std::pair<uint32_t,double> > & getStats()
         {
             return indexToCountAndBytes_;
         }
@@ -58,7 +56,7 @@ namespace intergdb { namespace common
         }
 
     private:
-        google::dense_hash_map<uint32_t, std::pair<uint32_t,double> > indexToCountAndBytes_;
+        std::unordered_map<uint32_t, std::pair<uint32_t,double> > indexToCountAndBytes_;
     };
 } } /* namespace */
 

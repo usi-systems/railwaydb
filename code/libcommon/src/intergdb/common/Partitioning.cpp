@@ -3,7 +3,6 @@
 #include <string>
 
 using namespace std;
-using namespace google;
 using namespace intergdb;
 using namespace intergdb::common;
 

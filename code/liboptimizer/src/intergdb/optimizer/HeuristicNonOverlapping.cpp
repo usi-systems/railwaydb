@@ -7,19 +7,24 @@
 #include <intergdb/optimizer/MinCostSolution.h>
 
 #include <iostream>
-#include <sparsehash/dense_hash_map>
+#include <unordered_map>
 #include <assert.h>
 
 using namespace std;
-using namespace google;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
 Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, SchemaStats const & stats)
 {
+  unordered_set<Attribute const *> queryAttributes;
+  for (QuerySummary const & summary : workload.getQuerySummaries())
+    for (Attribute const * attribute : summary.getAttributes())
+      queryAttributes.insert(attribute);
   Cost costModel(stats);
   MinCostSolution<Partitioning> minCostPart;
-  for (int numPartitions=1; numPartitions<=workload.getAttributes().size(); ++numPartitions) {
+  int numPartitions;
+  for (numPartitions=1; numPartitions<=
+       min(queryAttributes.size() + 1 , workload.getAttributes().size()); ++numPartitions) {
       Partitioning partitioning = solve(workload, storageThreshold, numPartitions, stats);
     double overhead = costModel.getStorageOverhead(partitioning, workload);
     if (overhead > storageThreshold)
@@ -39,8 +44,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
   // Perform greedy placement
   //  - Order attributes in decreasing order of frequency
   vector<Attribute const *> attributes(workload.getAttributes());
-  dense_hash_map<Attribute const *, int> attrbFreq;
-  attrbFreq.set_empty_key(nullptr);
+  unordered_map<Attribute const *, int> attrbFreq;
   for (Attribute const * attrb : workload.getAttributes())
     attrbFreq[attrb] = 0;
   for (QuerySummary const & query : workload.getQuerySummaries())
@@ -53,8 +57,7 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
   });
   // - In decreasing order of attribute frequency
   Cost costModel(stats);
-  dense_hash_set<Attribute const *> usedAttributes;
-  usedAttributes.set_empty_key(nullptr);
+  unordered_set<Attribute const *> usedAttributes;
   for (Attribute const * attrb : attributes) {
     usedAttributes.insert(attrb);
     MinCostSolution<Partition *> minCostPart;
