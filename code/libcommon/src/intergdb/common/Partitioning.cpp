@@ -3,15 +3,16 @@
 #include <string>
 
 using namespace std;
+using namespace google;
 using namespace intergdb;
 using namespace intergdb::common;
 
 bool Partition::operator==(Partition const & other) const
 {
-    unordered_set<Attribute const *> const & oattrbs = other.getAttributes();
+    auto const & oattrbs = other.getAttributes();
     if (oattrbs.size()!=attributes_.size())
         return false;
-    for (Attribute const * attrb : attributes_)
+    for (auto const attrb : attributes_)
         if (oattrbs.count(attrb)==0)
             return false;
     return true;

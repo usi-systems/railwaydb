@@ -8,7 +8,7 @@ int simulation()
 {
     // (VsStorageOverheadThreshold()).run();
     (VsNumAttributes()).run();
-    (VsNumQueryKinds()).run();
+    //(VsNumQueryKinds()).run();
     // (VsQueryLength()).run();
     // (VsAttributeSizeSkew()).run();
     // (VsQueryFreqSkew()).run();
@@ -27,6 +27,6 @@ int experiment()
 
 int main()
 {
-    return experiment();
+    return simulation();
 }
 

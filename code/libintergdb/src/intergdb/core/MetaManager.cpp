@@ -66,7 +66,7 @@ NetworkByteBuffer & operator>>(NetworkByteBuffer & sbuf, SchemaStats & stats)
         sbuf >> count;
         sbuf >> bytes;
         numStats--;
-        stats.getStats().emplace(index, std::make_pair(count, bytes));
+        stats.getStats()[index] = std::make_pair(count, bytes);
     }
     return sbuf;
 }

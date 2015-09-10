@@ -6,37 +6,33 @@
 #include <iostream>
 
 using namespace std;
+using namespace google;
 using namespace intergdb;
 using namespace intergdb::common;
 
 vector<Partition const *> Cost::getUsedPartitions(
     vector<Partition> const & partitions,
-    std::unordered_set<Attribute const *> const & attributes,
+    dense_hash_set<Attribute const *> const & attributes,
     QuerySummary const & query)
 {
-    // attributes present in the query
-    unordered_set<Attribute const *> queryAttributes;
-    for (Attribute const * attribute : query.getAttributes())
-        queryAttributes.insert(attribute);
-    // attributes we have covered so far
-    unordered_set<Attribute const *> selectedAttributes;
-    // attributes we have yet to cover
-    unordered_set<Attribute const *> remainingAttributes;
-    for (Attribute const * attribute : attributes)
-        if (queryAttributes.count(attribute))
-            remainingAttributes.insert(attribute);
     // attributes that appear in queries that we have to cover
-    unordered_set<Attribute const *> effectiveAttributes;
+    dense_hash_set<Attribute const *> effectiveAttributes;
+    effectiveAttributes.set_empty_key(nullptr);
     for (Attribute const * attribute : query.getAttributes())
         if (attributes.count(attribute)>0)
             effectiveAttributes.insert(attribute);
+    // attributes we have covered so far
+    dense_hash_set<Attribute const *> selectedAttributes;
+    selectedAttributes.set_empty_key(nullptr);
 
     vector<Partition const *> usedPartitions;
-    unordered_set<Partition const *> unusedPartitions;
-    for (Partition const & partition: partitions)
+    dense_hash_set<Partition const *> unusedPartitions;
+    unusedPartitions.set_empty_key(nullptr);
+    unusedPartitions.set_deleted_key(reinterpret_cast<Partition const *>(-1));
+    for (Partition const& partition : partitions)
         unusedPartitions.insert(&partition);
 
-    while (remainingAttributes.size()!=0) {
+    while (selectedAttributes.size()<effectiveAttributes.size()) {
         Partition const * bestPartition = nullptr;
         double bestPartitionScore = -1.0;
         for (Partition const * partition : unusedPartitions) {
@@ -56,10 +52,8 @@ vector<Partition const *> Cost::getUsedPartitions(
             }
         }
         assert(bestPartition);
-        for(Attribute const * attribute : bestPartition->getAttributes()) {
+        for(Attribute const * attribute : bestPartition->getAttributes())
             selectedAttributes.insert(attribute);
-            remainingAttributes.erase(attribute);
-        }
         usedPartitions.push_back(bestPartition);
         unusedPartitions.erase(bestPartition);
     }
@@ -69,23 +63,24 @@ vector<Partition const *> Cost::getUsedPartitions(
 double Cost::getIOCost(Partitioning const & partitioning,
                        QueryWorkload const & workload)
 {
-    unordered_set<Attribute const *> attributes;
-    for (Attribute const * attrb : workload.getAttributes())
-        attributes.insert(attrb);
+    auto const& attributeList = workload.getAttributes();
+    dense_hash_set<Attribute const *> attributes;
+    attributes.set_empty_key(nullptr);
+    for (auto const attribute : attributeList)
+        attributes.insert(attribute);
     return getIOCost(partitioning.getPartitions(), workload, attributes);
 }
 
 double Cost::getIOCost(vector<Partition> const & partitions,
                        QueryWorkload const & workload,
-                       unordered_set<Attribute const *> const & attributes)
+                       dense_hash_set<Attribute const *> const & attributes)
 {
     double totalIOCost = 0.0;
     auto const & summaries = workload.getQuerySummaries();
     for (QuerySummary const & summary : summaries) {
         double partitionIOCost = 0.0;
-        vector<Partition const *> usedPartitions =
-            getUsedPartitions(partitions, attributes, summary);
-        for (Partition const * partition : usedPartitions)
+        for (Partition const * partition :
+                getUsedPartitions(partitions, attributes, summary))
             partitionIOCost += getPartitionSize(*partition);
         totalIOCost += workload.getFrequency(summary) * partitionIOCost;
     }

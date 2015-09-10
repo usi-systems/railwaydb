@@ -7,10 +7,11 @@
 #include <intergdb/optimizer/MinCostSolution.h>
 
 #include <iostream>
-#include <unordered_map>
+#include <sparsehash/dense_hash_map>
 #include <assert.h>
 
 using namespace std;
+using namespace google;
 using namespace intergdb::common;
 using namespace intergdb::optimizer;
 
@@ -33,18 +34,15 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
 Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, double storageThreshold, int numPartitions, SchemaStats const & stats)
 {
   // Initialize partitions
-  vector<Partition> partitions;
-  for (int i=0; i<numPartitions; ++i)
-    partitions.emplace_back(Partition());
+  vector<Partition> partitions(numPartitions, Partition());
 
   // Perform greedy placement
   //  - Order attributes in decreasing order of frequency
-  vector<Attribute const *> attributes;
-  unordered_map<Attribute const *, int> attrbFreq;
-  for (Attribute const * attrb : workload.getAttributes()) {
+  vector<Attribute const *> attributes(workload.getAttributes());
+  dense_hash_map<Attribute const *, int> attrbFreq;
+  attrbFreq.set_empty_key(nullptr);
+  for (Attribute const * attrb : workload.getAttributes())
     attrbFreq[attrb] = 0;
-    attributes.push_back(attrb);
-  }
   for (QuerySummary const & query : workload.getQuerySummaries())
     for (Attribute const * attrb : query.getAttributes())
       ++(attrbFreq[attrb]);
@@ -55,7 +53,8 @@ Partitioning HeuristicNonOverlapping::solve(QueryWorkload const & workload, doub
   });
   // - In decreasing order of attribute frequency
   Cost costModel(stats);
-  unordered_set<Attribute const *> usedAttributes;
+  dense_hash_set<Attribute const *> usedAttributes;
+  usedAttributes.set_empty_key(nullptr);
   for (Attribute const * attrb : attributes) {
     usedAttributes.insert(attrb);
     MinCostSolution<Partition *> minCostPart;

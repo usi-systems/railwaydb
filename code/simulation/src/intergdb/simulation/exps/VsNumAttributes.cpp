@@ -107,7 +107,7 @@ void VsNumAttributes::process()
             vector<unique_ptr<Attribute>> allAttributes;
             auto workloadAndStats =
                 simConf.getQueryWorkloadAndStats(allAttributes);
-            QueryWorkload workload = workloadAndStats.first;
+            QueryWorkload const& workload = workloadAndStats.first;
             stats = workloadAndStats.second;
             j = 0;
             for (auto solver : solvers) {

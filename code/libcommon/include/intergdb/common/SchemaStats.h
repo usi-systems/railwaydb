@@ -1,8 +1,9 @@
 #pragma once
 
+#include <sparsehash/dense_hash_map>
+
 #include <string>
-#include <unordered_map>
-#include <sstream>      
+#include <sstream>
 
 namespace intergdb { namespace common
 {
@@ -10,12 +11,14 @@ namespace intergdb { namespace common
     {
     public:
         SchemaStats()
-        {}
+        {
+            indexToCountAndBytes_.set_empty_key(-1);
+        }
 
         double getAvgSize(uint32_t index) const
         {
             auto it = indexToCountAndBytes_.find(index);
-            if ( it == indexToCountAndBytes_.end() )
+            if (it == indexToCountAndBytes_.end())
                 throw std::runtime_error("SchemaStats index " +
                     std::to_string(index) + " not found.");
             if (it->second.first == 0)
@@ -28,19 +31,19 @@ namespace intergdb { namespace common
         {
             auto it = indexToCountAndBytes_.find(index);
             if (it == indexToCountAndBytes_.end()) {
-                indexToCountAndBytes_.emplace(index, std::make_pair(1, bytes));
+                indexToCountAndBytes_[index] = std::make_pair(1, bytes);
             } else {
                 it->second.first++;
                 it->second.second += bytes;
             }
         }
 
-        std::unordered_map<uint32_t, std::pair<uint32_t,double> > const & getStats() const
+        google::dense_hash_map<uint32_t, std::pair<uint32_t,double> > const & getStats() const
         {
             return indexToCountAndBytes_;
         }
 
-        std::unordered_map<uint32_t, std::pair<uint32_t,double> > & getStats()
+        google::dense_hash_map<uint32_t, std::pair<uint32_t,double> > & getStats()
         {
             return indexToCountAndBytes_;
         }
@@ -55,7 +58,7 @@ namespace intergdb { namespace common
         }
 
     private:
-        std::unordered_map<uint32_t, std::pair<uint32_t,double> > indexToCountAndBytes_;
+        google::dense_hash_map<uint32_t, std::pair<uint32_t,double> > indexToCountAndBytes_;
     };
 } } /* namespace */
 

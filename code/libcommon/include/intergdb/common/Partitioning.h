@@ -2,6 +2,8 @@
 
 #include <intergdb/common/Partition.h>
 
+#include <unordered_set>
+
 #include <vector>
 
 namespace intergdb { namespace common

@@ -24,14 +24,14 @@ namespace intergdb { namespace common
         // the m-function from the paper
         std::vector<Partition const *> getUsedPartitions(
             std::vector<Partition> const & partitions,
-            std::unordered_set<Attribute const *> const & attributes,
+            google::dense_hash_set<Attribute const *> const & attributes,
             QuerySummary const & query);
 
         // used for the non-overlapping heuristic, only considers some of the attributes (filterAttributes)
         double getIOCost(
             std::vector<Partition> const & partitions,
             QueryWorkload const & workload,
-            std::unordered_set<Attribute const *> const & filterAttributes);
+            google::dense_hash_set<Attribute const*> const & filterAttributes);
 
     private:
         SchemaStats const & stats_;
