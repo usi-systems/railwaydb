@@ -75,8 +75,8 @@ void VsNumAttributes::process()
     auto solvers = {
         SolverFactory::instance().makeSinglePartition(),
         SolverFactory::instance().makePartitionPerAttribute(),
-        //SolverFactory::instance().makeOptimalOverlapping(),
-        //SolverFactory::instance().makeOptimalNonOverlapping(),
+        SolverFactory::instance().makeOptimalOverlapping(),
+        SolverFactory::instance().makeOptimalNonOverlapping(),
         SolverFactory::instance().makeHeuristicOverlapping(),
         SolverFactory::instance().makeHeuristicNonOverlapping()
     };
