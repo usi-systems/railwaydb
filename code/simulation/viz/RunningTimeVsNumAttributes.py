@@ -20,6 +20,7 @@ def main(dirn, fname):
   fig = pp.figure()
   ax = fig.add_subplot(111)
   ax.set_xscale("log", basex=2)
+  #ax.set_yscale("symlog" )
 
   index = 0
   for (solver, ys), (solver, ydevs) in zip(ysPerSolver.iteritems(),ydevsPerSolver.iteritems()) : 
