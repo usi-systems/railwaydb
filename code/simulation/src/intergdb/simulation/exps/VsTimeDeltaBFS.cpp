@@ -194,7 +194,7 @@ void VsTimeDeltaBFS::process()
             std::vector<core::FocusedIntervalQuery> queries =
                 ExpSetupHelper::genSearchQueries(
                     templates, queryZipfParam_, numQueries_,
-                    tsStart_, tsEnd_, delta, graph_.get());
+                    tsStart_, tsEnd_, delta, graph_.get(), true);
 
             graph_->resetWorkloads();
 

@@ -56,7 +56,8 @@ namespace intergdb { namespace simulation {
             uint64_t tsStart,
             uint64_t tsEnd,
             double delta,
-            core::InteractionGraph * graph);
+            core::InteractionGraph * graph,
+            bool const useMostProlificVertex=false);
 
         static double runWorkload(
             core::InteractionGraph * graph,

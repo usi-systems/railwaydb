@@ -256,7 +256,8 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     uint64_t tsStart,
     uint64_t tsEnd,
     double delta,
-    InteractionGraph * graph)
+    InteractionGraph * graph,
+    bool const useMostProlificVertex/*=false*/)
 {
     vector<core::FocusedIntervalQuery> queries;
 
@@ -280,13 +281,28 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
             IntervalQuery(startTime, endTime), vertices);
     }
     vector<VertexId> vertexList;
-    for (auto const& vertex : vertices)
-    {
+    for (auto const& vertex : vertices) {
         if (static_cast<make_signed<VertexId>::type>(vertex) < 0)
-        {
             continue;
-        }
         vertexList.push_back(vertex);
+    }
+
+    VertexId mostProlificVertex;
+    size_t maxOccurances = 0;
+    if (useMostProlificVertex) {
+        for (auto const& vertex : vertexList) {
+            FocusedIntervalQuery q(vertex, startTime, endTime, templates[0]);
+            size_t count = 0;
+            for (auto iqIt = graph->processFocusedIntervalQuery(q);
+                 iqIt.isValid(); iqIt.next()) {
+                count += 1;
+            }
+            if (count > maxOccurances) {
+                maxOccurances = count;
+                mostProlificVertex = vertex;
+            }
+        }
+        cerr << "XXX " << maxOccurances << endl;
     }
 
     // use a random start node for the interval query
@@ -295,7 +311,8 @@ vector<FocusedIntervalQuery> ExpSetupHelper::genSearchQueries(
     for (int i = 0; i < numQueries; i++) {
         int templateIndex = numQueryTypes > 1 ? queryGen.getRandomValue() : 0;
         int vertexIndex = vertexDist(randomGen_);
-        VertexId vi = vertexList.at(vertexIndex);
+        VertexId vi = useMostProlificVertex ?  mostProlificVertex :
+            vertexList.at(vertexIndex);
         queries.push_back(FocusedIntervalQuery(
             vi, startTime, endTime, templates[templateIndex]));
     }
