@@ -20,8 +20,7 @@ INCDIR  = $(THISDIR)/include
 CXX      = clang++ 
 CXXFLAGS = -g -O2 -fPIC -Wall -std=c++11 -stdlib=libc++  
 SRCDIRS  = $(shell find $(SRCDIR) -type d)
-INCDIRS  = $(shell find $(INCDIR) -type d)
-INCFLAGS = $(addprefix -I ,$(SRCDIRS)) $(addprefix -I ,$(INCDIRS)) $(INCLUDES)
+INCFLAGS = -I $(INCDIR) $(INCLUDES)
 
 ## Stable Section: usually no need to be changed. 
 SHELL   = /bin/sh
@@ -79,7 +78,6 @@ show:
 	@echo 'THISDIR     :' $(THISDIR)
 	@echo 'LIBRARY     :' $(LIBRARY)
 	@echo 'SRCDIRS     :' $(SRCDIRS)
-	@echo 'INCDIRS     :' $(INCDIRS)
 	@echo 'SOURCES     :' $(SOURCES)
 	@echo 'OBJS        :' $(OBJS)
 	@echo 'DEPS        :' $(DEPS)
